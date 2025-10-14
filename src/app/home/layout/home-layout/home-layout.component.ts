@@ -1,9 +1,12 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { HomeSidebarComponent } from '../../components/home-sidebar/home-sidebar.component';
 
 @Component({
-  selector: 'app-home-layout',
-  imports: [RouterOutlet],
+  selector: 'home-layout',
+  imports: [RouterOutlet, HomeSidebarComponent],
   templateUrl: './home-layout.component.html',
 })
-export class HomeLayoutComponent { }
+export class HomeLayoutComponent { 
+  
+}

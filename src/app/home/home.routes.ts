@@ -12,12 +12,28 @@ export const homeRoutes: Routes = [
         children: [
             {
                 path: '',
+                title: 'Inicio',
+                data: { icon: 'home_outline' },
                 component: HomePageComponent,
             }, 
-            { path: 'tickets', component: TicketPageComponent },
-            { path: 'favorites', component: FavoritePageComponent },
-            { path: 'profile-user', component: ProfilePageComponent },
-
+            { 
+                path: 'tickets', 
+                title: 'Boletos',
+                data: { icon: 'confirmation_number' },
+                component: TicketPageComponent 
+            },
+            { 
+                path: 'favorites', 
+                title: 'Favoritos',
+                data: { icon: 'favorite' },
+                component: FavoritePageComponent 
+            },
+            { 
+                path: 'profile-user', 
+                title: 'Perfil',
+                data: { icon: 'person' },
+                component: ProfilePageComponent 
+            },
             {
                 path: '**',
                 redirectTo: ''
