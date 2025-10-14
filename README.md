@@ -2,6 +2,15 @@
 
 This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.2.0.
 
+
+## Build Project
+
+1. Clone the repository
+2. Install dependencies `npm install`
+3. Generate the `.env` based on the `env.template`
+4. Run the command `npm run set-envs`
+
+
 ## Development server
 
 To start a local development server, run:
