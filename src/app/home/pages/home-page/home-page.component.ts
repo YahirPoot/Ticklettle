@@ -1,10 +1,9 @@
 import { Component, ElementRef, ViewChild } from '@angular/core';
-import { MatIconModule } from '@angular/material/icon';
-import { EventCarouselComponent } from '../../../event/components/event-carousel/event-carousel.component';
+import { EventPageComponent } from "../../../event/pages/event-page/event-page.component";
 
 @Component({
   selector: 'app-home-page',
-  imports: [EventCarouselComponent],
+  imports: [EventPageComponent],
   templateUrl: './home-page.component.html',
 })
 export class HomePageComponent {

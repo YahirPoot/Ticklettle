@@ -1,10 +1,9 @@
 import { Component, ElementRef, ViewChild } from '@angular/core';
-import { MatIconModule } from '@angular/material/icon';
 import { EventCardComponent } from "../event-card/event-card.component";
 
 @Component({
   selector: 'event-carousel',
-  imports: [MatIconModule, EventCardComponent],
+  imports: [EventCardComponent],
   templateUrl: './event-carousel.component.html',
 })
 export class EventCarouselComponent { 
