@@ -1,9 +1,13 @@
 <div>
+    <div class="mb-6">
+        <h2 class="text-xl font-bold px-4">Ticklettle</h2>
+
+    </div>
     @for (route of routes; track $index) {
-        <li class="mb-3">
+        <li class="mb-4">
             <button [routerLink]="route.path === '' ? '/' : ['/', route.path]"
                 routerLinkActive="btn bg-base-200"
-                [routerLinkActiveOptions]="route.path === '' ? { exact: true } : { exact: false }"
+                [routerLinkActiveOptions]="route.path === '' ? { exact: false } : { exact: false }"
                 class="is-drawer-close:tooltip is-drawer-close:tooltip-right w-full flex items-center gap-3"
             >   
             <div class="flex items-center gap-3">
