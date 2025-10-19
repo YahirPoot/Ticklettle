@@ -1,10 +1,13 @@
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { environment } from '../../../../environments/environment.dev';
 
 declare global {
   interface Window { google?: any; }
 }
+
+const googleClientId = environment.googleClientId;
 
 @Component({
   selector: 'app-login-page',
@@ -13,12 +16,11 @@ declare global {
 })
 export class LoginPageComponent implements OnInit, OnDestroy {
   private router = inject(Router);
-  private clientId = '735301633233-lepi10vlc9g1a7c8k0uvip7cfp9iba2t.apps.googleusercontent.com';
+  private clientId = googleClientId;
   private mounted = false;
 
   ngOnInit(): void {
     this.initGsi();
-console.log('gsi clientId used:', this.clientId);
 console.log('window.origin:', window.location.origin);
   }
 
@@ -61,20 +63,8 @@ console.log('window.origin:', window.location.origin);
     tryInit();
   }
 
-  // llamada opcional para mostrar prompt / One Tap
-  public promptOneTap() {
-    try {
-      window.google?.accounts?.id?.prompt(); // muestra One Tap / consent
-    } catch (err) {
-      console.error('GSI prompt error', err);
-    }
-  }
-
   private handleCredentialResponse(response: { credential?: string }) {
-    if (!response || !response.credential) {
-      console.error('No credential from GSI', response);
-      return;
-    }
+    if (!response.credential) return;
 
     try {
       // credential es un JWT; decodificar payload
@@ -84,7 +74,7 @@ console.log('window.origin:', window.location.origin);
         id: payload.sub,
         email: payload.email,
         name: payload.name,
-        picture: payload.picture,
+        photoUrl: payload.picture,
         idToken: response.credential
       };
       // guardar en localStorage (solo para pruebas)
@@ -92,7 +82,7 @@ console.log('window.origin:', window.location.origin);
       console.log('GSI user', socialUser);
 
       // redirigir
-      void this.router.navigate(['/']);
+      void this.router.navigate(['/auth/callback']);
     } catch (err) {
       console.error('Error procesando credential JWT', err);
     }
