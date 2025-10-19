@@ -1,51 +1,88 @@
-import { inject, Injectable } from '@angular/core';
+import { computed, inject, Injectable, signal } from '@angular/core';
 import { SocialAuthService, SocialUser } from "@abacritt/angularx-social-login";
 import { GoogleLoginProvider } from "@abacritt/angularx-social-login";
-import { BehaviorSubject, Subject } from 'rxjs';
-import { HttpClient } from '@angular/common/http';
+import { BehaviorSubject, Observable, of, Subject } from 'rxjs';
+// import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { UserStoreService } from './user-store.service';
-import { AuthUser, UserRole } from '../interfaces';
+import { AuthUser } from '../interfaces';
 import { MockBackendService } from './mock-backend.service';
+
+type AuthStatus = 'checking' | 'authenticated' | 'not-authenticated';
+type UserRole = 'asistente' | 'organizador' | 'user';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private http = inject(HttpClient);
+  // private http = inject(HttpClient);
   private socialAuthService = inject(SocialAuthService);
 
   private router = inject(Router);
-  private store = inject(UserStoreService);
-  private mockBackend = inject(MockBackendService);
+  private storeService = inject(UserStoreService);
+  private mockBackendService = inject(MockBackendService);
 
-  private authChangeSub = new Subject<boolean>();
-  private extAuthSub = new Subject<SocialUser | null>();
+  private _authStatus =  signal<AuthStatus>('checking');
+  private _user = signal<AuthUser | null>(null);
 
-  public authChanged = this.authChangeSub.asObservable();
-  public externalAuthChanged = this.extAuthSub.asObservable();
+  authStatus = computed<AuthStatus>(() => {
+    if (this._authStatus() === 'checking')  return 'checking';
+    return this._user() ? 'authenticated' : 'not-authenticated';
+  })
 
-  private currentUserSub = new BehaviorSubject<AuthUser | null>(null);
-  public currentUser$ = this.currentUserSub.asObservable();
+  user = computed(() => this._user());
 
   constructor() {
-    const restored = this.loadUserFromStore();
-    if (restored) {
-      this.currentUserSub.next(restored);
-      this.authChangeSub.next(true);
+    const raw = sessionStorage.getItem('user');
+    if (raw) {
+      try {
+        const user = JSON.parse(raw) as AuthUser;
+        this._user.set(user);
+        this._authStatus.set('authenticated');
+      } catch { this._authStatus.set('not-authenticated'); }
+    } else {
+      this._authStatus.set('not-authenticated');
     }
-    // Suscribirse al estado de autenticación externo (Google)
-    this.socialAuthService.authState.subscribe((user: SocialUser | null) => {
-      console.log('external auth state', user);
-      this.extAuthSub.next(user);
-      // Emitir estado booleano para suscriptores de autenticación clásica
-      this.authChangeSub.next(!!user);
-    });
   }
 
-  // Emitir cambios manuales de autenticación tradicional
-  public setAuthState(isAuthenticated: boolean): void {
-    this.authChangeSub.next(isAuthenticated);
+
+  login(email: string, password: string): Observable<boolean> {
+    const exisiting = this.storeService.findByEmail(email);
+    if (exisiting && exisiting.isRegistered) {
+      this.handleAuthSuccess({ user: exisiting });
+      return of(true);
+    }
+
+    const user: AuthUser = {
+      id: Date.now(),
+      email,
+      name: email.split('@')[0],
+      picture: '',
+      roles: ['asistente'],
+      isRegistered: true
+    };
+    this.storeService.upsert(user);
+    this.handleAuthSuccess({ user });
+    return of(true);
+  }
+
+  logout(): void {
+    this.clearSession();
+    this.router.navigate(['/auth/login']);
+  }
+
+
+  checkStatusAuthenticated(): Observable<boolean> {
+    if (this._user()) return of(false);
+    const raw = sessionStorage.getItem('user');
+    if(!raw) return of(false);
+    const user = JSON.parse(raw) as AuthUser;
+    this.handleAuthSuccess({user});
+    return of(true);
+  }
+
+  chechStatus(): Observable<boolean> {
+    return this.checkStatusAuthenticated();
   }
 
   // Iniciar sesión con Google usando la librería
@@ -57,20 +94,6 @@ export class AuthService {
     return this.socialAuthService.signOut();
   }
 
-  // Cerrar sesión (externa)
-  public async signOut(): Promise<void> {
-    try {
-      await this.socialAuthService.signOut();
-    } catch (err) {
-      console.error('Sign out error', err);
-    } finally {
-      this.extAuthSub.next(null);
-      this.authChangeSub.next(false);
-      this.currentUserSub.next(null);
-      localStorage.removeItem('session_user');
-      this.router.navigate(['/auth/login']);
-    }
-  }
 
   public async handleExternalLogin(su: SocialUser): Promise<void> {
     if (!su.email) {
@@ -78,46 +101,39 @@ export class AuthService {
       return;
     }
 
-    try {
-      // Llamar al mock backend (simula POST /api/auth/google/verify)
-      const response = await this.mockBackend.verifyGoogleToken(
-        su.email,
-        su.id,
-        su.name,
-        su.photoUrl
-      );
+    const res = await this.mockBackendService.verifyGoogleToken(
+      su.email, String(su.id), su.name, su.photoUrl || ''
+    );
 
-      if (response.isNew) {
-        // Usuario nuevo → guardar temporal y redirigir a selección de rol
-        const provisionalUser: AuthUser = {
-          id: su.id,
-          email: su.email,
-          name: su.name,
-          picture: su.photoUrl,
-          roles: ['user'],
-          isRegistered: false
-        };
-        this.store.upset(provisionalUser);
-        this.setSession(provisionalUser);
-        await this.router.navigate(['/auth/select-rol']);
-      } else {
-        // Usuario existente → iniciar sesión
-        this.setSession(response.user!);
-        this.redirectByRole(response.user!.roles);
-      }
-    } catch (error) {
-      console.error('Login error', error);
-      await this.router.navigate(['/auth/login']);
+    if (res.isNew) {
+      // sesión provisional, NO escribir en “BD” aún
+      const provisional: AuthUser = {
+        id: su.id,
+        email: su.email,
+        name: su.name,
+        picture: su.photoUrl || '',
+        roles: ['user'],
+        isRegistered: false
+      };
+      this.handleAuthSuccess({ user: provisional });
+      await this.router.navigate(['/auth/select-rol']);
+      return;
     }
+
+    this.handleAuthSuccess({ user: res.user! });
+    this.redirectByRole(res.user!.roles);
   }
 
-  public async setRole(role: UserRole): Promise<void> {
-    const user = this.currentUserSub.value;
-    if (!user) return;
+  public async completeRegistration(role: UserRole): Promise<void> {
+    const user = this._user();
+    if (!user) {
+      await this.router.navigate(['/auth/login']);
+      return;
+    }
 
     try {
       // Llamar al mock backend (simula POST /api/auth/complete-registration)
-      const response = await this.mockBackend.completeRegistration(
+      const response = await this.mockBackendService.completeRegistration(
         user.email,
         user.id.toString(),
         user.name,
@@ -125,7 +141,7 @@ export class AuthService {
         role
       );
 
-      this.setSession(response.user);
+      this.handleAuthSuccess({ user: response.user });
       this.redirectByRole(response.user.roles);
     } catch (error) {
       console.error('Registration error', error);
@@ -133,11 +149,11 @@ export class AuthService {
   }
 
   public hasRole(role: UserRole): boolean {
-    return this.currentUserSub.value?.roles.includes(role) ?? false;
+    return this._user()?.roles.includes(role) ?? false;
   }
 
   public isAuthenticated(): boolean {
-    return !!this.currentUserSub.value;
+    return !!this._user();
   }
 
   private redirectByRole(roles: UserRole[]): void {
@@ -148,13 +164,16 @@ export class AuthService {
     }
   }
 
-  private setSession(user: AuthUser) {
-    this.currentUserSub.next(user);
-    localStorage.setItem('session_user', JSON.stringify(user));
-    this.authChangeSub.next(true);
+  private handleAuthSuccess({ user }: { user: AuthUser }): boolean {
+    this._user.set(user);
+    this._authStatus.set('authenticated');
+    sessionStorage.setItem('user', JSON.stringify(user));
+    return true;
   }
 
-  private loadUserFromStore(): AuthUser | null {
-    return JSON.parse(localStorage.getItem('session_user') || 'null');
+  private clearSession() {
+    this._user.set(null);
+    this._authStatus.set('not-authenticated');
+    sessionStorage.removeItem('user');
   }
 }

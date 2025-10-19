@@ -9,6 +9,6 @@ import { AuthService } from '../../services/auth.service';
 export class SelectRolComponent { 
   private authService = inject(AuthService);
   public async choose(role: 'asistente' | 'organizador') {
-    await this.authService.setRole(role);
+    await this.authService.completeRegistration(role);
   }
 }

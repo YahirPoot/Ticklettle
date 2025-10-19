@@ -49,7 +49,7 @@ export class MockBackendService {
       isRegistered: true
     };
 
-    this.storeService.upset(user);
+    this.storeService.upsert(user);
 
     return {
       user, 
