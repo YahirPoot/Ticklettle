@@ -1,7 +1,7 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { SocialAuthService, SocialUser } from "@abacritt/angularx-social-login";
 import { GoogleLoginProvider } from "@abacritt/angularx-social-login";
-import { BehaviorSubject, Observable, of, Subject } from 'rxjs';
+import { BehaviorSubject, Observable, of, Subject, switchMap } from 'rxjs';
 // import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { UserStoreService } from './user-store.service';
@@ -10,6 +10,14 @@ import { MockBackendService } from './mock-backend.service';
 
 type AuthStatus = 'checking' | 'authenticated' | 'not-authenticated';
 type UserRole = 'asistente' | 'organizador' | 'user';
+type MinimalExternalUser = {
+  id: string | number;
+  email: string;
+  name: string;
+  photoUrl?: string;
+  idToken?: string;
+  provider?: string;
+};
 
 @Injectable({
   providedIn: 'root'
@@ -74,15 +82,22 @@ export class AuthService {
 
   checkStatusAuthenticated(): Observable<boolean> {
     if (this._user()) return of(false);
-    const raw = sessionStorage.getItem('user');
-    if(!raw) return of(false);
-    const user = JSON.parse(raw) as AuthUser;
-    this.handleAuthSuccess({user});
-    return of(true);
+    const user =localStorage.getItem('user');
+    if (user) {
+      this.handleAuthSuccess({ user: JSON.parse(user) });
+      return of(true)
+    }
+    return of(false)
   }
 
-  chechStatus(): Observable<boolean> {
-    return this.checkStatusAuthenticated();
+  checkStatus(): Observable<boolean> {
+    return this.checkStatusAuthenticated().pipe(
+      switchMap(isAuthenticated => {
+        if (isAuthenticated) return of(true);
+
+        return of(false);
+      })
+    );
   }
 
   // Iniciar sesión con Google usando la librería
@@ -95,7 +110,7 @@ export class AuthService {
   }
 
 
-  public async handleExternalLogin(su: SocialUser): Promise<void> {
+  public async handleExternalLogin(su: MinimalExternalUser): Promise<void> {
     if (!su.email) {
       await this.router.navigate(['/auth/login']);
       return;
@@ -167,7 +182,7 @@ export class AuthService {
   private handleAuthSuccess({ user }: { user: AuthUser }): boolean {
     this._user.set(user);
     this._authStatus.set('authenticated');
-    sessionStorage.setItem('user', JSON.stringify(user));
+    localStorage.setItem('user', JSON.stringify(user));
     return true;
   }
 
