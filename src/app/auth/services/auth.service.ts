@@ -81,7 +81,7 @@ export class AuthService {
 
 
   checkStatusAuthenticated(): Observable<boolean> {
-    if (this._user()) return of(false);
+    if (this._user()) return of(true);
     const user =localStorage.getItem('user');
     if (user) {
       this.handleAuthSuccess({ user: JSON.parse(user) });
@@ -182,7 +182,7 @@ export class AuthService {
   private handleAuthSuccess({ user }: { user: AuthUser }): boolean {
     this._user.set(user);
     this._authStatus.set('authenticated');
-    localStorage.setItem('user', JSON.stringify(user));
+    sessionStorage.setItem('user', JSON.stringify(user));
     return true;
   }
 
