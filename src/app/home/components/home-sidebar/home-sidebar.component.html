@@ -7,7 +7,7 @@
         <li class="mb-4">
             <button [routerLink]="route.path === '' ? '/' : ['/', route.path]"
                 routerLinkActive="btn bg-base-200"
-                [routerLinkActiveOptions]="route.path === '' ? { exact: false } : { exact: false }"
+                [routerLinkActiveOptions]="route.path === '' ? { exact: true } : { exact: false }"
                 class="is-drawer-close:tooltip is-drawer-close:tooltip-right w-full flex items-center gap-3"
             >   
             <div class="flex items-center gap-3">

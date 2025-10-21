@@ -9,7 +9,7 @@
                 </div>
             </div>
             <div #popularesCarousel class="flex gap-4 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-4">
-                @for (item of populares; track $index) {
+                @for (item of popularesResource.value(); track $index) {
                     <event-card [event]="item"/>
                 }
             </div>
@@ -24,7 +24,7 @@
                 </div>
             </div>
             <div #proximosCarousel class="flex gap-4 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-4">
-                @for (item of populares; track $index) {
+                @for (item of proximosResource.value(); track $index) {
                     <event-card [event]="item"/>
                 }
             </div>

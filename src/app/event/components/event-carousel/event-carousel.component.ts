@@ -1,5 +1,7 @@
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { Component, ElementRef, inject, resource, ViewChild } from '@angular/core';
 import { EventCardComponent } from "../event-card/event-card.component";
+import { EventService } from '../../services/event.service';
+import { Event } from '../../interfaces';
 
 @Component({
   selector: 'event-carousel',
@@ -7,17 +9,18 @@ import { EventCardComponent } from "../event-card/event-card.component";
   templateUrl: './event-carousel.component.html',
 })
 export class EventCarouselComponent { 
-    public populares = Array.from({ length: 6 }).map((_, i) => (
-    {
-      id: i,
-      title: `Evento popular ${i + 1}`,
-      description: 'Breve descripción del evento popular.',
-      image: 'https://placeimg.com/640/360/arch'
-    }
-  ));
-
+  eventService = inject(EventService);
   @ViewChild('popularesCarousel', { read: ElementRef }) popularCarousel!: ElementRef<HTMLElement>;
   @ViewChild('proximosCarousel', { read: ElementRef }) proximosCarousel!: ElementRef<HTMLElement>;
+
+  popularesResource = resource({
+    loader: () => this.eventService.popular(), 
+  });
+
+  proximosResource = resource<Event[], unknown>({
+    loader: () => this.eventService.upcoming(),
+  });
+
 
   private resolveElement(container: ElementRef<HTMLElement> | HTMLElement | null): HTMLElement | null {
     if (!container) return null;
