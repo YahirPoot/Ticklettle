@@ -1,0 +1,55 @@
+<div class="w-full p-3 sm:p-4">
+    <article class="card bg-base-200 shadow-sm">
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-0 md:gap-0">
+            <!-- 1) Imagen del evento -->
+            <figure class="md:col-span-5">
+                <img
+                    src="https://placeimg.com/800/450/arch"
+                    alt="Imagen del evento"
+                    class="w-full h-56 sm:h-64 md:h-full object-cover"
+                />
+            </figure>
+            <!-- 2) Fecha (mes, día, año) -->
+            <section
+                class="md:col-span-2 flex items-center justify-center border-t md:border-t-0 md:border-l border-base-300 p-4"
+                aria-label="Fecha del evento"
+            >
+                <div class="bg-base-100 rounded-xl shadow px-6 py-4 text-center w-full max-w-40">
+                    <div class="uppercase tracking-wide text-sm font-semibold text-primary">
+                        Oct
+                    </div>
+                    <div class="text-4xl font-extrabold leading-none my-1">
+                        17
+                    </div>
+                    <div class="text-xs opacity-70">
+                        2025
+                    </div>
+                </div>
+            </section>
+            <!-- 3) Lugar, hora | artista -->
+            <section
+                class="md:col-span-5 border-t md:border-t-0 md:border-l border-base-300 p-4 flex flex-col"
+                aria-label="Detalles del evento"
+            >
+                <!-- Lugar (arriba) -->
+                <div class="mb-3">
+                    <h2 class="text-xl font-semibold">Auditorio Central</h2>
+                    <p class="text-sm opacity-70">Ciudad • Estado</p>
+                </div>
+                <!-- Línea divisoria + hora | artista -->
+                <div class="mt-auto">
+                    <div class="flex flex-col md:flex-row gap-2 md:gap-4 divide-y md:divide-y-0 md:divide-x divide-base-300">
+                        <div class="py-2 md:py-0 md:pr-4">
+                            <span class="text-sm opacity-70 block">Hora</span>
+                            <span class="text-lg font-medium">19:00</span>
+                        </div>
+                        <div class="py-2 md:py-0 md:pl-4">
+                            <span class="text-sm opacity-70 block">Artista</span>
+                            <span class="text-lg font-medium">Nombre del Artista</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </article>
+</div>

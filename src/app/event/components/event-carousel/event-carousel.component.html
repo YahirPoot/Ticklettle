@@ -1,0 +1,32 @@
+<div>
+    <!-- Sección de eventos populares (carrusel) -->
+        <section class="mb-6">
+            <div class="flex items-center justify-between mb-2">
+                <h3 id="eventos-populares" class="text-lg font-semibold">Eventos Populares</h3>
+                <div class="flex gap-2">
+                    <button class="btn btn-ghost btn-sm" (click)="scrollPrev(popularesCarousel)">‹</button>
+                    <button class="btn btn-ghost btn-sm" (click)="scrollNext(popularesCarousel)">›</button>
+                </div>
+            </div>
+            <div #popularesCarousel class="flex gap-4 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-4">
+                @for (item of popularesResource.value(); track $index) {
+                    <event-card [event]="item"/>
+                }
+            </div>
+        </section>
+        <!-- Sección de próximos eventos (carrusel) -->
+        <section aria-labelledby="proximos-eventos">
+            <div class="flex items-center justify-between mb-2">
+                <h3 id="proximos-eventos" class="text-lg font-semibold">Próximos Eventos</h3>
+                <div class="flex gap-2">
+                    <button class="btn btn-ghost btn-sm" (click)="scrollPrev(proximosCarousel)">‹</button>
+                    <button class="btn btn-ghost btn-sm" (click)="scrollNext(proximosCarousel)">›</button>
+                </div>
+            </div>
+            <div #proximosCarousel class="flex gap-4 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-4">
+                @for (item of proximosResource.value(); track $index) {
+                    <event-card [event]="item"/>
+                }
+            </div>
+        </section>
+</div>

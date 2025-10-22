@@ -1,25 +1,39 @@
-import { Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { Router } from '@angular/router';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { environment } from '../../../../environments/environment.dev';
+import { AuthService } from '../../services/auth.service';
+
 
 declare global {
   interface Window { google?: any; }
 }
 
+const googleClientId = environment.googleClientId;
+
 @Component({
   selector: 'app-login-page',
-  imports: [CommonModule],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './login-page.component.html'
 })
 export class LoginPageComponent implements OnInit, OnDestroy {
   private router = inject(Router);
-  private clientId = '735301633233-lepi10vlc9g1a7c8k0uvip7cfp9iba2t.apps.googleusercontent.com';
+  private fb = inject(FormBuilder);
+  private authService = inject(AuthService);
+
+  showError = signal(false);
+  
+  loginForm = this.fb.group({
+    email: ['', [Validators.required, Validators.email]],
+    password: ['', [Validators.required, Validators.minLength(6)]]
+  });
+  
+  private clientId = googleClientId;
   private mounted = false;
 
   ngOnInit(): void {
     this.initGsi();
-console.log('gsi clientId used:', this.clientId);
-console.log('window.origin:', window.location.origin);
   }
 
   
@@ -61,20 +75,8 @@ console.log('window.origin:', window.location.origin);
     tryInit();
   }
 
-  // llamada opcional para mostrar prompt / One Tap
-  public promptOneTap() {
-    try {
-      window.google?.accounts?.id?.prompt(); // muestra One Tap / consent
-    } catch (err) {
-      console.error('GSI prompt error', err);
-    }
-  }
-
   private handleCredentialResponse(response: { credential?: string }) {
-    if (!response || !response.credential) {
-      console.error('No credential from GSI', response);
-      return;
-    }
+    if (!response.credential) return;
 
     try {
       // credential es un JWT; decodificar payload
@@ -84,17 +86,44 @@ console.log('window.origin:', window.location.origin);
         id: payload.sub,
         email: payload.email,
         name: payload.name,
-        picture: payload.picture,
+        photoUrl: payload.picture,
         idToken: response.credential
       };
       // guardar en localStorage (solo para pruebas)
       localStorage.setItem('socialUser', JSON.stringify(socialUser));
       console.log('GSI user', socialUser);
 
+
+      this.authService.handleExternalLogin(socialUser).then(() => {
+        this.router.navigate(['/auth/callback']);
+      });
       // redirigir
-      void this.router.navigate(['/']);
     } catch (err) {
       console.error('Error procesando credential JWT', err);
     }
+  }
+
+  onSubmit() {
+    if (this.loginForm.invalid) {
+      this.showError.set(true);
+      setTimeout(() => {
+        this.showError.set(false);
+      }, 4000);
+      return;
+    }
+
+    const { email = '', password = '' } = this.loginForm.value;
+
+    this.authService.login(email!, password!).subscribe((isAuthenticated) => {
+      if (isAuthenticated) {
+        this.router.navigateByUrl('/auth/callback');
+        return;
+      }
+
+      this.showError.set(true);
+      setTimeout(() => {
+        this.showError.set(false);
+      }, 4000);
+    });
   }
 }

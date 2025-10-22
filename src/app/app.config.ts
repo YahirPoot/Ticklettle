@@ -1,12 +1,13 @@
-import { ApplicationConfig, importProvidersFrom, provideBrowserGlobalErrorListeners, provideZoneChangeDetection, isDevMode } from '@angular/core';
+import { ApplicationConfig, importProvidersFrom, provideBrowserGlobalErrorListeners, provideZoneChangeDetection, isDevMode, APP_INITIALIZER, inject } from '@angular/core';
 import { provideRouter } from '@angular/router';
-import { SocialLoginModule, SocialAuthServiceConfig, GoogleLoginProvider, SocialAuthService } from '@abacritt/angularx-social-login';
+import { SocialLoginModule, SocialAuthServiceConfig, GoogleLoginProvider } from '@abacritt/angularx-social-login';
 
 
 import { routes } from './app.routes';
 import { provideHttpClient } from '@angular/common/http';
 import { provideServiceWorker } from '@angular/service-worker';
 import { environment } from '../environments/environment.dev';
+import { MockSeedServiceService } from './auth/services/MockSeedService.service';
 
 const googleClientId = environment.googleClientId;
 
@@ -34,6 +35,14 @@ export const appConfig: ApplicationConfig = {
     { provide: 'SocialAuthServiceConfig', useValue: socialConfigValue }, provideServiceWorker('ngsw-worker.js', {
             enabled: !isDevMode(),
             registrationStrategy: 'registerWhenStable:30000'
-          })
+          }), 
+      {
+        provide: APP_INITIALIZER,
+        multi: true,
+        useFactory: () => {
+          const seeder = inject(MockSeedServiceService);
+          return () => seeder.seed();
+        }
+      }
   ]
 };
