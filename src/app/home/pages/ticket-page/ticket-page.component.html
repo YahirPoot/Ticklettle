@@ -1,1 +1,66 @@
-<p>ticket-page works!</p>,
+<div class="w-full min-h-screen flex flex-col">
+    <div class="navbar bg-base-200 px-4 py-2 shadow-sm">
+        <div class="flex-none lg:hidden">
+            </div>
+        <div class="flex-1">
+            <h1 class="text-xl font-bold">Mis Boletos</h1>
+        </div>
+    </div>
+
+    <div class="p-4 max-w-6xl mx-auto w-full">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+            <section>
+                <h2 class="text-2xl text-center font-bold mb-4">Activos</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    @for (ticket of activeTickets; track $index) {
+                        <article class="card bg-base-100 shadow-lg border border-base-300">
+                            <div class="card-body p-4 flex flex-col items-center text-center">
+                                <h3 class="text-lg font-semibold truncate">{{ ticket.organizer }}</h3>
+                                <div class="w-full h-32 my-3 rounded-lg bg-gray-500 flex items-center justify-center"
+                                    style="background: linear-gradient(180deg, rgba(255,255,255,0.1) 0%, rgba(0,0,0,0.3) 100%);">
+                                    <mat-icon class="text-6xl text-gray-300">image</mat-icon>
+                                </div>
+                                
+                                <p class="text-md font-medium mb-3 truncate">{{ ticket.ticketType }}</p>
+                                
+                                <div class="absolute bottom-2 right-2 bg-black text-white p-2 rounded-full shadow-lg">
+                                    <mat-icon class="!text-xl">{{ ticket.icon }}</mat-icon>
+                                </div>
+                            </div>
+                        </article>
+                    }
+                    @empty {
+                        <p class="col-span-full text-center text-gray-500">No tienes boletos activos.</p>
+                    }
+                </div>
+            </section>
+
+            <section>
+                <h2 class="text-2xl text-center font-bold mb-4">Vencidos/Transferidos</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    @for (ticket of expiredTransferredTickets; track $index) {
+                        <article class="card bg-base-100 shadow-lg border border-base-300 opacity-60">
+                            <div class="card-body p-4 flex flex-col items-center text-center">
+                                <h3 class="text-lg font-semibold truncate">{{ ticket.organizer }}</h3>
+                                <div class="w-full h-32 my-3 rounded-lg bg-gray-400 flex items-center justify-center"
+                                    style="background: linear-gradient(180deg, rgba(255,255,255,0.1) 0%, rgba(0,0,0,0.3) 100%);">
+                                    <mat-icon class="text-6xl text-gray-500">image</mat-icon>
+                                </div>
+                                
+                                <p class="text-md font-medium mb-3 truncate">{{ ticket.ticketType }}</p>
+                                
+                                <div class="absolute bottom-2 right-2 bg-black text-white p-2 rounded-full shadow-lg">
+                                    <mat-icon class="!text-xl">{{ ticket.icon }}</mat-icon>
+                                </div>
+                            </div>
+                        </article>
+                    }
+                    @empty {
+                        <p class="col-span-full text-center text-gray-500">No hay boletos vencidos o transferidos.</p>
+                    }
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
