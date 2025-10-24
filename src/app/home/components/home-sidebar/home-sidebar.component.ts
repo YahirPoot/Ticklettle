@@ -18,4 +18,5 @@ export class HomeSidebarComponent {
       })) || []
     )
     .filter((route) => route.path !== '**');
+
 }

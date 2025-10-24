@@ -9,6 +9,7 @@ export const noAuthenticatedGuard: CanMatchFn = async (route, segments) => {
 
   const isAuthenticated = await firstValueFrom(authService.checkStatus());
 
+
   const roles = authService.user()?.roles ?? [];
 
   if (roles.includes('organizador')) {

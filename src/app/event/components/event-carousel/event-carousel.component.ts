@@ -28,17 +28,25 @@ export class EventCarouselComponent {
     return (container as any).nativeElement ?? (container as HTMLElement);
   }
 
+  private visibleCountForWidth(width: number) {
+    if (width < 640) return 1;       // mobile
+    if (width < 768) return 2;       // small tablets
+    return 3; 
+  }
+
   public scrollNext(containerRef: ElementRef<HTMLElement> | HTMLElement | null) {
     const el = this.resolveElement(containerRef);
     if (!el) return;
-    const amount = Math.floor(el.clientWidth * 0.9);
+    const visible = this.visibleCountForWidth(el.clientWidth)
+    const amount = Math.floor(el.clientWidth / visible);
     el.scrollBy({ left: amount, behavior: 'smooth' });
   }
 
   public scrollPrev(containerRef: ElementRef<HTMLElement> | HTMLElement | null) {
     const el = this.resolveElement(containerRef);
     if (!el) return;
-    const amount = Math.floor(el.clientWidth * 0.9);
+    const visible = this.visibleCountForWidth(el.clientWidth)
+    const amount = Math.floor(el.clientWidth / visible);
     el.scrollBy({ left: -amount, behavior: 'smooth'});
   }
 

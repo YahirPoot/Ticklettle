@@ -17,12 +17,12 @@
         "isRegistered": true, 
         "password": "asistente123"
     }, 
-    {
-        "email": "pootyahir33@gmail.com",
-        "id": "117034482898600111125",  
-        "isRegistered": true,
-        "name": "Yahir Poot",
-        "picture": "https://lh3.googleusercontent.com/a/ACg8ocIIkICJjw-hHhYlVlsRbelXClp6X0xVLLx75jGJIoiGe5NHjg=s96-c",
-        "roles": ["organizador"]
-    }
+    // {
+    //     "email": "pootyahir33@gmail.com",
+    //     "id": "117034482898600111125",  
+    //     "isRegistered": true,
+    //     "name": "Yahir Poot",
+    //     "picture": "https://lh3.googleusercontent.com/a/ACg8ocIIkICJjw-hHhYlVlsRbelXClp6X0xVLLx75jGJIoiGe5NHjg=s96-c",
+    //     "roles": ["asistente"]
+    // }
 ]

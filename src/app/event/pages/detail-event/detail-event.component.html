@@ -58,9 +58,9 @@
                 <p class="text-sm md:text-base ">{{event?.description}}</p>
             </div>
             <div class="p-6">
-                <button class="btn  btn-xl btn-primary">
+                <a [routerLink]="['/tickets', 'buy-ticket', event?.id]" class="btn  btn-xl btn-primary">
                     Comprar Boleto
-                </button>
+                </a>
             </div>
         </div>
         <div class="pr-6 pl-6 pb-6">

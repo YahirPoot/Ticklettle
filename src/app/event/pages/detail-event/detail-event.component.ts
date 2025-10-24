@@ -1,11 +1,13 @@
 import { Component, inject, resource } from '@angular/core';
 import { EventService } from '../../services/event.service';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { DatePipe } from '@angular/common';
+import { ZonesInterface } from '../../../shared/interfaces';
+
 
 @Component({
   selector: 'app-detail-event',
-  imports: [DatePipe],
+  imports: [DatePipe, RouterLink],
   templateUrl: './detail-event.component.html',
 })
 export class DetailEventComponent {
@@ -25,10 +27,10 @@ export class DetailEventComponent {
     return this.eventResource.value();
   }
 
-  zones = [
-    { name: 'Zona Platinum', type: 'Adulto', price: 2500 },
-    { name: 'Zona Oro', type: 'Adulto', price: 2000 },
-    { name: 'Primer Nivel', type: 'Adulto', price: 1750 },
-    { name: 'Segundo Nivel', type: 'Adulto', price: 1500 },
+  zones: ZonesInterface[] = [
+    { id: 1, name: 'Zona Platinum', type: 'Adulto', price: 2500 },
+    { id: 2, name: 'Zona Oro', type: 'Adulto', price: 2000 },
+    { id: 3, name: 'Primer Nivel', type: 'Adulto', price: 1750 },
+    { id: 4, name: 'Segundo Nivel', type: 'Adulto', price: 1500 },
   ]
 }

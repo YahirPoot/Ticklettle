@@ -1,6 +1,6 @@
 <div>
     <!-- Sección de eventos populares (carrusel) -->
-        <section class="mb-6">
+        <section class="mb-6 w-full">
             <div class="flex items-center justify-between mb-2">
                 <h3 id="eventos-populares" class="text-lg font-semibold">Eventos Populares</h3>
                 <div class="flex gap-2">
@@ -8,7 +8,7 @@
                     <button class="btn btn-ghost btn-sm" (click)="scrollNext(popularesCarousel)">›</button>
                 </div>
             </div>
-            <div #popularesCarousel class="flex gap-4 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-4">
+            <div #popularesCarousel class="flex gap-4 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-4 max-w-full box-border">
                 @for (item of popularesResource.value(); track $index) {
                     <event-card [event]="item"/>
                 }
