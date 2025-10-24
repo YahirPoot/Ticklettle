@@ -2,11 +2,11 @@ import { Routes } from "@angular/router";
 
 import { HomeLayoutComponent } from "./layout/home-layout/home-layout.component";
 import { HomePageComponent } from "./pages/home-page/home-page.component";
-import { TicketPageComponent } from "./pages/ticket-page/ticket-page.component";
-import { DetailTicketPageComponent } from './pages/detail-ticket-page/detail-ticket-page.component';
 import { FavoritePageComponent } from "./pages/favorite-page/favorite-page.component";
 import { ProfilePageComponent } from "./pages/profile-page/profile-page.component";
 import { eventRoutes } from "../event/event.routes";
+import { TicketPage } from "./pages/ticket-page/ticket-page";
+import ticketRoutes from "../ticket/ticket.routes";
 
 export const homeRoutes: Routes = [
     {
@@ -24,7 +24,8 @@ export const homeRoutes: Routes = [
                 path: 'tickets', 
                 title: 'Boletos',
                 data: { icon: 'confirmation_number' },
-                component: TicketPageComponent 
+                component: TicketPage,
+                children: ticketRoutes
             },
             { 
                 path: 'favorites', 
@@ -37,11 +38,6 @@ export const homeRoutes: Routes = [
                 title: 'Perfil',
                 data: { icon: 'person' },
                 component: ProfilePageComponent 
-            },
-            { 
-                path: 'tickets/:id', 
-                title: 'Detalle de Boleto',
-                component: DetailTicketPageComponent
             },
 
             {
