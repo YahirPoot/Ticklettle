@@ -20,7 +20,7 @@ export const homeRoutes: Routes = [
                 component: HomePageComponent,
                 children: eventRoutes
             }, 
-            { 
+            {
                 path: 'tickets', 
                 title: 'Boletos',
                 data: { icon: 'confirmation_number' },
@@ -32,18 +32,6 @@ export const homeRoutes: Routes = [
                 data: { icon: 'favorite' },
                 component: FavoritePageComponent 
             },
-            { 
-                path: 'profile-user', 
-                title: 'Perfil',
-                data: { icon: 'person' },
-                component: ProfilePageComponent 
-            },
-            { 
-                path: 'tickets/:id', 
-                title: 'Detalle de Boleto',
-                component: DetailTicketPageComponent
-            },
-
             {
                 path: '**',
                 redirectTo: ''

@@ -1,12 +1,12 @@
 <div class="w-full p-3 sm:p-4">
-    <article class="card bg-base-200 shadow-sm">
+    <div class="card bg-base-200 shadow-sm">
         <div class="grid grid-cols-1 md:grid-cols-12 gap-0 md:gap-0">
             <!-- 1) Imagen del evento -->
-            <figure class="md:col-span-5">
+            <figure class="md:col-span-5 h-48">
                 <img
-                    src="https://placeimg.com/800/450/arch"
-                    alt="Imagen del evento"
-                    class="w-full h-56 sm:h-64 md:h-full object-cover"
+                    [src]="event?.image"
+                    [alt]="event?.title"
+                    class="w-full h-48 sm:h-64 md:h-full object-cover rounded-l-2xl sm:rounded-2xl"
                 />
             </figure>
             <!-- 2) Fecha (mes, día, año) -->
@@ -16,13 +16,13 @@
             >
                 <div class="bg-base-100 rounded-xl shadow px-6 py-4 text-center w-full max-w-40">
                     <div class="uppercase tracking-wide text-sm font-semibold text-primary">
-                        Oct
+                        {{ event?.date | date: 'MMM' }}
                     </div>
                     <div class="text-4xl font-extrabold leading-none my-1">
-                        17
+                        {{ event?.date | date: 'dd' }} 
                     </div>
                     <div class="text-xs opacity-70">
-                        2025
+                        {{ event?.date | date: 'yyyy' }}
                     </div>
                 </div>
             </section>
@@ -32,24 +32,59 @@
                 aria-label="Detalles del evento"
             >
                 <!-- Lugar (arriba) -->
-                <div class="mb-3">
-                    <h2 class="text-xl font-semibold">Auditorio Central</h2>
-                    <p class="text-sm opacity-70">Ciudad • Estado</p>
+                <div class="mb-3 flex items-center justify-center">
+                    <h2 class="text-xl font-semibold">{{ event?.location }}</h2>
                 </div>
                 <!-- Línea divisoria + hora | artista -->
                 <div class="mt-auto">
-                    <div class="flex flex-col md:flex-row gap-2 md:gap-4 divide-y md:divide-y-0 md:divide-x divide-base-300">
+                    <div class="flex flex-col md:flex-row gap-2 md:gap-4 divide-y md:divide-y-0 md:divide-x divide-base-300 justify-center items-center">
                         <div class="py-2 md:py-0 md:pr-4">
                             <span class="text-sm opacity-70 block">Hora</span>
-                            <span class="text-lg font-medium">19:00</span>
+                            <span class="text-lg font-medium">{{ event?.date | date: 'HH:mm' }}</span>
                         </div>
                         <div class="py-2 md:py-0 md:pl-4">
                             <span class="text-sm opacity-70 block">Artista</span>
-                            <span class="text-lg font-medium">Nombre del Artista</span>
+                            <span class="text-lg font-medium">{{ event?.title }}</span>
                         </div>
                     </div>
                 </div>
             </section>
         </div>
-    </article>
+    </div>
+    <div class="card bg-base-200 mt-4 shadow-sm flex flex-col">
+        <div class="w-full p-4 flex flex-col md:flex-row gap-6 items-start">
+            <div class="flex-1 min-w-0">
+                <h3 class="text-2xl md:text-3xl font-bold mb-6">{{event?.organizer}}</h3>
+                <p class="text-sm md:text-base ">{{event?.description}}</p>
+            </div>
+            <div class="p-6">
+                <button class="btn  btn-xl btn-primary">
+                    Comprar Boleto
+                </button>
+            </div>
+        </div>
+        <div class="pr-6 pl-6 pb-6">
+            <div class="overflow-x-auto">
+                <table class="table-sm md:table w-full bg-base-100">
+                    <thead>
+                        <tr>
+                            <th>Zona</th>
+                            <th>Tipo</th>
+                            <th class="text-right">Precio</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (item of zones; track $index) {
+                            <tr>
+                                <td class="text-sm font-semibold sm:text-lg">{{ item.name }}</td>
+                                <td class="text-sm md:text-base">{{ item.type }}</td>
+                                <td class="text-right text-sm font-sans md:text-lg">${{ item.price }}</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+    </div>
 </div>
