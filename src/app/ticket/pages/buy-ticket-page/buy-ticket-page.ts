@@ -69,7 +69,7 @@ export class BuyTicketPage {
       return;
     }
 
-    alert(`Has comprado ${this.selectedTicketsValue} /n boletos en la zona ${this.selectedZoneValue.name} por un total de $${this.totalPrice}`);
+    alert(`Has comprado ${this.selectedTicketsValue} boletos en la zona ${this.selectedZoneValue.name} por un total de $${this.totalPrice}`);
 
     console.log(
       'Comprar', {

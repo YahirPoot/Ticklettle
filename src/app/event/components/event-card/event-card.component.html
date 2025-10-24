@@ -3,7 +3,7 @@
         <div class="flex-1 flex flex-row">
             <div class="card-body p-4 flex flex-col">
                 <p class="text-sm text-muted mt-1">{{ event().organizer }}</p>
-                <h4 class="text-lg font-semibold">{{event().title.length > 16 ? (event().title | slice: 0 : 16) + '...' : event().title}}</h4>
+                <h4 class="text-lg font-semibold">{{event().title.length > 13 ? (event().title | slice: 0 : 13) + '...' : event().title}}</h4>
                 <p class="text-sm text-gray-600 mt-2 line-clamp-3">{{event().description.length > 16 ? (event().description | slice: 0 : 16) + '...' : event().description}}</p>
             </div>
             <figure class="w-28 h-28 md:w-32 md:h-32 shrink-0">

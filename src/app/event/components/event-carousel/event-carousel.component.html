@@ -8,11 +8,14 @@
                     <button class="btn btn-ghost btn-sm" (click)="scrollNext(popularesCarousel)">›</button>
                 </div>
             </div>
-            <div #popularesCarousel class="flex gap-4 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-4 max-w-full box-border">
-                @for (item of popularesResource.value(); track $index) {
-                    <event-card [event]="item"/>
-                }
-            </div>
+            <div #popularesCarousel class="carousel carousel-center bg-base-100 rounded-box overflow-auto space-x-4 p-4 w-full relative">
+                    @for (item of popularesResource.value(); track $index) {
+                        <div class="carousel-item">
+                            <!-- event-card debe ocupar todo el item sin expandirse -->
+                            <event-card [event]="item"></event-card>
+                        </div>
+                    }
+                </div>
         </section>
         <!-- Sección de próximos eventos (carrusel) -->
         <section aria-labelledby="proximos-eventos">
@@ -23,9 +26,12 @@
                     <button class="btn btn-ghost btn-sm" (click)="scrollNext(proximosCarousel)">›</button>
                 </div>
             </div>
-            <div #proximosCarousel class="flex gap-4 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-4">
+            <div #proximosCarousel class="carousel carousel-center bg-base-100 rounded-box overflow-auto space-x-4 p-4 w-full relative">
                 @for (item of proximosResource.value(); track $index) {
-                    <event-card [event]="item"/>
+                    <div class="carousel-item">
+                            <!-- event-card debe ocupar todo el item sin expandirse -->
+                        <event-card [event]="item"></event-card>
+                    </div>
                 }
             </div>
         </section>
