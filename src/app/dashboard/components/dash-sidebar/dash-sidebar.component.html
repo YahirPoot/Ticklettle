@@ -1,0 +1,29 @@
+<div>
+    <div class="mb-6">
+        <h2 class="text-xl font-bold px-4">Ticklettle</h2>
+        <div class="mt-5 mb-5"></div>
+    </div>
+    @for (route of routes; track $index) {
+        <li class="mb-4">
+            <button [routerLink]="route.path === '' ? '/admin' : ['/admin', route.path]"
+                routerLinkActive="btn bg-base-200"
+                [routerLinkActiveOptions]="route.path === '' ? { exact: true } : { exact: false }"
+            >   
+            <div class="flex items-center gap-3">
+                <mat-icon>{{ route.icon }}</mat-icon>
+                <span class="is-drawer-close:hidden">{{ route.title }}</span>
+            </div>
+            </button>
+        </li>
+    }
+    <!-- <li>
+        <a
+        (click)="authService.logout()"
+            class="w-full flex items-center gap-2 px-4 py-2 hover:bg-base-300 hover:text-black transition-all duration-200"
+            role="button"
+        >
+            <mat-icon>logout</mat-icon>
+            <span>Cerrar Sesión</span>
+        </a>
+    </li> -->
+</div>
