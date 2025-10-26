@@ -1,20 +1,19 @@
 import { Component, computed, inject, resource, signal } from '@angular/core';
+import { ZonesInterface } from '../../../shared/interfaces';
 import { EventService } from '../../../event/services/event.service';
 import { ActivatedRoute } from '@angular/router';
-import { DatePipe } from '@angular/common';
-import { ZonesInterface } from '../../../shared/interfaces';
+import { NotificationService } from '../../../shared/services/notification.service';
 import { AuthService } from '../../../auth/services/auth.service';
-import { Notification } from '../../../shared/services/notification';
 
 @Component({
-  selector: 'buy-ticket-page',
+  selector: 'app-buy-ticket-page',
   imports: [],
-  templateUrl: './buy-ticket-page.html',
+  templateUrl: './buy-ticket-page.component.html',
 })
-export class BuyTicketPage { 
+export class BuyTicketPageComponent {
   private eventService = inject(EventService);
   private activatedRoute = inject(ActivatedRoute);
-  private notificationService = inject(Notification);
+  private notificationService = inject(NotificationService);
   authService = inject(AuthService);
 
   isAuthenticated = computed(() => this.authService.authStatus() === 'authenticated');
@@ -72,15 +71,13 @@ export class BuyTicketPage {
 
   buyTickets() {
     if (!this.isAuthenticated()) {
-      alert('Debes iniciar sesión para comprar boletos.');
+      this.notificationService.showNotification('Debes iniciar sesión para comprar boletos.', 'warning');
       return;
     }
 
     if (!this.selectedZoneValue) {
       return;
     }
-
-    this.notificationService.showNotification('Compra realizada con éxito', 'success');
 
     console.log(
       'Comprar', {

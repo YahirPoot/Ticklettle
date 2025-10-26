@@ -4,8 +4,7 @@ import { NotificationData } from '../interfaces';
 @Injectable({
   providedIn: 'root'
 })
-export class Notification {
-  
+export class NotificationService {
   notification = signal<NotificationData | null>(null);
 
   showNotification(message: string, type: 'success' | 'error' | 'info' | 'warning' = 'info', duration = 3000) {
@@ -15,4 +14,5 @@ export class Notification {
   clearNotification() {
     this.notification.set(null);  
   }
+
 }

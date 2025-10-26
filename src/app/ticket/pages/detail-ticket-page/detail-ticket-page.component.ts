@@ -1,14 +1,12 @@
-import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-detail-ticket-page',
-  imports: [MatIconModule, CommonModule],
-  templateUrl: './detail-ticket-page.html',
+  imports: [MatIconModule],
+  templateUrl: './detail-ticket-page.component.html',
 })
-export class DetailTicketPage {
-
+export class DetailTicketPageComponent { 
   ticketDetails = {
     organizer: 'Casa Organizadora',
     type: 'Acceso Zona Platinum',
@@ -16,4 +14,4 @@ export class DetailTicketPage {
     location: 'Ubicación', // Esto podría ser 'Auditorio Central'
     qrPlaceholder: 'https://placehold.co/256x256/ffffff/000000?text=QR', // Placeholder para el QR
   };
- }
+}

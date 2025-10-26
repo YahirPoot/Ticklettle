@@ -1,15 +1,14 @@
-import { Component, effect, inject, OnDestroy, signal } from '@angular/core';
-import { Notification } from '../../services/notification';
 import { NgClass } from '@angular/common';
-
+import { Component, effect, inject } from '@angular/core';
+import { NotificationService } from '../../services/notification.service';
 
 @Component({
-  selector: 'shared-custom-notification',
+  selector: 'shared-customer-notification',
   imports: [NgClass],
-  templateUrl: './custom-notification.html',
+  templateUrl: './customer-notification.component.html',
 })
-export class CustomNotification implements OnDestroy {
-  notificationService = inject(Notification);
+export class CustomerNotificationComponent { 
+  notificationService = inject(NotificationService);
 
   show: boolean = false;
   type: 'success' | 'error' | 'info' | 'warning' = 'info';

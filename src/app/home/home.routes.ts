@@ -4,8 +4,9 @@ import { HomeLayoutComponent } from "./layout/home-layout/home-layout.component"
 import { HomePageComponent } from "./pages/home-page/home-page.component";
 import { FavoritePageComponent } from "./pages/favorite-page/favorite-page.component";
 import { ProfilePageComponent } from "./pages/profile-page/profile-page.component";
+import { TicketPageComponent } from "./pages/ticket-page/ticket-page.component";
+
 import { eventRoutes } from "../event/event.routes";
-import { TicketPage } from "./pages/ticket-page/ticket-page";
 import ticketRoutes from "../ticket/ticket.routes";
 
 export const homeRoutes: Routes = [
@@ -24,7 +25,7 @@ export const homeRoutes: Routes = [
                 path: 'tickets', 
                 title: 'Boletos',
                 data: { icon: 'confirmation_number' },
-                component: TicketPage,
+                component: TicketPageComponent,
                 children: ticketRoutes
             },
             { 
