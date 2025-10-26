@@ -4,6 +4,7 @@ import { ActivatedRoute } from '@angular/router';
 import { DatePipe } from '@angular/common';
 import { ZonesInterface } from '../../../shared/interfaces';
 import { AuthService } from '../../../auth/services/auth.service';
+import { Notification } from '../../../shared/services/notification';
 
 @Component({
   selector: 'buy-ticket-page',
@@ -13,6 +14,7 @@ import { AuthService } from '../../../auth/services/auth.service';
 export class BuyTicketPage { 
   private eventService = inject(EventService);
   private activatedRoute = inject(ActivatedRoute);
+  private notificationService = inject(Notification);
   authService = inject(AuthService);
 
   isAuthenticated = computed(() => this.authService.authStatus() === 'authenticated');
@@ -78,7 +80,7 @@ export class BuyTicketPage {
       return;
     }
 
-    alert(`Has comprado ${this.selectedTicketsValue} boletos en la zona ${this.selectedZoneValue.name} por un total de $${this.totalPrice}`);
+    this.notificationService.showNotification('Compra realizada con éxito', 'success');
 
     console.log(
       'Comprar', {

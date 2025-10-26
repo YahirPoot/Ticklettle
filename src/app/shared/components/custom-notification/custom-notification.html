@@ -1,0 +1,13 @@
+@if (show) {
+    <div role="alert" aria-live="polite"
+        [class]="'fixed top-10 left-1/2 transform -translate-1/2 z-[9999] lg:w-1/2 md:w-1/2'"
+        [ngClass]="alertClass"
+
+        >
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 shrink-0 stroke-current" fill="none" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" [attr.d]="customIcon || defaultIcon" />
+        </svg>
+        <span>{{ message }}</span>
+        <!-- <button type="button" class="btn-close" aria-label="Close" (click)="closeNotification()">Cerrar</button> -->
+    </div>
+}
