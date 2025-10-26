@@ -1,12 +1,13 @@
 import { Component, computed, inject } from '@angular/core';
-import { AuthService } from '../../../auth/services/auth.service';
-import { IsNotAuthenticated } from '../../../shared/components/is-not-authenticated/is-not-authenticated';
 import { RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 
+import { AuthService } from '../../../auth/services/auth.service';
+import { IsNotAuthenticatedComponent } from '../../../shared/components/is-not-authenticated/is-not-authenticated.component';
+
 @Component({
   selector: 'app-ticket-page',
-  imports: [IsNotAuthenticated, RouterLink, MatIconModule],
+  imports: [IsNotAuthenticatedComponent, RouterLink, MatIconModule],
   templateUrl: './ticket-page.component.html',
 })
 export class TicketPageComponent { 
