@@ -16,4 +16,16 @@
             </button>
         </li>
     }
+    @if (this.isAuthenticated()) {
+        <li>
+            <a
+            (click)="authService.logout()"
+                class="w-full flex items-center gap-2 px-4 py-2 hover:bg-base-300 hover:text-black transition-all duration-200"
+                role="button"
+            >
+                <mat-icon>logout</mat-icon>
+                <span>Cerrar Sesión</span>
+            </a>
+        </li>
+    }
 </div>

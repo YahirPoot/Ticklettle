@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import homeRoutes from '../../home.routes';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
+import { AuthService } from '../../../auth/services/auth.service';
 
 @Component({
   selector: 'home-sidebar',
@@ -9,6 +10,9 @@ import { MatIconModule } from '@angular/material/icon';
   templateUrl: './home-sidebar.component.html',
 })
 export class HomeSidebarComponent { 
+  authService = inject(AuthService);
+
+  isAuthenticated = computed(() => this.authService.authStatus() === 'authenticated');
   routes = homeRoutes
     .flatMap((route) =>
       route.children?.map((childRoute) => ({

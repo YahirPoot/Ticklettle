@@ -46,12 +46,12 @@
             <p class="text-base pl-2">Comprar boletos</p>
             <div class="flex items-center gap-2">
               <button
-                [disabled]="selectedZoneId()! === null" 
-                class="btn font-bold btn-lg" (click)="increaseTickets()">+</button>
+              [disabled]="selectedZoneId()! === null" 
+              class="btn font-bold btn-lg" (click)="decreaseTickets()">-</button>
               <span class="text-base badge badge-outline badge-secondary">{{ selectedTickets() }}</span>
               <button
                 [disabled]="selectedZoneId()! === null" 
-                class="btn font-bold btn-lg" (click)="decreaseTickets()">-</button>
+                class="btn font-bold btn-lg" (click)="increaseTickets()">+</button>
             </div>
           </div>
 

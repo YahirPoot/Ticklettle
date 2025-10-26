@@ -1,17 +1,21 @@
-import { Component, inject, resource, signal } from '@angular/core';
+import { Component, computed, inject, resource, signal } from '@angular/core';
 import { EventService } from '../../../event/services/event.service';
 import { ActivatedRoute } from '@angular/router';
 import { DatePipe } from '@angular/common';
 import { ZonesInterface } from '../../../shared/interfaces';
+import { AuthService } from '../../../auth/services/auth.service';
 
 @Component({
   selector: 'buy-ticket-page',
-  imports: [DatePipe],
+  imports: [],
   templateUrl: './buy-ticket-page.html',
 })
 export class BuyTicketPage { 
   private eventService = inject(EventService);
   private activatedRoute = inject(ActivatedRoute);
+  authService = inject(AuthService);
+
+  isAuthenticated = computed(() => this.authService.authStatus() === 'authenticated');
 
   private eventId: number = this.activatedRoute.snapshot.params['eventId'];
 
@@ -65,6 +69,11 @@ export class BuyTicketPage {
   }
 
   buyTickets() {
+    if (!this.isAuthenticated()) {
+      alert('Debes iniciar sesión para comprar boletos.');
+      return;
+    }
+
     if (!this.selectedZoneValue) {
       return;
     }
