@@ -4,6 +4,7 @@ import { DashHomePageComponent } from "./pages/dash-home-page/dash-home-page.com
 import { ProfilePageComponent } from "../home/pages/profile-page/profile-page.component";
 import { DashEventPageComponent } from "./pages/dash-event-page/dash-event-page.component";
 import { DashSalePageComponent } from "./pages/dash-sale-page/dash-sale-page.component";
+import { NotFoundPageComponent } from "../shared/components/not-found-page/not-found-page.component";
 
 export const dashRoutes: Routes = [
     {
@@ -36,8 +37,7 @@ export const dashRoutes: Routes = [
             },
             {
                 path: '**',
-                redirectTo: 'dashboard',
-
+                component: NotFoundPageComponent,
             }
         ]
     }, 

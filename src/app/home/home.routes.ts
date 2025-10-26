@@ -8,6 +8,7 @@ import { TicketPageComponent } from "./pages/ticket-page/ticket-page.component";
 
 import { eventRoutes } from "../event/event.routes";
 import ticketRoutes from "../ticket/ticket.routes";
+import { NotFoundPageComponent } from "../shared/components/not-found-page/not-found-page.component";
 
 export const homeRoutes: Routes = [
     {
@@ -43,7 +44,7 @@ export const homeRoutes: Routes = [
 
             {
                 path: '**',
-                redirectTo: ''
+                component: NotFoundPageComponent
             }
 
         ]

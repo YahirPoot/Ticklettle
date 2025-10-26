@@ -1,0 +1,23 @@
+<div class="min-h-screen flex items-center justify-center bg-base-200 p-6">
+    <div class="max-w-xl w-full text-center">
+        <div class="inline-flex items-center justify-center w-36 h-36 rounded-full bg-primary/10 text-primary mx-auto">
+            <span class="text-4xl font-extrabold">404</span>
+        </div>
+        <h1 class="mt-6 text-2xl md:text-3xl font-bold">Página no encontrada</h1>
+        <p class="mt-2 text-sm text-neutral-500">
+            La ruta que intentas visitar no existe o fue movida. REvisa la URL o regresa a la página principal.
+        </p>
+
+        <!-- <div class="mt-6 flex items-center justify-center gap-3">
+            <a [routerLink]="link()" class="btn btn-neutral">Ir al inicio</a>
+            <button></button>
+        </div> -->
+        <div class="mt-6 flex items-center justify-center gap-3">
+            <button type="button" class="btn btn-outline btn-neutral w-full" (click)="goBack()">Ir al inicio</button>
+        </div>
+        
+        <div class="mt-8 text-xs text-neutral-400">
+            Si crees que esto es un error, contacta soporte o revisa la barra de navegación.
+        </div>
+    </div>
+</div>
