@@ -6,7 +6,7 @@
         "picture": "https://example.com/avatars/organizador.png",
         "roles": ["organizador"],
         "isRegistered": true, 
-        "password": "organizador123"
+        "password": "Organizador_123"
     },
     {
         "id": "u_asistente_001",
@@ -15,6 +15,6 @@
         "picture": "https://example.com/avatars/asistente.png",
         "roles": ["asistente"], 
         "isRegistered": true, 
-        "password": "asistente123"
+        "password": "Asistente_123"
     }
 ]

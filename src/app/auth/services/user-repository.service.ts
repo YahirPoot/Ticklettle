@@ -3,7 +3,7 @@ import { inject, Injectable } from '@angular/core';
 import { AuthUser, UserRole } from '../interfaces';
 import { firstValueFrom } from 'rxjs';
 
-const KEY_USER_DATA = 'user_data';
+const KEY_USER_DATA = 'users_data';
 const KEY_SEEDED = 'mock_seeded_v1';
 
 // interfaz de respuesta de verificación (simula el login del backend cuando no se encontro al usuario dentro del sistema)
@@ -40,7 +40,8 @@ export class UserRepositoryService {
   }
 
   // metodo que funciona como login provicional
-  findByEmail(email: string): AuthUser | null {
+  findByEmail(email: string, password?: string): AuthUser | null {
+
     return this.getAll().find(user => user.email === email) || null;
   }
 

@@ -111,6 +111,7 @@ export class LoginPageComponent implements OnInit, OnDestroy {
     }
 
     const { email = '', password = '' } = this.loginForm.value;
+    console.log('Login con', { email, password });
 
     this.authService.login(email!, password!).subscribe((isAuthenticated) => {
       if (isAuthenticated) {
