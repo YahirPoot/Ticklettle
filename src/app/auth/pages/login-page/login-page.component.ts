@@ -4,6 +4,7 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { environment } from '../../../../environments/environment.dev';
 import { AuthService } from '../../services/auth.service';
+import { NotificationService } from '../../../shared/services/notification.service';
 
 
 declare global {
@@ -21,6 +22,7 @@ export class LoginPageComponent implements OnInit, OnDestroy {
   private router = inject(Router);
   private fb = inject(FormBuilder);
   private authService = inject(AuthService);
+  private notifcationService = inject(NotificationService)
 
   showError = signal(false);
   
@@ -111,13 +113,15 @@ export class LoginPageComponent implements OnInit, OnDestroy {
     const { email = '', password = '' } = this.loginForm.value;
 
     this.authService.login(email!, password!).subscribe((isAuthenticated) => {
-      if (!isAuthenticated) {
-        this.showError.set(true);
-        setTimeout(() => {
-          this.showError.set(false);
-        }, 4000);
+      if (isAuthenticated) {
+        this.router.navigateByUrl('/auth/callback');
+        return;
       }
 
+    this.showError.set(true);
+      setTimeout(() => {
+        this.showError.set(false);
+      }, 4000);
     });
   }
 }

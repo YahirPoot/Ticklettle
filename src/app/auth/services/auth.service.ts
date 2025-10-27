@@ -50,27 +50,7 @@ export class AuthService {
       this.handleAuthSuccess({ user: exisiting });
       return of(true);
     }
-
-    if (exisiting && !exisiting.isRegistered) {
-      this.handleAuthSuccess({ user: exisiting }, undefined);
-
-      this.router.navigate(['/auth/select-rol']);
-      return of(false);
-    }
-    // Si no existe, crear un nuevo usuario registrado (simula registro rápido)
-    const user: AuthUser = {
-      id: Date.now(),
-      email,
-      name: email.split('@')[0],
-      picture: '',
-      roles: undefined,
-      isRegistered: true
-    };
-    // this.userRepository.upsert(user);
-
-    this.handleAuthSuccess({ user }, false);
-    this.router.navigate(['/auth/select-rol']);
-    return of(true);
+    return of(false);
   }
 
   logout(): void {
