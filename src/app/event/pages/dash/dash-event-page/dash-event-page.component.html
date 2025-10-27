@@ -1,0 +1,65 @@
+<div class="flex flex-col">
+    <div class="flex items-center justify-start">
+        <div class="collapse collapse-arrow w-60 border border-base-300 bg-base-100 rounded-box">
+            <input type="checkbox" />
+            <div class="collapse-title">
+                <h3 class="font-semibold">Selecciona un estado</h3>
+            </div>
+            <div class="collapse-content">
+                <p>Contenido de eventos</p>
+            </div>
+        </div>
+    </div>
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-2 w-ful mt-4">
+        @for (event of events; track $index) {
+            <div class="card bg-base-100 shadow-sm flex flex-col overflow-hidden">
+                <div class="flex flex-col md:flex-row items-stretch">
+                    <!-- Info -->
+                    <div class="p-4 flex-1 min-w-0 items-end justify-end">
+                        <h4 class="text-lg font-semibold truncate">{{ event.title }}</h4>
+                        <p class="text-sm text-neutral mt-1 truncate">{{ event.date }}</p>
+                        <p class="text-sm text-neutral mt-1 truncate">{{ event.location }}</p>
+                        
+                        <p class="text-sm text-gray-600 mt-3 line-clamp-3 min-w-0">
+                            {{ event.description }}
+                        </p>
+                    </div>
+                
+                    <!-- Imagen y badge -->
+                    <div class="w-full md:w-44 flex-shrink-0 flex flex-col items-end gap-2">
+                        <div class="w-full h-28 md:h-32 overflow-hidden rounded-lg bg-gray-100">
+                            <img
+                                [src]="event.image"
+                                [alt]="'Imagen evento '  + event.title"
+                                class="w-full h-full object-cover"
+                            />
+                        </div>
+                        
+                        <span class="badge badge-outline badge-neutral mt-1 mr-4" aria-label="estado">
+                            <!-- {{ event.status }} --> Activo
+                        </span>
+                    </div>
+                </div>
+    
+                <!-- Acciones: ver más (izq) y iconos (der) -->
+                <div class="px-4 py-3 flex items-center justify-between">
+                    <a class="btn btn-ghost btn-sm" [routerLink]="['/admin','events', event.id]" aria-label="Ver más">
+                        Ver más
+                    </a>
+                    
+                    <div class="flex items-center gap-2">
+                        <button class="btn btn-ghost btn-sm" aria-label="Ver evento">
+                            <mat-icon>visibility</mat-icon>
+                        </button>
+                        <button class="btn btn-ghost btn-sm" aria-label="Editar evento">
+                            <mat-icon>edit</mat-icon>
+                        </button>
+                        <button class="btn btn-error btn-sm" aria-label="Eliminar evento">
+                            <mat-icon>delete</mat-icon>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

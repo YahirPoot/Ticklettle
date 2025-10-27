@@ -5,6 +5,7 @@ import { ProfilePageComponent } from "../home/pages/profile-page/profile-page.co
 import { DashEventPageComponent } from "./pages/dash-event-page/dash-event-page.component";
 import { DashSalePageComponent } from "./pages/dash-sale-page/dash-sale-page.component";
 import { NotFoundPageComponent } from "../shared/components/not-found-page/not-found-page.component";
+import { dashEventRoutes } from "../event/dash/dash-event.routes";
 
 export const dashRoutes: Routes = [
     {
@@ -22,6 +23,7 @@ export const dashRoutes: Routes = [
                 title: 'Eventos',
                 data: { icon: 'event' },
                 component: DashEventPageComponent,
+                children: dashEventRoutes
             },
             {
                 path: 'sales', 

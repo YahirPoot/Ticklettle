@@ -4,7 +4,7 @@
         <!-- TOP: dos cards de boletos a la izquierda y botón + card debajo a la derecha -->
         <section class="grid grid-cols-1 md:grid-cols-2 gap-2  items-center">
             <!-- izquierda: dos cards -->
-            <div class="flex flex-col items-center justify-center gap-4 w-full">
+            <div class="flex flex-col items-center justify-center w-full">
                 <div>
                     <h3 class="text-xl font-light">Boletos Vendidos</h3>
                 </div>
@@ -26,7 +26,7 @@
             <!-- derecha: botón y debajo una card que ocupa el espacio restante -->
             <div class="w-full flex flex-col items-center justify-end gap-4 ">
                 <div class="md:w-56">
-                    <button class="btn btn-primary btn-lg w-full">Crear Evento</button>
+                    <button [routerLink]="['/admin', 'event', 'create-event']" class="btn btn-primary btn-lg w-full">Crear Evento</button>
                 </div>
             </div>
         </section>
@@ -34,7 +34,7 @@
         <!-- BOTTOM: productos vendidos -> dos cards side + una card larga (tall) -->
         <section class="grid grid-cols-1 md:grid-cols-2 md:grid-rows-2 gap-4 mt-4">
             <!-- primera card (fila 1, col 1) -->
-            <div class="flex flex-col items-center justify-center gap-4 w-full">
+            <div class="flex flex-col items-center justify-center w-full">
                 <div>
                     <h3 class="text-xl font-light">Productos Vendidos</h3>
                 </div>
