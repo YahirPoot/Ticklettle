@@ -3,7 +3,7 @@ export interface AuthUser {
     email: string, 
     name: string, 
     picture?: string,
-    roles: UserRole[],
+    roles?: UserRole[],
     isRegistered: boolean;
 }
 

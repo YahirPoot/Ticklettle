@@ -7,7 +7,7 @@ import { routes } from './app.routes';
 import { provideHttpClient } from '@angular/common/http';
 import { provideServiceWorker } from '@angular/service-worker';
 import { environment } from '../environments/environment.dev';
-import { MockSeedServiceService } from './auth/services/MockSeedService.service';
+import { UserRepositoryService } from './auth/services/user-repository.service';
 
 const googleClientId = environment.googleClientId;
 
@@ -40,7 +40,7 @@ export const appConfig: ApplicationConfig = {
         provide: APP_INITIALIZER,
         multi: true,
         useFactory: () => {
-          const seeder = inject(MockSeedServiceService);
+          const seeder = inject(UserRepositoryService);
           return () => seeder.seed();
         }
       }

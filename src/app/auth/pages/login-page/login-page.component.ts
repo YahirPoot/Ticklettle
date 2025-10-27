@@ -78,7 +78,6 @@ export class LoginPageComponent implements OnInit, OnDestroy {
   private handleCredentialResponse(response: { credential?: string }) {
     if (!response.credential) return;
 
-    try {
       // credential es un JWT; decodificar payload
       const payload = JSON.parse(atob(response.credential.split('.')[1]));
       // ejemplo de objeto a guardar
@@ -90,7 +89,7 @@ export class LoginPageComponent implements OnInit, OnDestroy {
         idToken: response.credential
       };
       // guardar en localStorage (solo para pruebas)
-      localStorage.setItem('socialUser', JSON.stringify(socialUser));
+      // localStorage.setItem('socialUser', JSON.stringify(socialUser));
       console.log('GSI user', socialUser);
 
 
@@ -98,9 +97,6 @@ export class LoginPageComponent implements OnInit, OnDestroy {
         this.router.navigate(['/auth/callback']);
       });
       // redirigir
-    } catch (err) {
-      console.error('Error procesando credential JWT', err);
-    }
   }
 
   onSubmit() {
@@ -115,15 +111,13 @@ export class LoginPageComponent implements OnInit, OnDestroy {
     const { email = '', password = '' } = this.loginForm.value;
 
     this.authService.login(email!, password!).subscribe((isAuthenticated) => {
-      if (isAuthenticated) {
-        this.router.navigateByUrl('/auth/callback');
-        return;
+      if (!isAuthenticated) {
+        this.showError.set(true);
+        setTimeout(() => {
+          this.showError.set(false);
+        }, 4000);
       }
 
-      this.showError.set(true);
-      setTimeout(() => {
-        this.showError.set(false);
-      }, 4000);
     });
   }
 }

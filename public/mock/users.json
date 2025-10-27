@@ -16,8 +16,5 @@
         "roles": ["asistente"], 
         "isRegistered": true, 
         "password": "asistente123"
-    }, 
-    {
-        
     }
 ]

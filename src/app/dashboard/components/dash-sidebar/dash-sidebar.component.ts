@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import dashRoutes from '../../dash.routes';
 import { MatIconModule } from '@angular/material/icon';
 import { RouterLink, RouterLinkActive } from '@angular/router';
+import { AuthService } from '../../../auth/services/auth.service';
 
 @Component({
   selector: 'dash-sidebar',
@@ -9,6 +10,10 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
   templateUrl: './dash-sidebar.component.html',
 })
 export class DashSidebarComponent { 
+  authService = inject(AuthService);
+
+  isAuthenticated = computed(() => this.authService.authStatus() === 'authenticated');
+  
   routes = dashRoutes
       .flatMap((route) =>
         route.children?.map((childRoute) => ({
