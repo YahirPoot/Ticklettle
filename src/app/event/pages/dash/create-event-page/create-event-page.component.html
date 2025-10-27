@@ -1,1 +1,106 @@
-<p>create-event-page works!</p>,
+<div class="min-h-screen w-full p-2">
+    <form [formGroup]="eventForm" (ngSubmit)="onSubmit()" class="w-full p-4 space-y-6">
+        <section class="grid grid-cols-1 md:grid-cols-2 gap-4 items-start" aria-labelledby="general-info">
+            <div>
+                <h2 id="general-info" class="text-xl font-semibold mb-3">Información General</h2>
+
+                <div class="space-y-3">
+                    <label class="block">
+                        <span class="text-sm font-medium text-gray-500">Nombre del evento: </span>
+                        <input type="text" placeholder="Nombre del evento" formControlName="title"
+                            class="input input-bordered w-full mt-1" required>
+                    </label>
+
+                    <label class="block">
+                        <span class="text-sm font-medium text-gray-500">Descripción: </span>
+                        <textarea formControlName="description" rows="4" placeholder="Descripción breve"
+                            class="textarea textarea-bordered w-full mt-1" aria-label="Descripción del evento"></textarea>
+                    </label>
+
+                    <label class="block">
+                        <span class="text-sm font-medium text-gray-500">Ubicación: </span>
+                        <input type="text" placeholder="Lugar o dirección" formControlName="location"
+                            class="input input-bordered w-full mt-1">
+                    </label>
+                </div>
+            </div>
+            <div>
+                <div class="flex items-start justify-end mb-3">
+                    <button type="submit" class="btn btn-lg btn-primary">Publicar Evento</button>
+                </div>
+                <h3 class="text-lg font-medium mb-2">Imagen del evento</h3>
+
+                <div class="border border-dashed rounded-lg p-3 flex flex-col items-center gap-3">
+                    <div class="w-full h-56 bg-base-200 rounded-md overflow-hidden flexx items-center justify-center">
+                        @if (imagePreview()) {
+                            <img [src]="imagePreview()" alt="preview" class="w-full h-full object-cover">
+                        }
+                        @if (!imagePreview()) {
+                            <div class="text-sm text-neutral">Previsualización de la imagen </div>
+                        }
+                    </div>
+
+                    <input type="file" accept="image/*" (change)="onFileChange($event)" class="file-input file-input-bordered w-full">
+                    <p class="text-xs text-neutral">Formatos permitidos: JPG, PNG, GIF. Tamaño máximo: 2MB</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="grid-cols-1 md:grid-cols-2 gap-4" aria-labelledby="ticket-config">
+            <div>
+                <h2 id="ticket-config" class="text-xl font-semibold mb-3">Configuración de boletos</h2>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <label class="block">
+                        <span class="text-sm font-medium text-gray-500">Tipo de boleto</span>
+                        <select class="select select-bordered w-full mt-1" aria-label="Tipo de boleto" formControlName="ticketType">
+                            <option value="general">General</option>
+                            <option value="vip">VIP</option>
+                            <option value="student">Estudiante</option>
+                        </select>
+                    </label>
+
+                    <label class="block">
+                        <span class="text-sm  font-medium text-gray-500">Precio</span>
+                        <input type="number" min="0" step="0.01" placeholder="0.00" formControlName="price"
+                            class="input input-bordered w-full mt-1" aria-label="Precio del boleto">
+                    </label>
+
+                    <label class="block">
+                        <span class="text-sm font-medium text-gray-500">Fecha: </span>
+                        <input type="date" formControlName="date"
+                            class="input input-bordered w-full mt-1" aria-label="Fecha del evento">
+                    </label>
+
+                    <label class="block">
+                        <span class="text-sm font-medium text-gray-500">Hora: </span>
+                        <input type="time" formControlName="time"
+                            class="input input-bordered w-full mt-1" aria-label="Hora del evento">
+                    </label>
+                </div>
+            </div>
+        </section>
+
+        <section class="bg-base-100 rounded-lg p-4">
+            <h2 class="text-lg font-semibold mb-3">Opciones de monetización</h2>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <label class="flex items-start gap-3">
+                    <input type="checkbox" formControlName="sellMerch" class="checkbox mt-1" />
+                    <div>
+                        <div class="font-medium">Venta de mercancía</div>
+                        <div class="text-xs text-neutral">Permitir ventas de artículos físicos/merch durante el evento.</div>
+                    </div>  
+                </label>
+
+                <label class="flex items-start gap-3">
+                    <input type="checkbox" formControlName="postEventContent" class="checkbox mt-1" />
+                    <div>
+                        <div class="font-medium">Contenido post-evento</div>
+                        <div class="text-xs text-neutral">Ofrecer grabaciones o contenido exclusivo después del evento.</div>
+                    </div>
+                </label>
+            </div>
+        </section>
+    </form>
+</div>
