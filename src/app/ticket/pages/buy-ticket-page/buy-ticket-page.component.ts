@@ -4,7 +4,7 @@ import { EventService } from '../../../event/services/event.service';
 import { ActivatedRoute } from '@angular/router';
 import { NotificationService } from '../../../shared/services/notification.service';
 import { AuthService } from '../../../auth/services/auth.service';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormArray, FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-buy-ticket-page',
@@ -19,23 +19,6 @@ export class BuyTicketPageComponent {
 
   private fb = inject(FormBuilder);
 
-  isAuthenticated = computed(() => this.authService.authStatus() === 'authenticated');
-
-  private eventId: number = this.activatedRoute.snapshot.params['eventId'];
-
-  formBuyTicket = this.fb.group({
-    zoneId: [null as number | null, [Validators.required]], 
-    tickets: [1, [Validators.required, Validators.min(1), Validators.max(5)]],
-  })
-
-  eventResource = resource({
-    loader: () => this.eventService.byId(this.eventId),
-  });
-
-  get event() {
-    return this.eventResource.value();
-  }
-
   zones: ZonesInterface[] = [
     { id: 1,  name: 'Zona Platinum', type: 'Adulto', price: 2500 },
     { id: 2, name: 'Zona Oro', type: 'Adulto', price: 2000 },
@@ -43,44 +26,80 @@ export class BuyTicketPageComponent {
     { id: 4, name: 'Segundo Nivel', type: 'Adulto', price: 1500 },
   ]
 
-  get selectedZoneValue(): ZonesInterface | null {
-    const id = this.formBuyTicket.get('zoneId')?.value ?? null;
-    return this.zones.find(z => z.id === id) ?? null;
+  isAuthenticated = computed(() => this.authService.authStatus() === 'authenticated');
+
+  private eventId: number = this.activatedRoute.snapshot.params['eventId'];
+  
+    eventResource = resource({
+      loader: () => this.eventService.byId(this.eventId),
+    });
+  
+    get event() {
+      return this.eventResource.value();
+    }
+
+  formBuyTicket = this.fb.group({
+    quantities: this.fb.array(this.zones.map(() => this.fb.control(0, [Validators.min(0), Validators.max(5)]))),
+  });
+
+  get quantities(): FormArray {
+    return this.formBuyTicket.get('quantities') as FormArray;
   }
 
-  get selectedTicketsValue() {
-    return this.formBuyTicket.get('tickets')?.value ?? 1;
+  qtyAt(i: number) {
+    return this.quantities.at(i).value ?? 0;
+  } 
+
+  totalTickets() {
+    return this.quantities.controls.reduce((sum, control) =>  sum + (control.value ?? 0), 0);
   }
   
-  get unitPrice(): number {
-    return this.selectedZoneValue?.price ?? 1;
+  totalPrice() {
+    return this.zones.reduce((sum, zone, index) =>  sum + zone.price * (this.qtyAt(index) ?? 0), 0);
   }
 
-  get totalPrice() {
-    if (!this.selectedZoneValue) {
-      return 0;
+  canIncrease(i: number) {
+    return this.totalTickets() < 5;
+  }
+
+  increase(i: number) {
+    if (!this.canIncrease(i)) {
+      return;
     }
-    return this.unitPrice * this.selectedTicketsValue;
+    const control = this.quantities.at(i);
+    control.setValue(Math.min(5, (control.value || 0) + 1));
   }
 
-  constructor() {
-    this.formBuyTicket.get('zoneId')?.valueChanges.subscribe(() => {  
-      this.formBuyTicket.get('tickets')?.setValue(1, { emitEvent: false });
-    });
+  decrease(i: number) {
+    const  control = this.quantities.at(i);
+    control.setValue(Math.max(0, (control.value || 0) - 1));
   }
 
-  selectZone(zone: ZonesInterface) {
-    this.formBuyTicket.get('zoneId')?.setValue(zone.id);
+  toggleZone(index: number) {
+    const current = this.qtyAt(index);
+    if (current === 0) {
+      if (this.totalTickets() >= 5) return;
+      this.quantities.at(index).setValue(1);
+    } else {
+      this.quantities.at(index).setValue(0);
+    }
   }
 
-  increaseTickets() {
-    const currentTicket = this.formBuyTicket.get('tickets')?.value;
-    this.formBuyTicket.get('tickets')?.setValue(Math.min(5, currentTicket! + 1));
+  totalTicketsForZone(index: number) {
+    const qty = this.qtyAt(index);
+    const price = this.zones[index].price;
+    return qty * price;
   }
 
-  decreaseTickets() {
-    const currentTicket = this.formBuyTicket.get('tickets')?.value;
-    this.formBuyTicket.get('tickets')?.setValue(Math.max(1, currentTicket! - 1));
+  selectedIndexs() {
+    return this.quantities.controls
+      .map((control, index) => ({index, v: control.value ?? 0}))
+      .filter(it => it.v > 0)
+      .map(it => it.index);
+  }
+
+  removeZone(index: number) {
+    return this.quantities.at(index).setValue(0);
   }
 
   onSubmit() {
@@ -89,41 +108,30 @@ export class BuyTicketPageComponent {
       return;
     }
 
-    console.log(
-      'Comprar', {
-        eventId: this.eventId,
-        event: this.event,
-        zone: this.selectedZoneValue, 
-        tickes: this.selectedTicketsValue,
-        total: this.totalPrice
-      }
-    )
-    const zone = this.selectedZoneValue;
-    const qTickets = this.selectedTicketsValue;
+    const items = this.zones
+      .map((zone, index) => ({
+        zoneId: zone.id, zoneName: zone.name, quantity: this.qtyAt(index)
+      })).filter(it => it.quantity > 0);
 
-    if (!zone || qTickets <= 0) {
-      this.notificationService.showNotification('Por favor, selecciona una zona y cantidad de boletos válidos.', 'warning');
+    if (items.length === 0) {
+      this.notificationService.showNotification('Debes seleccionar al menos un boleto para continuar.', 'warning');
       return;
     }
 
-    const user = this.authService.user();
-
     const playload = {
       eventId: this.eventId,
-      zoneId: zone.id,
-      userId: user?.id,
-      userEmail: user?.email,
-      zoneName: zone.name,
-      quantityTickets: qTickets,
-      totalPrice: this.totalPrice,
-      eventName: this.event?.title,
-    }
+      items,
+      totalTickets: this.totalTickets(),
+      totalPrice: this.totalPrice(),
+      buyer: {
+        userId: this.authService.user()?.id,
+        email: this.authService.user()?.email,
+        nameUser: this.authService.user()?.name
+      },
+      createdAt: new Date().toISOString()
+    };
 
-    // Aqui iría la lógica para procesar la compra, como llamar a un servicio
-    // que maneje la transacción y la generación de los boletos.
-    console.log('Procesando compra con el siguiente detalle:', playload);
-    // this.notificationService.showNotification('Compra realizada con éxito.', 'success');
-    // this.formBuyTicket.reset();
+    console.log('Compra de boletos:', playload);
 
   }
 }

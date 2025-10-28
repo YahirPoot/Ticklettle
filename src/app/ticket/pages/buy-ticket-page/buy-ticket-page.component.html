@@ -1,34 +1,40 @@
-<div class="min-h-screen w-full p-4 flex items-center justify-center">
-    <div class="w-full max-w-6xl h-[calc(100vh-2rem)] grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
-        <!-- LEFT: imagen + info (centrado verticalmente) -->
+<div class="min-h-screen w-full p-4">
+    <div class="w-full mx-auto grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
         <div class="flex flex-col gap-4 p-2 h-full">
+            <!-- <div class="card bg-base-100 p-4 rounded-lg shadow-sm">
+                <h3 class="text-lg font-semibold">{{ event?.title }}</h3>
+                <p class="text-sm text-neutral mt-2">{{ event?.description }}</p>
+                <p class="text-sm text-neutral mt-2">Ubicación: {{ event?.location }}</p>
+            </div> -->
             <div class="card bg-base-200 shadow-sm flex-1 flex items-center justify-center overflow-hidden rounded-lg">
                 <figure class="w-full h-full flex items-center justify-center">
                     <img [src]="event?.image" [alt]="event?.title" class="w-full h-full object-cover" />
                 </figure>
             </div>
         </div>
-
         <!-- RIGHT: panel de compra (centrado verticalmente) -->
-        <aside class="flex flex-col gap-4 h-full">
-            <form [formGroup]="formBuyTicket" (ngSubmit)="onSubmit()" class="p-2 rounded-lg shadow-md grid grid-cols-1 md:grid-cols-1 h-full">
-                    <div class="card bg-base-200 p-2">
+        <aside class="p-2">
+            <form [formGroup]="formBuyTicket" (ngSubmit)="onSubmit()" class="space-y-4">
+                    <div class="card bg-base-200 p-3 rounded-lg shadow-sm">
                         <label class="text-sm font-medium mb-2 block">Selecciona la sección</label>
-                        <div class="space-y-2 max-h-44 sm:max-h-56 overflow-auto pr-1">
+                        <div class="space-y-2 max-h-48 sm:max-h-56 overflow-auto pr-1">
                             @for (zone of zones; track zone.id) {
                                 <button
                                     type="button"
-                                    class="w-full text-left p-2 rounded-lg border transition flex items-center justify-between text-sm hover:border-primary group"
-                                    [class.border-primary]="selectedZoneValue?.id === zone.id"
-                                    [class.bg-base-200]="selectedZoneValue?.id === zone.id"
-                                    (click)="selectZone(zone)"
-                                    [attr.aria-pressed]="selectedZoneValue?.id === zone.id"
+                                    class="w-full text-left p-3 rounded-lg border transition flex items-center justify-between text-sm hover:border-primary group md:text-base"
+                                    [class.border-primary]="qtyAt($index) > 0"
+                                    [class.bg-base-200]="qtyAt($index) > 0"
+                                    (click)="toggleZone($index)"
+                                    [attr.aria-pressed]="qtyAt($index) > 0"
                                 >
                                     <div class="min-w-0">
-                                        <div class="font-medium truncate">{{ zone.name }}</div>
+                                        <div class="font-medium truncate"
+                                            [class.text-primary]="qtyAt($index) > 0">{{ zone.name }}</div>
                                         <div class="text-xs text-neutral/70 truncate">{{ zone.type }}</div>
                                     </div>
-                                    <div class="text-sm font-semibold ml-3">${{ zone.price }}</div>
+                                    <div class="text-sm font-semibold ml-3"
+                                        [class.text-primary]="qtyAt($index) > 0"
+                                    >${{ zone.price }}</div>
                                 </button>
                             }
                         </div>
@@ -41,35 +47,41 @@
                         </div>
                     </div>
     
-                    <div class="mt-4">
-                        <div class="card flex flex-row items-center justify-between mb-1 bg-base-200 p-1 rounded-lg ">
-                            <p class="text-base pl-2">Comprar boletos</p>
-                            <div class="flex items-center gap-2">
-                                <button
-                                [disabled]="selectedTicketsValue! === null" 
-                                class="btn font-bold btn-lg" (click)="decreaseTickets()">-</button>
-                                <span class="text-base badge badge-outline badge-secondary">{{ selectedTicketsValue }}</span>
-                                <button
-                                    [disabled]="selectedZoneValue! === null" 
-                                    class="btn font-bold btn-lg" (click)="increaseTickets()">+</button>
+                    <div class="space-y-3">
+                        @for (idx of selectedIndexs(); track $index) {
+                            <div class="card p-3 bg-base-200 rounded-lg shadow-sm">
+                                <div class="flex flex-col sm:flex-row items-center sm:items-start justify-between gap-3">
+                                    <div class="min-w-0 flex-1">
+                                        <div class="font-semibold truncate">{{ zones[idx].name }}</div>
+                                        <div class="text-xs text-neutral mt-1">Comprar boletos</div>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <button type="button" class="btn btn-dash btn-sm md:btn-md" (click)="decrease(idx)" [disabled]="qtyAt(idx) <= 0">-</button>
+                                        <div class="w-14 text-center">
+                                            <input class="input input-ghost w-full text-center" readonly [value]="qtyAt(idx)" />
+                                        </div>
+                                        <button type="button" class="btn btn-dash btn-sm md:btn-md" (click)="increase(idx)" [disabled]="!canIncrease(idx)">+</button>
+                                        <button type="button" class="btn btn-error btn-outline btn-sm ml-2" aria-label="Eliminar zona" (click)="removeZone(idx)">
+                                            ✕
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-    
-                        <div class="flex items-center justify-end mb-3">
-                            <div class="font-semibold">Total: ${{ totalPrice }}</div>
-                        </div>
-                        @if (selectedTicketsValue === 5) {
-                            <span class="text-sm text-warning text-center">
-                                Haz alcanzado el máximo de boletos por compra.
-                            </span>
                         }
-                        <button type="submit" class="btn btn-neutral btn-lg w-full">
-                            Pagar
-                        </button>
+                    </div>
+                    <div class="mt-4">
+                        <div class="flex items-center justify-end mb-3">
+                            <div class="font-semibold">Total boletos: {{ totalTickets() }} — Total: ${{ totalPrice() }}</div>
+                        </div>
+                        @if (totalTickets() >= 5) {
+                            <span class="text-xs text-warning">Has alcanzado el máximo de boletos por compra (5).</span>
+                        }
+                        <button type="submit" class="btn btn-neutral btn-lg w-full">Pagar</button>
                     </div>
             </form>
         
         
         </aside>
     </div>
+
 </div>
