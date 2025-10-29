@@ -1,0 +1,63 @@
+[
+    { 
+        "id":1, 
+        "organizer": "Casa Organizadora", 
+        "ticketType": "Boleto Acceso VIP",
+        "dateAndTime": "Fecha y Hora",
+        "location": "Ubicación",
+        "icon": "wallet", 
+        "status": "active",
+        "qrPlaceholder": "https://placehold.co/256x256/ffffff/000000?text=QR"
+    },
+    { 
+        "id": 2,
+        "organizer": "Casa Organizadora", 
+        "ticketType": "Boleto Acceso VIP",
+        "dateAndTime": "Fecha y Hora",
+        "location": "Ubicación",
+        "icon": "wallet",
+        "status": "active",
+        "qrPlaceholder": "https://placehold.co/256x256/ffffff/000000?text=QR"
+    },
+    { 
+        "id": 3,
+        "organizer": "Casa Organizadora", 
+        "ticketType": "Boleto Acceso VIP",
+        "dateAndTime": "Fecha y Hora",
+        "location": "Ubicación",
+        "icon": "wallet",
+        "status": "transferred",
+        "qrPlaceholder": "https://placehold.co/256x256/ffffff/000000?text=QR"
+    },
+    { 
+        "id": 4,
+        "organizer": "Casa Organizadora", 
+        "ticketType": "Boleto Acceso VIP",
+        "dateAndTime": "Fecha y Hora",
+        "location": "Ubicación",
+        "icon": "wallet" ,
+        "status": "expired",
+        "qrPlaceholder": "https://placehold.co/256x256/ffffff/000000?text=QR"
+    }, 
+    {
+        "id": 5,
+        "organizer": "Casa Organizadora", 
+        "ticketType": "Boleto Acceso VIP",
+        "dateAndTime": "Fecha y Hora",
+        "location": "Ubicación",
+        "icon": "wallet",
+        "status": "expired",
+        "qrPlaceholder": "https://placehold.co/256x256/ffffff/000000?text=QR"
+    }, 
+    {
+        "id": 6,
+        "organizer": "Casa Organizadora", 
+        "ticketType": "Boleto Acceso VIP",
+        "dateAndTime": "Fecha y Hora",
+        "location": "Ubicación",
+        "icon": "wallet",
+        "status": "transferred",
+        "qrPlaceholder": "https://placehold.co/256x256/ffffff/000000?text=QR"
+    }
+
+]
