@@ -9,6 +9,7 @@ import { TicketPageComponent } from "./pages/ticket-page/ticket-page.component";
 import { eventRoutes } from "../event/event.routes";
 import ticketRoutes from "../ticket/ticket.routes";
 import { NotFoundPageComponent } from "../shared/components/not-found-page/not-found-page.component";
+import profileRoute from "../profile/profile.route";
 
 export const homeRoutes: Routes = [
     {
@@ -39,7 +40,8 @@ export const homeRoutes: Routes = [
                 path: 'profile-user', 
                 title: 'Perfil',
                 data: { icon: 'person' },
-                component: ProfilePageComponent 
+                component: ProfilePageComponent,
+                children: profileRoute, 
             },
 
             {
