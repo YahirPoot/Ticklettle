@@ -101,10 +101,10 @@
             </a>
 
             <!-- Enlace: Créditos disponibles -->
-            <a [routerLink]="['/credits']" class="p-4 border-b border-gray-300 hover:border-primary transition-all duration-200 flex justify-between items-center group">
+            <button onclick="my_modal_5.showModal()" class="p-4 border-b border-gray-300 hover:border-primary transition-all duration-200 flex justify-between items-center group">
                 <span class="text-base font-medium">Créditos disponibles</span>
                 <mat-icon class="text-xl text-gray-500 group-hover:text-primary transition-colors">chevron_right</mat-icon>
-            </a>
+            </button>
 
             <!-- Enlace: Favoritos -->
             <a [routerLink]="['/favorites']" class="p-4 border-b border-gray-300 hover:border-primary transition-all duration-200 flex justify-between items-center group">
@@ -116,3 +116,35 @@
     </section>
 
 </div>
+
+
+<dialog id="my_modal_5" class="modal modal-bottom sm:modal-middle">
+    <div class="modal-box">
+        <h3 class="text-lg font-bold">Tus Créditos Disponibles!</h3>
+        <div class="bg-indigo-600 rounded-xl p-6 text-white text-center shadow-lg">
+            <div class="text-sm font-light uppercase opacity-90 mb-1">Saldo Actual</div>
+            <div class="text-5xl font-extrabold tracking-tight">
+                {{ creditData.currentBalance }} {{ creditData.currency }}
+            </div>
+            <div class="mt-2 text-sm opacity-90">
+                Última actualización: {{ now | date: 'shortDate' }}
+            </div>
+        </div>  
+        <div class="space-y-3 pt-2">
+            <div class="flex items-center gap-3">
+                <mat-icon class="text-green-500">check_circle</mat-icon>
+                <span class="text-gray-700 text-sm">Usable en todas las compras de boletos.</span>
+            </div>
+            <div class="flex items-center gap-3">
+                <mat-icon class="text-blue-500">info</mat-icon>
+                <span class="text-gray-700 text-sm">Los créditos no caducan.</span>
+            </div>
+        </div>
+        <div class="modal-action">
+            <form method="dialog">
+                <!-- if there is a button in form, it will close the modal -->
+                <button class="btn btn-ghost text-gray-600">Close</button>
+            </form>
+        </div>
+    </div>
+</dialog>
