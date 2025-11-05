@@ -1,25 +1,28 @@
 import { Component, computed, inject, resource, signal } from '@angular/core';
 import { ZonesInterface } from '../../../shared/interfaces';
 import { EventService } from '../../../event/services/event.service';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { NotificationService } from '../../../shared/services/notification.service';
 import { AuthService } from '../../../auth/services/auth.service';
 import { FormArray, FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CheckoutService } from '../../../shared/services/checkout.service';
+import { HeaderBackComponent } from '../../../shared/components/header-back/header-back.component';
 
 @Component({
   selector: 'app-buy-ticket-page',
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, HeaderBackComponent],
   templateUrl: './buy-ticket-page.component.html',
 })
 export class BuyTicketPageComponent {
-  private eventService = inject(EventService);
   private activatedRoute = inject(ActivatedRoute);
+  private fb = inject(FormBuilder);
+  private readonly router = inject(Router);
+
+  private eventService = inject(EventService);
   private notificationService = inject(NotificationService);
   private checkoutService = inject(CheckoutService);
   authService = inject(AuthService);
 
-  private fb = inject(FormBuilder);
 
   loading = signal(false);
 
@@ -151,6 +154,9 @@ export class BuyTicketPageComponent {
       this.notificationService.showNotification('Error al crear la orden o iniciar checkout.', 'error');
       this.loading.set(false);
     }
+  }
 
+  goBack() {
+    this.router.navigate(['/detail-event', this.eventId], { relativeTo: this.activatedRoute });
   }
 }
