@@ -4,6 +4,7 @@ import { Component } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
 import { Router, ActivatedRoute } from '@angular/router'; // <-- IMPORTANTE para navegación
+import { HeaderBackComponent } from '../../../shared/components/header-back/header-back.component';
 
 // Definición de la estructura de una transacción
 interface Transaction {
@@ -19,7 +20,7 @@ interface Transaction {
 @Component({
     selector: 'app-history-page',
     standalone: true, 
-    imports: [MatIconModule, CommonModule],
+    imports: [MatIconModule, CommonModule, HeaderBackComponent],
     templateUrl: './history-page.component.html',
 })
 export class HistoryPageComponent {

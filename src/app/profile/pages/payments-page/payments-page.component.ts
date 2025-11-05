@@ -4,6 +4,7 @@ import { Component } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule, NgClass } from '@angular/common';
 import { Router, ActivatedRoute } from '@angular/router';
+import { HeaderBackComponent } from '../../../shared/components/header-back/header-back.component';
 
 interface PaymentMethod {
     id: number;
@@ -15,7 +16,7 @@ interface PaymentMethod {
 @Component({
     selector: 'app-payments-page',
     standalone: true,
-    imports: [MatIconModule, CommonModule, NgClass],
+    imports: [MatIconModule, CommonModule, NgClass, HeaderBackComponent],
     templateUrl: './payments-page.component.html',
 })
 export class PaymentsPageComponent {
@@ -55,5 +56,11 @@ export class PaymentsPageComponent {
         console.log('Navegando a formulario para agregar nueva tarjeta...');
         this.router.navigate(['../add-method'], { relativeTo: this.route });
         // Navegación o modal para formulario de tarjeta
+    }
+
+    goBack(): void {
+        // La navegación debe llevarnos de vuelta a la ruta principal del perfil
+        // Asumiendo que el componente ProfilePage está en la ruta raíz del módulo:
+        this.router.navigate(['../'], { relativeTo: this.route });
     }
 }

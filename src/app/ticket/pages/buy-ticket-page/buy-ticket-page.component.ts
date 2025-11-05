@@ -5,6 +5,7 @@ import { ActivatedRoute } from '@angular/router';
 import { NotificationService } from '../../../shared/services/notification.service';
 import { AuthService } from '../../../auth/services/auth.service';
 import { FormArray, FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { CheckoutService } from '../../../shared/services/checkout.service';
 
 @Component({
   selector: 'app-buy-ticket-page',
@@ -15,9 +16,12 @@ export class BuyTicketPageComponent {
   private eventService = inject(EventService);
   private activatedRoute = inject(ActivatedRoute);
   private notificationService = inject(NotificationService);
+  private checkoutService = inject(CheckoutService);
   authService = inject(AuthService);
 
   private fb = inject(FormBuilder);
+
+  loading = signal(false);
 
   zones: ZonesInterface[] = [
     { id: 1,  name: 'Zona Platinum', type: 'Adulto', price: 2500 },
@@ -102,36 +106,51 @@ export class BuyTicketPageComponent {
     return this.quantities.at(index).setValue(0);
   }
 
-  onSubmit() {
-    if (this.isAuthenticated()) {
-      this.notificationService.showNotification('Debes iniciar sesión para comprar boletos.', 'warning');
-      return;
-    }
+  async onSubmit() {
+    // if (!this.isAuthenticated()) {
+    //   this.notificationService.showNotification('Debes iniciar sesión para comprar boletos.', 'warning');
+    //   return;
+    // }
 
     const items = this.zones
       .map((zone, index) => ({
-        zoneId: zone.id, zoneName: zone.name, quantity: this.qtyAt(index)
+        title: zone.name,
+        unitPrice: zone.price,
+        unit_amount: zone.price,
+        quantity: this.qtyAt(index),
       })).filter(it => it.quantity > 0);
 
     if (items.length === 0) {
       this.notificationService.showNotification('Debes seleccionar al menos un boleto para continuar.', 'warning');
       return;
     }
-
-    const playload = {
+    
+    const orderPayload = {
       eventId: this.eventId,
-      items,
-      totalTickets: this.totalTickets(),
-      totalPrice: this.totalPrice(),
+      items, 
       buyer: {
         userId: this.authService.user()?.id,
         email: this.authService.user()?.email,
         nameUser: this.authService.user()?.name
       },
-      createdAt: new Date().toISOString()
-    };
+      total: this.totalPrice(),
+      totalTickets: this.totalTickets(),
+    }
 
-    console.log('Compra de boletos:', playload);
+    this.loading.set(true);
+    try {
+      const resp = await fetch('http://localhost:4242/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(orderPayload),
+      });
+      const order = await resp.json();
+      this.checkoutService.onProceedToPay(items, order.id);
+    } catch (error) {
+      console.error('error', error);
+      this.notificationService.showNotification('Error al crear la orden o iniciar checkout.', 'error');
+      this.loading.set(false);
+    }
 
   }
 }

@@ -76,7 +76,13 @@
                         @if (totalTickets() >= 5) {
                             <span class="text-xs text-warning">Has alcanzado el máximo de boletos por compra (5).</span>
                         }
-                        <button type="submit" class="btn btn-neutral btn-lg w-full">Pagar</button>
+                        <button type="submit" class="btn btn-neutral btn-lg w-full">
+                            @if (loading()) {
+                                Procesando…
+                            } @else {
+                                Pagar
+                            }
+                        </button>
                     </div>
             </form>
         

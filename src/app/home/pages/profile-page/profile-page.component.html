@@ -1,9 +1,10 @@
 <!-- <div class="min-h-screen w-full">
     <router-outlet></router-outlet>
 </div> -->
-<!-- @if (!this.isAuthenticated()) {
+@if (!this.isAuthenticated()) {
     <shared-is-not-authenticated [message]="'Debes iniciar sesión para ver tu perfil.'" />
-} -->
-<div class="min-h-screen w-full">
-    <router-outlet /> 
-</div>
+} @else {
+    <div class="min-h-screen w-full">
+        <router-outlet /> 
+    </div>
+}
