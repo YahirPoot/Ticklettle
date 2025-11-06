@@ -1,0 +1,101 @@
+<div class="min-h-screen w-full">
+    <shared-header-back [title]="'Detalles del Evento'" (back)="goBack()"/>
+    <div class="flex flex-col p-2">
+        <div class="card w-full bg-base-200 rounded-lg">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
+                <!-- LEFT: info compacta -->
+                <div class="flex flex-col justify-start space-y-3 pl-14 py-8">
+                    <h2 class="text-lg md:text-2xl font-bold leading-tight">Nombre del Evento</h2>
+                    <p class="text-sm text-gray-600 line-clamp-3">Descripción breve del evento que no ocupe mucho espacio pero permita ver lo esencial.</p>
+                    
+                    <div class="grid gap-2 text-sm mt-2">
+                        <div class="flex items-center gap-3">
+                            <span class="text-gray-600">12 de diciembre de 2023, 18:00</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span class="text-gray-600">Auditorio Principal</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- RIGHT: imagen compacta + estado + editar -->
+                <div class="flex flex-col items-stretch px-4 py-3">
+                    <figure class="w-full h-36 md:h-44 overflow-hidden rounded-lg">
+                        <img
+                            src="https://pueblanews.mx/wp-content/uploads/2025/06/image-184-1024x1280.png"
+                            alt="imagen del evento"
+                            class="w-full h-full object-cover"
+                        />
+                    </figure>
+                    
+                    <div class=" mt-2 flex justify-end items-center gap-3">
+                        <button
+                            class="btn btn-sm btn-ghost btn-circle"
+                        >
+                            <mat-icon class="text-base">edit</mat-icon>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="mt-4">
+            <div class="flex flex-col">
+                <span class="text-lg md:text-2xl font-semibold">Boletos Vendidos</span>
+                
+                <label class="input input-bordered input-sm mt-2 w-full max-w-xs">
+                    <div class="flex items-center gap-2 px-2">
+                            <svg class="h-4 w-4 opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <g stroke-linejoin="round" stroke-linecap="round" stroke-width="2.5" fill="none" stroke="currentColor">
+                                    <circle cx="11" cy="11" r="8"></circle>
+                                    <path d="m21 21-4.3-4.3"></path>
+                                </g>
+                            </svg>
+                            <input class="flex-1" type="search" placeholder="Buscar boleto..." />
+                    </div>
+                </label>
+                
+                <div class="overflow-x-auto mt-3">
+                    <table class="table w-full bg-base-200">
+                        <thead>
+                            <tr class="font-semibold text-sm">
+                                <th>#</th>
+                                <th>Comprador</th>
+                                <th>Correo</th>
+                                <th>Metodo de Pago</th>
+                                <th>Fecha</th>
+                                <th>Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-sm">
+                            <tr class="hover:bg-base-200">
+                                <th>1</th>
+                                <td>Angel Poot Ucan</td>
+                                <td>angel.poot@example.com</td>
+                                <td>Tarjeta de Credito</td>
+                                <td>12/12/2023</td>
+                                <td>Activo</td>
+                            </tr>
+                            <tr class="hover:bg-base-200">
+                                <th>2</th>
+                                <td>Jose Perez</td>
+                                <td>jose@example.com</td>
+                                <td>PayPal</td>
+                                <td>12/12/2023</td>
+                                <td>Inactivo</td>
+                            </tr>
+                            <tr class="hover:bg-base-200">
+                                <th>3</th>
+                                <td>Estefania Pacheco</td>
+                                <td>estefania.pacheco@example.com</td>
+                                <td>Tarjeta de Credito</td>
+                                <td>12/12/2023</td>
+                                <td>Activo</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
