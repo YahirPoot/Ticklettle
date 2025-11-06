@@ -1,13 +1,23 @@
 import { HttpClient } from '@angular/common/http';
-import { inject, Injectable } from '@angular/core';
-import { Ticket } from '../interfaces';
-import { firstValueFrom } from 'rxjs';
+import { inject, Injectable, NgZone } from '@angular/core';
+import { OrderRequest, OrderResponse, Ticket } from '../interfaces';
+import { firstValueFrom, Observable, tap } from 'rxjs';
+import { environment } from '../../../environments/environment.dev';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TicketService {
   private http = inject(HttpClient);
+  private readonly apiUrl = environment.serverBackend;
+  private ngZone = inject(NgZone);
+
+  createOrder(orderRequest: OrderRequest): Observable<OrderResponse> {
+    return this.http.post<OrderResponse>(`${this.apiUrl}/orders`, orderRequest)
+      .pipe(
+        tap(res => console.log('Order created:', res))
+      );
+  }
 
   private readAll(): Ticket[] {
     return JSON.parse(localStorage.getItem('tickets') || '[]');
@@ -38,4 +48,5 @@ export class TicketService {
     const all = await this.all();
     return all.filter((t) => t.status.toLowerCase() === status.toLowerCase());
   }
+
 }

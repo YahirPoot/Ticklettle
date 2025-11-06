@@ -1,4 +1,4 @@
-import { Component, computed, inject, resource, signal } from '@angular/core';
+import { Component, computed, inject, OnDestroy, OnInit, resource, signal } from '@angular/core';
 import { ZonesInterface } from '../../../shared/interfaces';
 import { EventService } from '../../../event/services/event.service';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -7,6 +7,9 @@ import { AuthService } from '../../../auth/services/auth.service';
 import { FormArray, FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CheckoutService } from '../../../shared/services/checkout.service';
 import { HeaderBackComponent } from '../../../shared/components/header-back/header-back.component';
+import { lastValueFrom, Subscription } from 'rxjs';
+import { TicketService } from '../../services/ticket.service';
+import { OrderRequest } from '../../interfaces';
 
 @Component({
   selector: 'app-buy-ticket-page',
@@ -22,7 +25,8 @@ export class BuyTicketPageComponent {
   private notificationService = inject(NotificationService);
   private checkoutService = inject(CheckoutService);
   authService = inject(AuthService);
-
+  private ticketService = inject(TicketService);
+  private sseSub?: Subscription;
 
   loading = signal(false);
 
@@ -56,7 +60,7 @@ export class BuyTicketPageComponent {
   qtyAt(i: number) {
     return this.quantities.at(i).value ?? 0;
   } 
-
+  
   totalTickets() {
     return this.quantities.controls.reduce((sum, control) =>  sum + (control.value ?? 0), 0);
   }
@@ -76,12 +80,12 @@ export class BuyTicketPageComponent {
     const control = this.quantities.at(i);
     control.setValue(Math.min(5, (control.value || 0) + 1));
   }
-
+  
   decrease(i: number) {
     const  control = this.quantities.at(i);
     control.setValue(Math.max(0, (control.value || 0) - 1));
   }
-
+  
   toggleZone(index: number) {
     const current = this.qtyAt(index);
     if (current === 0) {
@@ -91,7 +95,7 @@ export class BuyTicketPageComponent {
       this.quantities.at(index).setValue(0);
     }
   }
-
+  
   totalTicketsForZone(index: number) {
     const qty = this.qtyAt(index);
     const price = this.zones[index].price;
@@ -100,10 +104,10 @@ export class BuyTicketPageComponent {
 
   selectedIndexs() {
     return this.quantities.controls
-      .map((control, index) => ({index, v: control.value ?? 0}))
+    .map((control, index) => ({index, v: control.value ?? 0}))
       .filter(it => it.v > 0)
       .map(it => it.index);
-  }
+    }
 
   removeZone(index: number) {
     return this.quantities.at(index).setValue(0);
@@ -114,21 +118,21 @@ export class BuyTicketPageComponent {
     //   this.notificationService.showNotification('Debes iniciar sesión para comprar boletos.', 'warning');
     //   return;
     // }
-
+    
     const items = this.zones
-      .map((zone, index) => ({
+    .map((zone, index) => ({
         title: zone.name,
         unitPrice: zone.price,
         unit_amount: zone.price,
         quantity: this.qtyAt(index),
       })).filter(it => it.quantity > 0);
-
-    if (items.length === 0) {
-      this.notificationService.showNotification('Debes seleccionar al menos un boleto para continuar.', 'warning');
-      return;
+      
+      if (items.length === 0) {
+        this.notificationService.showNotification('Debes seleccionar al menos un boleto para continuar.', 'warning');
+        return;
     }
     
-    const orderPayload = {
+    const orderPayload: OrderRequest = {
       eventId: this.eventId,
       items, 
       buyer: {
@@ -139,15 +143,11 @@ export class BuyTicketPageComponent {
       total: this.totalPrice(),
       totalTickets: this.totalTickets(),
     }
-
+    
     this.loading.set(true);
     try {
-      const resp = await fetch('http://localhost:4242/orders', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(orderPayload),
-      });
-      const order = await resp.json();
+      
+      const order = await lastValueFrom(this.ticketService.createOrder(orderPayload));
       this.checkoutService.onProceedToPay(items, order.id);
     } catch (error) {
       console.error('error', error);
@@ -155,8 +155,9 @@ export class BuyTicketPageComponent {
       this.loading.set(false);
     }
   }
-
+  
   goBack() {
     this.router.navigate(['/detail-event', this.eventId], { relativeTo: this.activatedRoute });
   }
+
 }
