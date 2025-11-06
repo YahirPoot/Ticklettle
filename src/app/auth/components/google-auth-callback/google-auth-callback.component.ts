@@ -12,7 +12,7 @@ export class GoogleAuthCallbackComponent implements OnInit {
   private router = inject(Router);
   
   ngOnInit(): void {
-    const raw = localStorage.getItem('socialUser');
+    const raw = localStorage.getItem('user');
     if (!raw) {
       this.router.navigate(['/auth/login']);
       return

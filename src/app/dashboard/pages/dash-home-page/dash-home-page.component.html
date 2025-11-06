@@ -1,18 +1,18 @@
 <div class="min-h-screen w-full">
-    <div class="flex flex-col gap-2">
+    <div class="flex flex-col gap-4">
 
         <!-- TOP: dos cards de boletos a la izquierda y botón + card debajo a la derecha -->
-        <section class="grid grid-cols-1 md:grid-cols-2 gap-2  items-center">
+        <section class="grid grid-cols-1 md:grid-cols-2 gap-2 justify-center items-center">
             <!-- izquierda: dos cards -->
             <div class="flex flex-col items-center justify-center w-full">
                 <div>
                     <h3 class="text-xl font-light">Boletos Vendidos</h3>
                 </div>
-                <div class="flex flex-col md:flex-row w-full items-center justify-around gap-4 p-4">
-                    <div class="card bg-base-100 shadow w-1/2 p-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 w-full items-center gap-2 justify-around p-2">
+                    <div class="card bg-base-200 shadow p-6">
                         <div class="text-base">Por Mes</div>
                     </div>
-                    <div class="card bg-base-100 shadow w-1/2 p-6">
+                    <div class="card bg-base-200 shadow p-6">
                         <div class="flex items-center justify-between">
                             <div>
                                 Por Evento
@@ -26,48 +26,48 @@
             <!-- derecha: botón y debajo una card que ocupa el espacio restante -->
             <div class="w-full flex flex-col items-center justify-end gap-4 ">
                 <div class="md:w-56">
-                    <button [routerLink]="['/admin', 'event', 'create-event']" class="btn btn-primary btn-lg w-full">Crear Evento</button>
+                    <button [routerLink]="['/admin', 'event', 'create-event']" class="btn btn-primary btn-xl w-full">Crear Evento</button>
                 </div>
             </div>
         </section>
 
         <!-- BOTTOM: productos vendidos -> dos cards side + una card larga (tall) -->
-        <section class="grid grid-cols-1 md:grid-cols-2 md:grid-rows-2 gap-4 mt-4">
+        <section class="grid grid-cols-1 md:grid-cols-1 md:grid-rows-1 gap-2 mt-4">
             <!-- primera card (fila 1, col 1) -->
-            <div class="flex flex-col items-center justify-center w-full">
+            <div class="grid grid-cols-1 md:grid-cols-2 items-center justify-center w-full">
                 <div>
-                    <h3 class="text-xl font-light">Productos Vendidos</h3>
-                </div>
-                <div class="flex flex-col md:flex-row w-full items-center justify-around gap-4">
-                    <div class="flex flex-col p-2 w-full">
-                        <div class="card bg-base-100 shadow p-6">
-                            <div class="text-base">Por Mes</div>
-                        </div>
-                        <div class="card bg-base-100 shadow h-80 text-center mt-4">
-                            <div> Promedio de Ocupación</div>
-                        </div>
+                    <div class="text-center">
+                        <h3 class="text-xl font-light">Productos Vendidos</h3>
                     </div>
-                    <div class="flex flex-col p-2 w-full">
-                        <div class="card bg-base-100 shadow p-6">
-                            <div class="text-base">Por Mes</div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-2 w-full">
+                        <div class="flex flex-col p-2 w-full">
+                            <div class="card bg-base-200 shadow p-6">
+                                <div class="text-base">Por Mes</div>
+                            </div>
+                            <div class="card bg-base-200 shadow h-70 text-center mt-4">
+                                <div> Promedio de Ocupación</div>
+                            </div>
                         </div>
-                        <div class="card bg-base-100 shadow h-80 text-center mt-4">
-                            <div> Promedio de Ocupación</div>
+                        <div class="flex flex-col p-2 w-full">
+                            <div class="card bg-base-200 shadow p-6">
+                                <div class="text-base">Por Mes</div>
+                            </div>
+                            <div class="card bg-base-200 shadow h-70 text-center mt-4">
+                                <div> Promedio de Ocupación</div>
+                            </div>
                         </div>
                     </div>
                 </div> 
-            </div>
-
-            <!-- tercera card: larga, ocupa dos filas en md -->
-            <div class="card bg-base-100 shadow p-4 md:row-span-2 h-screen">
-                <div class="flex items-center justify-between mb-3">
-                    <h4 class="text-lg font-semibold">Eventos activos</h4>
-                    <span class="text-sm text-neutral">Estado actual</span>
+                <div class="card bg-base-200 shadow p-4 md:row-span-2 h-96">
+                    <div class="flex items-center justify-between mb-3">
+                        <h4 class="text-lg font-semibold">Eventos activos</h4>
+                        <span class="text-sm text-neutral">Estado actual</span>
+                    </div>
+                    <div class="md:h-full bg-neutral/10 rounded-lg flex items-center justify-center text-neutral">
+                        Placeholder: gráfica eventos activos (tall)
+                    </div>
+                    <div class="mt-3 text-sm text-neutral">Eventos activos: <strong>8</strong></div>
                 </div>
-                <div class="md:h-full bg-neutral/10 rounded-lg flex items-center justify-center text-neutral">
-                    Placeholder: gráfica eventos activos (tall)
-                </div>
-                <div class="mt-3 text-sm text-neutral">Eventos activos: <strong>8</strong></div>
             </div>
         </section>
     </div>

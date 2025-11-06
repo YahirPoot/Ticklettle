@@ -90,10 +90,10 @@ export class AuthService {
 
 
   public async handleExternalLogin(su: MinimalExternalUser): Promise<void> {
-    if (!su.email) {
-      await this.router.navigate(['/auth/login']);
-      return;
-    }
+    // if (!su.email) {
+    //   await this.router.navigate(['/auth/login']);
+    //   return;
+    // }
 
     const res = await this.userRepository.verifyGoogleToken(
       su.email, String(su.id), su.name, su.photoUrl || ''
