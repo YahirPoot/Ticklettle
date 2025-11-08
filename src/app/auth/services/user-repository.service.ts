@@ -75,6 +75,14 @@ export class UserRepositoryService {
     return user;
   }
 
+  verifyCredentials(email: string, password: string): AuthUser | null {
+    if (!email || !password) return null;
+    const users = this.getAll();
+
+    const user = users.find(u => u.email === email && u.password === password);
+    return user || null;
+  }
+
   // simula la verificación del token de Google en el backend 
   async verifyGoogleToken(email: string, googleId: string, name: string, picture: string): Promise<VerifyResponse> {
     // simulamos un retardo 
@@ -97,7 +105,7 @@ export class UserRepositoryService {
   }
   
   // simula el registro del usuario en el backend
-  async completeRegistration(email: string, googleId: string, name: string, picture: string, role: UserRole): Promise<RegisterResponse> {
+  async completeRegistration(email: string, googleId: string, name: string, photoUrl: string, role: UserRole): Promise<RegisterResponse> {
     // simulamos un retardo
     await this.delay(500);
     // creamos el objeto usuario
@@ -105,7 +113,7 @@ export class UserRepositoryService {
       id: googleId, 
       email, 
       name, 
-      picture,
+      photoUrl,
       roles: [role],
       isRegistered: true
     };

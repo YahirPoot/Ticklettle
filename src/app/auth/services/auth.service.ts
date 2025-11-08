@@ -43,11 +43,9 @@ export class AuthService {
   user = computed(() => this._user());
 
   login(email: string, password: string): Observable<boolean> {
-    const exisiting = this.userRepository.findByEmail(email);
-
-    // Si el usuario existe y está registrado, iniciar sesión
-    if (exisiting && exisiting.isRegistered) {
-      this.handleAuthSuccess({ user: exisiting });
+    const user = this.userRepository.verifyCredentials(email, password);
+    if (user && user.isRegistered) {
+      this.handleAuthSuccess({ user });
       return of(true);
     }
     return of(false);
@@ -105,7 +103,7 @@ export class AuthService {
         id: su.id,
         email: su.email,
         name: su.name,
-        picture: su.photoUrl || '',
+        photoUrl: su.photoUrl || '',
         roles: undefined,
         isRegistered: false
       };
@@ -131,7 +129,7 @@ export class AuthService {
         user.email,
         user.id.toString(),
         user.name,
-        user.picture || '',
+        user.photoUrl || '',
         role
       );
 

@@ -25,4 +25,13 @@ export class ProfilePageComponent {
     currentBalance: 150.75,
     currency: 'MEX',
   }
+
+  splitName(fullName?: string) {
+    const name = (fullName || '').trim();
+    if (!name) return { firstName: '', lastName: '' };
+    const parts = name.split(' ');
+    const firstName = parts[0];
+    const lastName = parts.length > 1 ? parts.slice(1).join(' ') : '';
+    return { firstName, lastName };
+  }
 }

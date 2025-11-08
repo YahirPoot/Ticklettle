@@ -2,7 +2,7 @@ export interface AuthUser {
     id: string | number, 
     email: string, 
     name: string, 
-    picture?: string,
+    photoUrl?: string,
     roles?: UserRole[],
     password?: string | null;
     isRegistered: boolean;

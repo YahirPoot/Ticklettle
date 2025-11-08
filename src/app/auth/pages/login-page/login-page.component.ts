@@ -91,7 +91,7 @@ export class LoginPageComponent implements OnInit, OnDestroy {
         idToken: response.credential
       };
       // guardar en localStorage (solo para pruebas)
-      // localStorage.setItem('socialUser', JSON.stringify(socialUser));
+      localStorage.setItem('socialUser', JSON.stringify(socialUser));
       console.log('GSI user', socialUser);
 
 
