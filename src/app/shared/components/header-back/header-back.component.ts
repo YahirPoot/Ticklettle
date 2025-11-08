@@ -6,7 +6,7 @@ import { Router, UrlTree } from '@angular/router';
   selector: 'shared-header-back',
   imports: [MatIconModule],
   template: `
-    <header class="flex items-center mb-4">
+    <header class="flex items-center mb-2">
         <button (click)="onBack()" class="btn btn-ghost btn-circle text-gray-600 hover:bg-gray-100 mr-4">
             <mat-icon>arrow_back</mat-icon>
         </button>
