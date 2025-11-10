@@ -1,11 +1,8 @@
 import { Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { CommonModule } from '@angular/common';
 import { environment } from '../../../../environments/environment.dev';
 import { AuthService } from '../../services/auth.service';
-import { NotificationService } from '../../../shared/services/notification.service';
-
 
 declare global {
   interface Window { google?: any; }
@@ -15,14 +12,13 @@ const googleClientId = environment.googleClientId;
 
 @Component({
   selector: 'app-login-page',
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [ReactiveFormsModule, RouterLink],
   templateUrl: './login-page.component.html'
 })
 export class LoginPageComponent implements OnInit, OnDestroy {
   private router = inject(Router);
   private fb = inject(FormBuilder);
   private authService = inject(AuthService);
-  private notifcationService = inject(NotificationService)
 
   showError = signal(false);
   
@@ -91,8 +87,8 @@ export class LoginPageComponent implements OnInit, OnDestroy {
         idToken: response.credential
       };
       // guardar en localStorage (solo para pruebas)
-      localStorage.setItem('socialUser', JSON.stringify(socialUser));
-      console.log('GSI user', socialUser);
+      // localStorage.setItem('socialUser', JSON.stringify(socialUser));
+      // console.log('GSI user', socialUser);
 
 
       this.authService.handleExternalLogin(socialUser).then(() => {

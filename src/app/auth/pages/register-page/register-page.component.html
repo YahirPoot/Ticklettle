@@ -1,1 +1,70 @@
-<p>register-page works!</p>,
+<div class="grid grid-cols-1 md:grid-cols-2">
+    <div class="bg-base-200 w-full">
+        <div class="flex flex-col p-4 items-center justify-center">
+            <h3 class="text-xl truncate uppercase font-bold">Registro</h3>
+            <p class="text-center text-sm text-gray-600 mt-4">
+                ¿Tienes una cuenta? <a [routerLink]="'/auth/login'" class="text-blue-600 hover:underline">Iniciar Sesión</a>
+            </p>
+            <div class="mt-3">
+                <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+                    <!-- Select rol -->
+                    <div class="form-control flex md:flex-row flex-col gap-2 items-center justify-between">
+                        <button type="button" class="btn btn-outline" 
+                            [class.btn-primary]="registerForm.get('role')?.value === 'organizador'"
+                            [class.btn-active]="registerForm.get('role')?.value === 'organizador'"
+                            (click)="setRole('organizador')">Organizador</button>
+                        <button type="button" class="btn btn-outline" 
+                            [class.btn-primary]="registerForm.get('role')?.value === 'asistente'"
+                            [class.btn-active]="registerForm.get('role')?.value === 'asistente'"
+                            (click)="setRole('asistente')">Asistente</button>
+                    </div>
+                    <div class="form-control">
+                        <label class="label label-text font-semibold mb-2">Nombre completo: </label>
+                        <input type="text" class="input input-bordered w-full focus:input-neutral mb-2" formControlName="name" placeholder="Nombre completo" required/>
+                    </div>
+                    <div class="form-control">
+                        <label class="label label-text font-semibold mb-2">Email: </label>
+                        <input type="email" class="input input-bordered w-full focus:input-neutral mb-2" formControlName="email" placeholder="Correo Electronico" required/>
+                    </div>
+                    <!-- Campos para ASISTENTE -->
+                    <div [hidden]="!isOrganizer">
+                        <div class="form-control">
+                            <label class="label label-text font-semibold mb-2">Razón social: </label>
+                            <input type="text" class="input input-bordered w-full focus:input-neutral mb-2" formControlName="razonSocial" placeholder="Razón social" />
+                        </div>
+                        <div class="form-control">
+                            <label class="label label-text font-semibold mb-2">RFC: </label>
+                            <input type="text" class="input input-bordered w-full focus:input-neutral mb-2" formControlName="rfc" placeholder="RFC" />
+                        </div>
+                        <div class="form-control">
+                            <label class="label label-text font-semibold mb-2">Teléfono: </label>
+                            <input type="tel" class="input input-bordered w-full focus:input-neutral mb-2" formControlName="telefono" placeholder="Teléfono" />
+                        </div>
+                    </div>
+                    <div class="form-control">
+                        <label class="label label-text font-semibold mb-2">Contraseña: </label>
+                        <input type="password" class="input input-bordered w-full focus:input-neutral mb-2" formControlName="password" placeholder="Contraseña" required/>
+                    </div>
+                    <div class="form-control">
+                        <label class="label label-text font-semibold mb-2">Confirmar Contraseña: </label>
+                        <input type="password" class="input input-bordered w-full focus:input-neutral mb-2" formControlName="confirmPassword"   placeholder="Confirmar Contraseña" required/>
+                    </div>
+                    <div class="form-control">
+                        <label class="flex items-center gap-3">
+                            <input type="checkbox" class="checkbox mt-1" />
+                            <div>
+                                <div class="font-medium">Acepto las Politicas de Privacidad</div>                            
+                            </div>  
+                        </label>
+                    </div>
+                    <div class="mt-4 w-full">
+                        <button type="submit" class="btn btn-neutral w-full">Crear cuenta</button>
+                        <div class="divider text-gray-600"> o </div>
+                        <div id="g_id_signin" class="w-full flex justify-center"></div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="w-full"></div>
+</div>

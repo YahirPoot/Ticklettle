@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { AuthUser, UserRole } from '../interfaces';
+import { AuthUser, RegisterRequest, UserRole } from '../interfaces';
 import { firstValueFrom } from 'rxjs';
 
 const KEY_USER_DATA = 'users_data';
@@ -81,6 +81,34 @@ export class UserRepositoryService {
 
     const user = users.find(u => u.email === email && u.password === password);
     return user || null;
+  }
+
+  async register(request: RegisterRequest): Promise<AuthUser> {
+    await this.delay(500);
+
+    const id = `u_${Date.now()}`;
+
+    const name = (request.role === 'organizador')
+      ? (request as any).razonSocial ?? (request as any).name ?? 'Sin Nombre'
+      : (request as any).name ?? 'Sin Nombre';
+
+    const user: AuthUser = {
+      id,
+      email: request.email!,
+      name,
+      password: request.password,
+      isRegistered: true,
+      roles: [request.role as UserRole]
+    };
+
+    (user as any).password = request.password;
+    if (request.role === 'organizador') {
+      (user as any).rfc = (request as any).rfc ?? '';
+      (user as any).telefono = (request as any).telefono ?? '';
+    }
+    this.upsert(user);
+    
+    return user;
   }
 
   // simula la verificación del token de Google en el backend 

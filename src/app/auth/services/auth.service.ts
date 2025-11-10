@@ -1,11 +1,11 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { SocialAuthService, SocialUser } from "@abacritt/angularx-social-login";
 import { GoogleLoginProvider } from "@abacritt/angularx-social-login";
-import { Observable, of, switchMap } from 'rxjs';
+import { catchError, from, map, Observable, of, switchMap, tap } from 'rxjs';
 // import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 
-import { AuthUser } from '../interfaces';
+import { AuthUser, RegisterRequest } from '../interfaces';
 import { UserRepositoryService } from './user-repository.service';
 
 type AuthStatus = 'checking' | 'authenticated' | 'not-authenticated';
@@ -56,6 +56,17 @@ export class AuthService {
     this.router.navigate(['/auth/login']);
   }
 
+  register(request: RegisterRequest): Observable<boolean> {
+    return from(this.userRepository.register(request)).pipe(
+      tap(user => this.handleAuthSuccess({ user })),
+      map(() => true),
+      catchError(err => {
+        console.error('Register error', err);
+        return of(false);
+      })
+    );
+  }
+
 
   checkStatusAuthenticated(): Observable<boolean> {
     if (this._user()) return of(true);
@@ -88,10 +99,6 @@ export class AuthService {
 
 
   public async handleExternalLogin(su: MinimalExternalUser): Promise<void> {
-    // if (!su.email) {
-    //   await this.router.navigate(['/auth/login']);
-    //   return;
-    // }
 
     const res = await this.userRepository.verifyGoogleToken(
       su.email, String(su.id), su.name, su.photoUrl || ''
@@ -170,4 +177,5 @@ export class AuthService {
     localStorage.removeItem('user')
     // localStorage.removeItem('user_data')
   }
+
 }
