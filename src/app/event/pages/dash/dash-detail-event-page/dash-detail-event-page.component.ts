@@ -1,6 +1,6 @@
 import { Component, inject, resource } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { HeaderBackComponent } from '../../../../shared/components/header-back/header-back.component';
 import { EventService } from '../../../services/event.service';
 import { DatePipe } from '@angular/common';
@@ -8,7 +8,7 @@ import { TicketService } from '../../../../ticket/services/ticket.service';
 
 @Component({
   selector: 'app-dash-detail-event-page',
-  imports: [MatIconModule, HeaderBackComponent, DatePipe],
+  imports: [MatIconModule, HeaderBackComponent, DatePipe, RouterLink],
   templateUrl: './dash-detail-event-page.component.html',
 })
 export class DashDetailEventPageComponent { 

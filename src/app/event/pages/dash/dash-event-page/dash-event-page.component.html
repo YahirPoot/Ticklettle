@@ -48,9 +48,9 @@
                     </a>
                     
                     <div class="flex items-center gap-2">
-                        <button class="btn btn-ghost btn-sm" aria-label="Editar evento">
+                        <a [routerLink]="['/admin', 'events', 'update-event', event.id]" class="btn btn-ghost btn-sm" aria-label="Editar evento">
                             <mat-icon>edit</mat-icon>
-                        </button>
+                        </a>
                         <button class="btn btn-error btn-sm" aria-label="Eliminar evento">
                             <mat-icon>delete</mat-icon>
                         </button>
