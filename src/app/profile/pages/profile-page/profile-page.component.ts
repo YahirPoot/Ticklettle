@@ -34,4 +34,11 @@ export class ProfilePageComponent {
     const lastName = parts.length > 1 ? parts.slice(1).join(' ') : '';
     return { firstName, lastName };
   }
+
+  get role() {
+    const roles = this.user()?.roles || [];
+    if (roles.includes('organizador')) return 'Organizador';
+    if (roles.includes('asistente')) return 'Asistente';
+    return 'Asistente';
+  }
 }

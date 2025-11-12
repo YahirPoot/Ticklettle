@@ -174,7 +174,7 @@ export class AuthService {
     this._user.set(null);
     this._authStatus.set('not-authenticated');
     // localStorage.removeItem('socialUser');
-    localStorage.removeItem('user')
+    localStorage.clear()
     // localStorage.removeItem('user_data')
   }
 

@@ -85,35 +85,37 @@
     </section>
 
     <!-- Sección 3: Navegación Rápida (Enlaces Inferiores) -->
-    <section>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            
-            <!-- Enlace: Métodos de Pago -->
-            <a [routerLink]="['/profile-user', 'payments']" class="p-4 border-b border-gray-300 hover:border-primary transition-all duration-200 flex justify-between items-center group">
-                <span class="text-base font-medium">Métodos de Pago</span>
-                <mat-icon class="text-xl text-gray-500 group-hover:text-primary transition-colors">chevron_right</mat-icon>
-            </a>
-
-            <!-- Enlace: Historial -->
-            <a [routerLink]="['/profile-user', 'history']" class="p-4 border-b border-gray-300 hover:border-primary transition-all duration-200 flex justify-between items-center group">
-                <span class="text-base font-medium">Historial</span>
-                <mat-icon class="text-xl text-gray-500 group-hover:text-primary transition-colors">chevron_right</mat-icon>
-            </a>
-
-            <!-- Enlace: Créditos disponibles -->
-            <button onclick="my_modal_5.showModal()" class="p-4 border-b border-gray-300 hover:border-primary transition-all duration-200 flex justify-between items-center group">
-                <span class="text-base font-medium">Créditos disponibles</span>
-                <mat-icon class="text-xl text-gray-500 group-hover:text-primary transition-colors">chevron_right</mat-icon>
-            </button>
-
-            <!-- Enlace: Favoritos -->
-            <a [routerLink]="['/favorites']" class="p-4 border-b border-gray-300 hover:border-primary transition-all duration-200 flex justify-between items-center group">
-                <span class="text-base font-medium">Favoritos</span>
-                <mat-icon class="text-xl text-gray-500 group-hover:text-primary transition-colors">chevron_right</mat-icon>
-            </a>
-
-        </div>
-    </section>
+    @if (!role) {
+        <section>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                
+                <!-- Enlace: Métodos de Pago -->
+                <a [routerLink]="['/profile-user', 'payments']" class="p-4 border-b border-gray-300 hover:border-primary transition-all duration-200 flex justify-between items-center group">
+                    <span class="text-base font-medium">Métodos de Pago</span>
+                    <mat-icon class="text-xl text-gray-500 group-hover:text-primary transition-colors">chevron_right</mat-icon>
+                </a>
+    
+                <!-- Enlace: Historial -->
+                <a [routerLink]="['/profile-user', 'history']" class="p-4 border-b border-gray-300 hover:border-primary transition-all duration-200 flex justify-between items-center group">
+                    <span class="text-base font-medium">Historial</span>
+                    <mat-icon class="text-xl text-gray-500 group-hover:text-primary transition-colors">chevron_right</mat-icon>
+                </a>
+    
+                <!-- Enlace: Créditos disponibles -->
+                <button onclick="my_modal_5.showModal()" class="p-4 border-b border-gray-300 hover:border-primary transition-all duration-200 flex justify-between items-center group">
+                    <span class="text-base font-medium">Créditos disponibles</span>
+                    <mat-icon class="text-xl text-gray-500 group-hover:text-primary transition-colors">chevron_right</mat-icon>
+                </button>
+    
+                <!-- Enlace: Favoritos -->
+                <a [routerLink]="['/favorites']" class="p-4 border-b border-gray-300 hover:border-primary transition-all duration-200 flex justify-between items-center group">
+                    <span class="text-base font-medium">Favoritos</span>
+                    <mat-icon class="text-xl text-gray-500 group-hover:text-primary transition-colors">chevron_right</mat-icon>
+                </a>
+    
+            </div>
+        </section>
+    }
 
 </div>
 
