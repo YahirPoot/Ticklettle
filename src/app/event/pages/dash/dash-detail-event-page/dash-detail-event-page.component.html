@@ -5,15 +5,15 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
                 <!-- LEFT: info compacta -->
                 <div class="flex flex-col justify-start space-y-3 pl-14 py-8">
-                    <h2 class="text-lg md:text-2xl font-bold leading-tight">Nombre del Evento</h2>
-                    <p class="text-sm text-gray-600 line-clamp-3">Descripción breve del evento que no ocupe mucho espacio pero permita ver lo esencial.</p>
+                    <h2 class="text-lg md:text-2xl font-bold leading-tight">{{eventById?.title}}</h2>
+                    <p class="text-sm text-gray-600 line-clamp-3">{{eventById?.description}}</p>
                     
                     <div class="grid gap-2 text-sm mt-2">
                         <div class="flex items-center gap-3">
-                            <span class="text-gray-600">12 de diciembre de 2023, 18:00</span>
+                            <span class="text-gray-600">{{eventById?.date| date:'d \'de\' MMMM \'de\' y, HH:mm'}}</span>
                         </div>
                         <div class="flex items-center gap-3">
-                            <span class="text-gray-600">Auditorio Principal</span>
+                            <span class="text-gray-600">{{eventById?.location}}</span>
                         </div>
                     </div>
                 </div>
@@ -22,8 +22,8 @@
                 <div class="flex flex-col items-stretch px-4 py-3">
                     <figure class="w-full h-36 md:h-44 overflow-hidden rounded-lg">
                         <img
-                            src="https://pueblanews.mx/wp-content/uploads/2025/06/image-184-1024x1280.png"
-                            alt="imagen del evento"
+                            src="{{ eventById?.image }}"
+                            alt="{{eventById?.title}}"
                             class="w-full h-full object-cover"
                         />
                     </figure>
@@ -66,15 +66,17 @@
                             </tr>
                         </thead>
                         <tbody class="text-sm">
-                            <tr class="hover:bg-base-200">
-                                <th>1</th>
-                                <td>Angel Poot Ucan</td>
-                                <td>angel.poot@example.com</td>
-                                <td>Tarjeta de Credito</td>
-                                <td>12/12/2023</td>
-                                <td>Activo</td>
-                            </tr>
-                            <tr class="hover:bg-base-200">
+                            @for (ticket of allTickets; track $index) {
+                                <tr class="hover:bg-base-200">
+                                    <th>{{ticket.id}}</th>
+                                    <td>{{ticket.buyer.name}}</td>
+                                    <td>{{ticket.buyer.correo}}</td>
+                                    <td>{{ticket.method_payment}}</td>
+                                    <td>{{ticket.parchaseDate}}</td>
+                                    <td>{{ticket.status}}</td>
+                                </tr>
+                            }
+                            <!-- <tr class="hover:bg-base-200">
                                 <th>2</th>
                                 <td>Jose Perez</td>
                                 <td>jose@example.com</td>
@@ -89,7 +91,7 @@
                                 <td>Tarjeta de Credito</td>
                                 <td>12/12/2023</td>
                                 <td>Activo</td>
-                            </tr>
+                            </tr> -->
                         </tbody>
                     </table>
                 </div>
@@ -102,7 +104,7 @@
         <div class="mt-4">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
                 <div class="flex flex-col justify-center items-start">
-                    <span class="text-lg md:text-2xl font-semibold">Boletos Vendidos</span>
+                    <span class="text-lg md:text-2xl font-semibold mb-2">Productos Vendidos</span>
                     <div class="overflow-x-auto">
                         <table class="table bg-base-200">
                             <!-- head -->

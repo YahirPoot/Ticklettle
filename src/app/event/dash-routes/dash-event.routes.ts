@@ -13,7 +13,7 @@ export const dashEventRoutes: Routes = [
         component: CreateEventPageComponent
     }, 
     {
-        path: 'detail-event/:evenId',
+        path: 'detail-event/:eventId',
         component: DashDetailEventPageComponent
     }
 ]

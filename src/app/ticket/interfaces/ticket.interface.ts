@@ -6,5 +6,14 @@ export interface Ticket {
     location: string;
     icon: string;
     status: string;
+    method_payment: string,
     qrPlaceholder: string;
+    buyer: Buyer,
+    parchaseDate: string;
+}
+
+export interface Buyer {
+    name: string;
+    id: string | number;
+    correo: string;
 }
