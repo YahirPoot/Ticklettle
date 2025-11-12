@@ -11,6 +11,25 @@
         </div>
     
         <div class="p-4 max-w-6xl mx-auto w-full">
+            @if (allTickets.length === 0) {
+                <div class="card bg-base-200 border border-base-300 rounded-lg p-6 flex flex-col items-center justify-center gap-4 w-full">
+                    <svg class="w-16 h-16 text-yellow-500" viewBox="0 0 24 24" fill="none" aria-hidden="true" role="img">
+                        <path d="M2 7.5A2.5 2.5 0 014.5 5h15A2.5 2.5 0 0122 7.5v9A2.5 2.5 0 0119.5 19h-15A2.5 2.5 0 012 16.5v-9zM7 9v6M12 9v6M17 9v6" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" class="fill-current/5"/>
+                    </svg>
+                    
+                    <h3 class="text-2xl font-semibold">Aún no tienes boletos</h3>
+                    
+                    <p class="text-sm text-gray-500 max-w-lg text-center">
+                        Cuando compres boletos aparecerán aquí. Puedes explorar eventos y comprar entradas fácilmente.
+                    </p>
+                    
+                    <div class="flex gap-3">
+                        <a routerLink="/" class="btn btn-primary" aria-label="Explorar eventos">
+                            Explorar eventos
+                        </a>
+                    </div>
+                </div>
+            }   
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
     
                 <section>

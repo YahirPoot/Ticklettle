@@ -13,8 +13,13 @@
         <div class="px-2 pb-2">
             <div class="flex items-center justify-between">
                 <a class="btn btn-ghost btn-sm" [routerLink]="['', 'detail-event', event().id]">Ver detalles</a>
-                <button class="btn btn-ghost btn-sm" aria-label="Favorito">
-                    <mat-icon>favorite_border</mat-icon>
+                <button class="btn btn-ghost btn-sm" aria-label="Favorito" (click)="toggleFavorite($event)">
+                    @if (isFavorited()) {
+                        <mat-icon>favorite</mat-icon>
+                    } 
+                    @if (!isFavorited()) {
+                        <mat-icon>favorite_border</mat-icon>
+                    }
                 </button>
             </div>
         </div>

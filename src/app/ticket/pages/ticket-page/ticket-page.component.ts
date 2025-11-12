@@ -39,5 +39,9 @@ export class TicketPageComponent {
     return [...expired, ...transferred];
   }
 
+  get allTickets() {
+    return this.activeTickets || this.expired_transferredTickets;
+  }
+
 }
 
