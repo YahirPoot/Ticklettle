@@ -86,15 +86,17 @@ export class LoginPageComponent implements OnInit, OnDestroy {
         photoUrl: payload.picture,
         idToken: response.credential
       };
-      // guardar en localStorage (solo para pruebas)
-      // localStorage.setItem('socialUser', JSON.stringify(socialUser));
-      // console.log('GSI user', socialUser);
 
-
-      this.authService.handleExternalLogin(socialUser).then(() => {
-        this.router.navigate(['/auth/callback']);
+      this.authService.googleLogin({
+        email: socialUser.email,
+        firstName: (payload.given_name ?? '').toString(),
+        lastName: (payload.family_name ?? '').toString(),
+        googleToken: socialUser.idToken
+      }).subscribe((loggedIn) => {
+        if (loggedIn) {
+          this.router.navigateByUrl('/auth/callback')
+        }
       });
-      // redirigir
   }
 
   onSubmit() {

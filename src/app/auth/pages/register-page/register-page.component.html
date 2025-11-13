@@ -10,13 +10,13 @@
                     <!-- Select rol -->
                     <div class="form-control flex md:flex-row flex-col gap-2 items-center justify-between">
                         <button type="button" class="btn btn-outline" 
-                            [class.btn-primary]="registerForm.get('role')?.value === 'organizador'"
-                            [class.btn-active]="registerForm.get('role')?.value === 'organizador'"
-                            (click)="setRole('organizador')">Organizador</button>
+                            [class.btn-primary]="registerForm.get('role')?.value === 1"
+                            [class.btn-active]="registerForm.get('role')?.value === 1"
+                            (click)="setRole(1)">Organizador</button>
                         <button type="button" class="btn btn-outline" 
-                            [class.btn-primary]="registerForm.get('role')?.value === 'asistente'"
-                            [class.btn-active]="registerForm.get('role')?.value === 'asistente'"
-                            (click)="setRole('asistente')">Asistente</button>
+                            [class.btn-primary]="registerForm.get('role')?.value === 0"
+                            [class.btn-active]="registerForm.get('role')?.value === 0"
+                            (click)="setRole(0)">Asistente</button>
                     </div>
                     <div class="form-control">
                         <label class="label label-text font-semibold mb-2">Nombre completo: </label>

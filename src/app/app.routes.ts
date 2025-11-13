@@ -14,7 +14,7 @@ export const routes: Routes = [
         path: 'admin', 
         loadChildren: () => import('./dashboard/dash.routes'),
         canMatch: [
-            hasRoleGuard('organizador'),
+            hasRoleGuard(1),
         ]
     },
     {

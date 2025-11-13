@@ -1,19 +1,26 @@
-import { UserRole } from "./auth-user.interfaces";
-
-export interface BaseRegisterRequest {
-    role?: UserRole,
-    email?: string,
-    password: string;
+export interface AttendeeRegisterRequest {
+    email: string,
+    firstName: string,
+    lastName: string,
+    password: string,
+    dateOfBirth: string,
+    gender: string,
+    photoUrl: string | File
 }
 
-export interface AssintantRedisterRequest extends BaseRegisterRequest {
-    name: string;
+export interface OrganizerRegisterRequest {
+    email: string,
+    firstName: string,
+    lastName: string,
+    password: string,
+    photoUrl: string,
+    company: string,
+    taxId: string,
+    fiscalAddress: string,
+    organizingHouseName: string,
+    organizingHouseAddress: string,
+    organizingHouseContact: string,
+    organizingHouseTaxData: string
 }
 
-export interface OrganizerRegisterRequest extends BaseRegisterRequest {
-    razonSocial: string;
-    rfc: string;
-    telefono: string; 
-}
-
-export type RegisterRequest =  AssintantRedisterRequest | OrganizerRegisterRequest;
+export type RegisterRequest = AttendeeRegisterRequest | OrganizerRegisterRequest

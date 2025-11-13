@@ -1,11 +1,8 @@
 export interface AuthUser {
-    id: string | number, 
-    email: string, 
-    name: string, 
-    photoUrl?: string,
-    roles?: UserRole[],
-    password?: string | null;
-    isRegistered: boolean;
+    email: string,
+    firstName: string,
+    lastName: string,
+    googleToken: string
 }
 
-export type UserRole = 'asistente' | 'organizador' | 'user';
+export type UserRole = 0 | 1;

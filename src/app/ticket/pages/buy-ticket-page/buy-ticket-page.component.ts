@@ -138,7 +138,7 @@ export class BuyTicketPageComponent {
       buyer: {
         userId: this.authService.user()?.id,
         email: this.authService.user()?.email,
-        nameUser: this.authService.user()?.name
+        nameUser: this.authService.user()?.firstName
       },
       total: this.totalPrice(),
       totalTickets: this.totalTickets(),

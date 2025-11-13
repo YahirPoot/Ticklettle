@@ -26,19 +26,10 @@ export class ProfilePageComponent {
     currency: 'MEX',
   }
 
-  splitName(fullName?: string) {
-    const name = (fullName || '').trim();
-    if (!name) return { firstName: '', lastName: '' };
-    const parts = name.split(' ');
-    const firstName = parts[0];
-    const lastName = parts.length > 1 ? parts.slice(1).join(' ') : '';
-    return { firstName, lastName };
-  }
-
   get role() {
-    const roles = this.user()?.roles || [];
-    if (roles.includes('organizador')) return 'Organizador';
-    if (roles.includes('asistente')) return 'Asistente';
+    const roles = this.user()?.customRole || [];
+    if (roles == 1) return 'Organizador';
+    if (roles == 0) return 'Asistente';
     return 'Asistente';
   }
 }

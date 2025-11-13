@@ -8,16 +8,20 @@
             <!-- Nota: Esta URL es un placeholder. En una app real, usarías la URL del usuario. -->
             <img 
                 [src]="user()?.photoUrl"
-                [alt]="'Foto de' + user()?.name" 
+                [alt]="'Foto de' + user()?.firstName" 
                 class="w-24 h-24 object-cover rounded-full shadow-lg shrink-0"
             />
 
             <!-- Nombre y Ubicación -->
             <div class="flex-1 min-w-0">
-                <h2 class="text-xl font-bold">{{ user()?.name }} </h2>
+                <h2 class="text-xl font-bold">{{ user()?.firstName }} </h2>
                 <div class="flex items-center gap-1 text-sm text-gray-500">
                     <mat-icon class="text-base">location_on</mat-icon>
-                    <span>{{ user()?.roles }}</span>
+                    @if (user()?.customRole == 1) {
+                        <span>Organizador</span>
+                    } @else {
+                        <span>Asistente</span>
+                    }
                 </div>
             </div>
 
@@ -42,7 +46,7 @@
                 <!-- El bg-base-300 simula el color de fondo claro en el diseño de Figma para el input -->
                 <input 
                     type="text" 
-                    [value]="splitName(user()?.name).firstName" 
+                    [value]="user()?.firstName" 
                     class="input w-full bg-base-300 border-none focus:outline-none" 
                     readonly
                 />
@@ -53,7 +57,7 @@
                 <label class="text-sm font-medium">Apellido</label>
                 <input 
                     type="text" 
-                    [value]="splitName(user()?.name).lastName" 
+                    [value]="user()?.lastName" 
                     class="input w-full bg-base-300 border-none focus:outline-none" 
                     readonly
                 />

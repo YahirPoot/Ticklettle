@@ -1,14 +1,16 @@
 import { Component, inject } from '@angular/core';
-import { AuthService } from '../../services/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-select-rol',
   imports: [],
   templateUrl: './select-rol.component.html',
 })
-export class SelectRolComponent { 
-  private authService = inject(AuthService);
-  public async choose(role: 'asistente' | 'organizador') {
-    await this.authService.completeRegistration(role);
+export class SelectRolComponent {
+  private readonly router = inject(Router);
+  public async choose(role: 0 | 1) {
+    localStorage.setItem('provisional_role', String(role));
+
+    this.router.navigate(['/auth/register'], { queryParams: { role }});
   }
 }

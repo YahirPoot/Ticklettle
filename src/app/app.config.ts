@@ -7,7 +7,7 @@ import { routes } from './app.routes';
 import { provideHttpClient } from '@angular/common/http';
 import { provideServiceWorker } from '@angular/service-worker';
 import { environment } from '../environments/environment.dev';
-import { UserRepositoryService } from './auth/services/user-repository.service';
+// import { UserRepositoryService } from './auth/services/user-repository.service';
 
 const googleClientId = environment.googleClientId;
 
@@ -36,13 +36,13 @@ export const appConfig: ApplicationConfig = {
             enabled: !isDevMode(),
             registrationStrategy: 'registerWhenStable:30000'
           }), 
-      {
-        provide: APP_INITIALIZER,
-        multi: true,
-        useFactory: () => {
-          const seeder = inject(UserRepositoryService);
-          return () => seeder.seed();
-        }
-      }
+      // {
+      //   provide: APP_INITIALIZER,
+      //   multi: true,
+      //   useFactory: () => {
+      //     const seeder = inject(UserRepositoryService);
+      //     return () => seeder.seed();
+      //   }
+      // }
   ]
 };

@@ -1,6 +1,6 @@
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { AbstractControl, FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { environment } from '../../../../environments/environment.dev';
 import { RegisterRequest, UserRole } from '../../interfaces';
@@ -17,23 +17,31 @@ declare global {
 })
 export class RegisterPageComponent implements OnInit, OnDestroy { 
   private readonly router = inject(Router);
+  private readonly activatedRoute = inject(ActivatedRoute)
   private fb = inject(FormBuilder);
   private authService = inject(AuthService);
 
+  role: 0 | 1 = 0; // 0: asistente, 1: organizador
+
   // Se agrega control del rol y cmapos extra para el rol del organizadorez
   registerForm = this.fb.group({
-    role: ['asistente', Validators.required],
-    // Camopos para el 'asistente'
-    name: ['', [Validators.required, Validators.minLength(2)]],
+    role: [0],
     email: ['', [Validators.required, Validators.email]],
-    password: ['', [Validators.required, Validators.minLength(6)]], 
-    // Campos para organizador
-    razonSocial: [''],
-    rfc: [''],
-    telefono: [''],
-    isRegistered: [false],
+    firstName: ['', [Validators.required]],
+    lastName: ['', [Validators.required]],
+    password: ['', [Validators.required, Validators.minLength(6)]],
+    // campos organizador
+    company: [''],
+    taxId: [''],
+    fiscalAddress: [''],
+    organizingHouseName: [''],
+    organizingHouseAddress: [''],
+    organizingHouseContact: [''],
+    organizingHouseTaxData: [''],
+    // campos asistente
+    dateOfBirth: [''],
+    gender: [''],
     photoUrl: [''],
-
     confirmPassword: ['', [Validators.required, Validators.minLength(6)]]
   });
 
@@ -43,11 +51,33 @@ export class RegisterPageComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.initGsi();
 
-    this.registerForm.get('role')?.valueChanges.subscribe(() => {
+    this.activatedRoute.queryParams.subscribe(q => {
+      const role = q['role'];
+      if (role === 1) {
+        this.role = 1;
+        this.registerForm.get('role')?.setValue(1);
+      } else {
+        this.role = 0;
+        this.registerForm.get('role')?.setValue(0);
+      }
+    }) ;
+
+    const prov = localStorage.getItem('provisional_social');
+    if (prov) {
+      const p = JSON.parse(prov);
+      this.registerForm.patchValue({
+        email: p.email ?? '',
+          firstName: p.firstName ?? p.name ?? '',
+          lastName: p.lastName ?? '',
+          photoUrl: p.photoUrl ?? ''
+      })
+    }
+
+    this.registerForm.get('role')?.valueChanges.subscribe((v) => {
+        this.updateRoleValidators();
+      });
       this.updateRoleValidators();
-    });
-    this.updateRoleValidators();
-    this.registerForm.setValidators(this.passwordsMatchValidator);
+      this.registerForm.setValidators(this.passwordsMatchValidator);
   }
 
   ngOnDestroy(): void {
@@ -58,20 +88,23 @@ export class RegisterPageComponent implements OnInit, OnDestroy {
   }
 
   private updateRoleValidators() {
-    const role = this.registerForm.get('role')?.value;
-    if (role === 'organizador') {
-      this.registerForm.get('razonSocial')?.setValidators([Validators.minLength(2)]);
-      this.registerForm.get('rfc')?.setValidators([Validators.minLength(12)]);
-      this.registerForm.get('telefono')?.setValidators([Validators.minLength(10)]);
-      this.registerForm.get('name')?.clearValidators();
+    const role = Number(this.registerForm.get('role')?.value) as 0 | 1;
+    if (role === 1) {
+      // organizador: requerir algunos campos opcionales según tu API
+      this.registerForm.get('company')?.setValidators([Validators.required, Validators.minLength(2)]);
+      this.registerForm.get('taxId')?.setValidators([Validators.required, Validators.minLength(6)]);
+      // limpiar campos de asistente si aplica
+      this.registerForm.get('dateOfBirth')?.clearValidators();
+      this.registerForm.get('gender')?.clearValidators();
     } else {
-      this.registerForm.get('name')?.setValidators([Validators.required, Validators.minLength(2)]);
-      this.registerForm.get('razonSocial')?.clearValidators();
-      this.registerForm.get('rfc')?.clearValidators();
-      this.registerForm.get('telefono')?.clearValidators();
+      // asistente: requerir fecha/género si lo deseas
+      this.registerForm.get('dateOfBirth')?.setValidators([Validators.required]);
+      this.registerForm.get('gender')?.setValidators([Validators.required]);
+      this.registerForm.get('company')?.clearValidators();
+      this.registerForm.get('taxId')?.clearValidators();
     }
-    ['name', 'razonSocial', 'rfc', 'telefono', 'email', 'password'].forEach(field => {
-      this.registerForm.get(field)?.updateValueAndValidity();
+    ['company','taxId','dateOfBirth','gender','email','password','firstName','lastName'].forEach(field => {
+      this.registerForm.get(field as any)?.updateValueAndValidity();
     });
   }
 
@@ -83,11 +116,14 @@ export class RegisterPageComponent implements OnInit, OnDestroy {
   }
 
   setRole(r: UserRole) {
+    // this.registerForm.get('role')?.setValue(r);
+    this.role = r;
     this.registerForm.get('role')?.setValue(r);
+    this.updateRoleValidators();
   }
 
   get isOrganizer() {
-    return this.registerForm.get('role')?.value === 'organizador';
+    return Number(this.registerForm.get('role')?.value) === 1;
   }
 
   private initGsi() {
@@ -136,54 +172,73 @@ export class RegisterPageComponent implements OnInit, OnDestroy {
 
     localStorage.setItem('social_user', JSON.stringify(socialUser));
 
-    this.authService.handleExternalLogin(socialUser).then(() => {
-      this.router.navigate(['/auth/callback']);
-    });
+    this.authService.googleLogin({
+        email: socialUser.email,
+        firstName: (payload.given_name ?? '').toString(),
+        lastName: (payload.family_name ?? '').toString(),
+        googleToken: socialUser.idToken
+      }).subscribe((loggedIn) => {
+        if (loggedIn) {
+          this.router.navigateByUrl('/auth/callback')
+        }
+      });
   }
 
   onSubmit() {
-    if (this.registerForm.invalid) return;
-
-
-    const role: UserRole = this.registerForm.get('role')?.value as UserRole;
-    const email = this.registerForm.get('email')?.value ?? '' ;
-    const password = this.registerForm.get('password')?.value ?? '';
-
-    let payload: RegisterRequest
-    if (role === 'organizador') {
-      payload = {
-        role,
-        email,
-        password,
-        razonSocial: this.registerForm.get('razonSocial')?.value ?? '',
-        rfc: this.registerForm.get('rfc')?.value ?? '',
-        telefono: this.registerForm.get('telefono')?.value ?? ''
-      }
-    } else {
-      payload = {
-        role, 
-        email, 
-        password, 
-        name: this.registerForm.get('name')?.value ?? ''
-      }
+    if (this.registerForm.invalid) {
+      this.registerForm.markAllAsTouched();
+      return;
     }
-    console.log('Register con', payload);
-    // localStorage.setItem('user_data', JSON.stringify(payload));
 
-    this.authService.register(payload).subscribe({
-      next: (isAuthenticated) => {
-        if (isAuthenticated) {
+    const role = Number(this.registerForm.get('role')?.value) as 0 | 1;
+    const payloadAttendee: RegisterRequest = {
+      email: this.registerForm.get('email')?.value!,
+      firstName: this.registerForm.get('firstName')?.value!,
+      lastName: this.registerForm.get('lastName')?.value!,
+      password: this.registerForm.get('password')?.value!,
+      dateOfBirth: this.registerForm.get('dateOfBirth')?.value ?? new Date().toISOString(),
+      gender: this.registerForm.get('gender')?.value ?? '',
+      photoUrl: this.registerForm.get('photoUrl')?.value ?? ''
+    };
+
+    const payloadOrganizer: RegisterRequest = {
+      email: this.registerForm.get('email')?.value!,
+      firstName: this.registerForm.get('firstName')?.value!,
+      lastName: this.registerForm.get('lastName')?.value!,
+      password: this.registerForm.get('password')?.value!,
+      photoUrl: this.registerForm.get('photoUrl')?.value ?? '',
+      company: this.registerForm.get('company')?.value ?? '',
+      taxId: this.registerForm.get('taxId')?.value ?? '',
+      fiscalAddress: this.registerForm.get('fiscalAddress')?.value ?? '',
+      organizingHouseName: this.registerForm.get('organizingHouseName')?.value ?? '',
+      organizingHouseAddress: this.registerForm.get('organizingHouseAddress')?.value ?? '',
+      organizingHouseContact: this.registerForm.get('organizingHouseContact')?.value ?? '',
+      organizingHouseTaxData: this.registerForm.get('organizingHouseTaxData')?.value ?? ''
+    };
+
+    if (role === 1) {
+      this.authService.registerOrganizer(payloadOrganizer).subscribe({
+        next: ok => {
+          if (ok) {
+            localStorage.removeItem('provisional_social');
+            localStorage.removeItem('provisional_role');
+            this.router.navigate(['/auth/callback']);
+          }
+        },
+        error: err => console.error('Error registrar organizer', err)
+      });
+      return;
+    }
+
+    this.authService.registerAttendee(payloadAttendee).subscribe({
+      next: ok => {
+        if (ok) {
+          localStorage.removeItem('provisional_social');
+          localStorage.removeItem('provisional_role');
           this.router.navigate(['/auth/callback']);
-        } else {
-          console.error('Registro fallido');
         }
       },
-      error: (err) => {
-        console.error('Error al registrar', err);
-      },
-      complete: () => {
-        // this.isSubmitting = false;
-      }
+      error: err => console.error('Error registrar attendee', err)
     });
   }
 }

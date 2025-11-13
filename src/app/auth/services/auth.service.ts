@@ -1,15 +1,18 @@
-import { computed, inject, Injectable, signal } from '@angular/core';
+import { computed, inject, Injectable, resource, signal } from '@angular/core';
 import { SocialAuthService, SocialUser } from "@abacritt/angularx-social-login";
 import { GoogleLoginProvider } from "@abacritt/angularx-social-login";
-import { catchError, from, map, Observable, of, switchMap, tap } from 'rxjs';
+import { catchError, firstValueFrom, map, Observable, of, switchMap } from 'rxjs';
 // import { HttpClient } from '@angular/common/http';
+
 import { Router } from '@angular/router';
 
-import { AuthUser, RegisterRequest } from '../interfaces';
-import { UserRepositoryService } from './user-repository.service';
+import { LoginResponse, RegisterRequest, User } from '../interfaces';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../environments/environment.dev';
 
 type AuthStatus = 'checking' | 'authenticated' | 'not-authenticated';
-type UserRole = 'asistente' | 'organizador' | 'user';
+type UserRole = 0 | 1;
+const apiBaseUrl = environment.apiBaseUrl;
 type MinimalExternalUser = {
   id: string | number;
   email: string;
@@ -23,14 +26,12 @@ type MinimalExternalUser = {
   providedIn: 'root'
 })
 export class AuthService {
-  // private http = inject(HttpClient);
+  private http = inject(HttpClient);
   private socialAuthService = inject(SocialAuthService);
-
   private router = inject(Router);
-  private userRepository = inject(UserRepositoryService);
 
   private _authStatus =  signal<AuthStatus>('checking');
-  private _user = signal<AuthUser | null>(null);
+  private _user = signal<User | null>(null);
 
   authStatus = computed<AuthStatus>(() => {
     if (this._authStatus() === 'checking')  return 'checking';
@@ -40,15 +41,19 @@ export class AuthService {
     return 'not-authenticated';
   })
 
+  checkStatusResource = resource({
+    loader: () => firstValueFrom(this.checkStatus()),
+  })
   user = computed(() => this._user());
 
   login(email: string, password: string): Observable<boolean> {
-    const user = this.userRepository.verifyCredentials(email, password);
-    if (user && user.isRegistered) {
-      this.handleAuthSuccess({ user });
-      return of(true);
-    }
-    return of(false);
+    return this.http.post<LoginResponse>(`${apiBaseUrl}/Auth/login`, {
+      email,
+      password
+    }).pipe(
+      map(resp => this.handleAuthSuccess(resp)),
+      catchError((err: any) => this.handleAuthError(err))
+    )
   }
 
   logout(): void {
@@ -56,26 +61,76 @@ export class AuthService {
     this.router.navigate(['/auth/login']);
   }
 
-  register(request: RegisterRequest): Observable<boolean> {
-    return from(this.userRepository.register(request)).pipe(
-      tap(user => this.handleAuthSuccess({ user })),
-      map(() => true),
-      catchError(err => {
-        console.error('Register error', err);
+  registerAttendee(attendeeRequest: RegisterRequest): Observable<boolean> {
+    return  this.http.post<LoginResponse>(`${apiBaseUrl}/Auth/register/attendee`,
+      attendeeRequest
+    ).pipe(
+      map(resp => this.handleAuthSuccess(resp)),
+    )
+  }
+
+  registerOrganizer(organizerRequest: RegisterRequest): Observable<boolean> {
+    return this.http.post<LoginResponse>(`${apiBaseUrl}/Auth/register/organizer`, 
+      organizerRequest
+    ).pipe(
+      map(resp => this.handleAuthSuccess(resp)),
+    )
+  }
+
+  googleLogin(payload: { email: string; firstName: string; lastName: string; googleToken: string; }): Observable<boolean> {
+    return this.http.post<any>(`${apiBaseUrl}/Auth/google-login`, payload).pipe(
+      map((resp: any) => {
+        // caso éxito con token
+        if (resp?.token && resp?.user) {
+          // resp cumple LoginResponse
+          this.handleAuthSuccess(resp as LoginResponse);
+          // redirect según rol numérico (customRole)
+          const role = (resp.user?.customRole ?? resp.user?.customRole);
+          this.redirectByRole(role ?? undefined);
+          return true;
+        }
+
+        // caso: backend indica que el usuario no existe y hay que completar registro
+        // guardamos provisionalmente los datos para completar el registro en el flujo UI
+        if (resp?.isNew) {
+          const provisional = {
+            email: payload.email,
+            firstName: payload.firstName,
+            lastName: payload.lastName,
+            googleToken: payload.googleToken
+          };
+          try { localStorage.setItem('provisional_social', JSON.stringify(provisional)); } catch {}
+          // navegar a selección/registro de rol; el componente de UI leerá provisional_social
+          this.router.navigate(['/auth/select-rol']);
+          return false;
+        }
+
+        // otros casos: fallback a error
+        console.error('googleLogin: respuesta inesperada', resp);
+        return false;
+      }),
+      catchError((err) => {
+        console.error('googleLogin error', err);
         return of(false);
       })
     );
   }
 
-
   checkStatusAuthenticated(): Observable<boolean> {
     if (this._user()) return of(true);
-    const user = localStorage.getItem('user');
-    if (user) {
-      this.handleAuthSuccess({ user: JSON.parse(user) });
-      return of(true)
+    const userStr = sessionStorage.getItem('user');
+    if (!userStr) return of(false);
+
+    try {
+      const user = JSON.parse(userStr) as User;
+      this._user.set(user);
+      this._authStatus.set('authenticated');
+      return of(true);
+    } catch (err) {
+      console.warn('checkStatusAuthenticated: usuario en storage inválido', err);
+      this.clearSession();
+      return of(false);
     }
-    return of(false)
   }
 
   checkStatus(): Observable<boolean> {
@@ -97,85 +152,52 @@ export class AuthService {
     return this.socialAuthService.signOut();
   }
 
-
-  public async handleExternalLogin(su: MinimalExternalUser): Promise<void> {
-
-    const res = await this.userRepository.verifyGoogleToken(
-      su.email, String(su.id), su.name, su.photoUrl || ''
-    );
-
-    if (res.isNew) {
-      // sesión provisional, NO escribir en “BD” aún
-      const provisional: AuthUser = {
-        id: su.id,
-        email: su.email,
-        name: su.name,
-        photoUrl: su.photoUrl || '',
-        roles: undefined,
-        isRegistered: false
-      };
-      this.handleAuthSuccess({ user: provisional });
-      await this.router.navigate(['/auth/select-rol']);
-      return;
-    }
-
-    this.handleAuthSuccess({ user: res.user! });
-    this.redirectByRole(res.user!.roles!);
-  }
-
-  public async completeRegistration(role: UserRole): Promise<void> {
-    const user = this._user();
-    if (!user) {
-      await this.router.navigate(['/auth/login']);
-      return;
-    }
-
-    try {
-      // Llamar al mock backend (simula POST /api/auth/complete-registration)
-      const response = await this.userRepository.completeRegistration(
-        user.email,
-        user.id.toString(),
-        user.name,
-        user.photoUrl || '',
-        role
-      );
-
-      this.handleAuthSuccess({ user: response.user });
-      this.redirectByRole(response.user.roles!);
-    } catch (error) {
-      console.error('Registration error', error);
-    }
-  }
-
   public hasRole(role: UserRole): boolean {
-    return this._user()?.roles!.includes(role) ?? false;
+    return this._user()?.customRole === role;
   }
 
   public isAuthenticated(): boolean {
     return !!this._user();
   }
 
-  private redirectByRole(roles: UserRole[]): void {
-    if (roles.includes('organizador')) {
+  private redirectByRole(role: UserRole): void {
+    if (role == 1) {
       this.router.navigate(['/admin/dashboard']);
     } else {
       this.router.navigate(['/']);
     }
   }
 
-  private handleAuthSuccess({ user }: { user: AuthUser }, persist = false): boolean {
+  private handleAuthSuccess(resp: LoginResponse | {user: User}) {
+    const maybeLogin = resp as LoginResponse;
+    const user = maybeLogin?.user ?? (resp as { user: User }).user;
+    if (!user) return false;
+
+    // guardar token/expiration si vienen del backend
+    if (maybeLogin?.token) {
+      localStorage.setItem('token', maybeLogin.token);
+    }
+    if (maybeLogin?.expiration) {
+      localStorage.setItem('token-expiration', maybeLogin.expiration);
+    }
+
     this._user.set(user);
     this._authStatus.set('authenticated');
-    localStorage.setItem('user', JSON.stringify(user));
+    sessionStorage.setItem('user', JSON.stringify(user));
     return true;
   }
+
+  private handleAuthError( error: any ) {
+      console.log(error)
+      this.clearSession();
+      return of(false);
+    }
 
   private clearSession() {
     this._user.set(null);
     this._authStatus.set('not-authenticated');
-    // localStorage.removeItem('socialUser');
     localStorage.clear()
-    // localStorage.removeItem('user_data')
+    sessionStorage.clear();
   }
 
 }
