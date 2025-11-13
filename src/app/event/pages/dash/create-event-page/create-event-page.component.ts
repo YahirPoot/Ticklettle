@@ -7,13 +7,13 @@ import { TicketTypeRequest } from '../../../../ticket/interfaces';
 import { MatIcon } from "@angular/material/icon";
 import { LoadingComponent } from '../../../../shared/components/loading/loading.component';
 import { LoadingModalService } from '../../../../shared/services/loading-modal.service';
-import { JsonPipe } from '@angular/common';
+// import { JsonPipe } from '@angular/common';
 import { AuthService } from '../../../../auth/services/auth.service';
 
 
 @Component({
   selector: 'app-create-event-page',
-  imports: [ReactiveFormsModule, MatIcon, LoadingComponent, JsonPipe],
+  imports: [ReactiveFormsModule, MatIcon, LoadingComponent],
   templateUrl: './create-event-page.component.html',
 })
 export class CreateEventPageComponent { 
