@@ -22,6 +22,18 @@
                         <input type="text" placeholder="Lugar o dirección" formControlName="location"
                             class="input input-bordered w-full mt-1">
                     </label>
+
+                    <label class="block">
+                        <span class="text-sm font-medium text-gray-500">Fecha: </span>
+                        <input type="date" formControlName="date"
+                            class="input input-bordered w-full mt-1" aria-label="Fecha del evento" required="">
+                    </label>
+
+                    <label class="block">
+                        <span class="text-sm font-medium text-gray-500">Hora: </span>
+                        <input type="time" formControlName="time"
+                            class="input input-bordered w-full mt-1" aria-label="Hora del evento" required>
+                    </label>
                 </div>
             </div>
             <div>
@@ -36,7 +48,9 @@
                             <img [src]="imagePreview()" alt="preview" class="w-full h-full object-cover">
                         }
                         @if (!imagePreview()) {
-                            <div class="text-sm text-neutral">Previsualización de la imagen </div>
+                            <div class="text-sm text-neutral flex items-center justify-center h-full">
+                                <mat-icon>image</mat-icon>
+                            </div>
                         }
                     </div>
 
@@ -52,32 +66,52 @@
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <label class="block">
-                        <span class="text-sm font-medium text-gray-500">Tipo de boleto</span>
-                        <select class="select select-bordered w-full mt-1" aria-label="Tipo de boleto" formControlName="ticketType">
-                            <option value="general">General</option>
-                            <option value="vip">VIP</option>
-                            <option value="student">Estudiante</option>
-                        </select>
+                        <span class="text-sm font-medium text-gray-500">Capacidad total (tope)</span>
+                        <input type="number" min="0" formControlName="capacity" class="input input-bordered w-full mt-1">
+                        <p class="text-xs text-neutral mt-1">Define el limite máximo de asistentes. La suma de tickets no puede exceder esta cifra</p>
                     </label>
-
-                    <label class="block">
-                        <span class="text-sm  font-medium text-gray-500">Precio</span>
-                        <input type="number" min="0" step="0.01" placeholder="0.00" formControlName="price"
-                            class="input input-bordered w-full mt-1" aria-label="Precio del boleto">
-                    </label>
-
-                    <label class="block">
-                        <span class="text-sm font-medium text-gray-500">Fecha: </span>
-                        <input type="date" formControlName="date"
-                            class="input input-bordered w-full mt-1" aria-label="Fecha del evento">
-                    </label>
-
-                    <label class="block">
-                        <span class="text-sm font-medium text-gray-500">Hora: </span>
-                        <input type="time" formControlName="time"
-                            class="input input-bordered w-full mt-1" aria-label="Hora del evento">
-                    </label>
+                    <div class="block">
+                        <span class="text-sm font-medium text-gray-500">Total tickets configurados</span>
+                        <div class="mt-1 text-lg font-semibold">
+                            {{ totalTicketsCount() }}
+                        </div>
+                    </div>
                 </div>
+            </div>
+
+            <div class="space-y-3" formArrayName="tickets">
+                @for (ticket of tickets.controls; track $index ) {
+                    <div [formGroupName]="$index" class="grid grid-cols-12 gap-2 items-end">
+                        <div class="col-span-5">
+                            <label class="block text-xs text-gray-500">Tipo</label>
+                            <select class="input input-bordered w-full" formControlName="type">
+                                <option value="general">General</option>
+                                <option value="vip">VIP</option>
+                                <!-- <option value="">Estudiante</option> -->
+                                <option value="early">Early</option>
+                            </select>
+                        </div>
+                        <div class="col-span-3">
+                            <label class="block text-xs text-gray-500">Precio</label>
+                            <input type="number" min="0" step="0.01" class="input input-bordered w-full" formControlName="price" />
+                        </div>
+                        <div class="col-span-3">
+                            <label class="block text-xs text-gray-500">Cantidad</label>
+                            <input type="number" min="0" class="input input-bordered w-full" formControlName="quantity" />
+                        </div>
+                        <div class="col-span-1">
+                            <button type="button" class="btn btn-ghost" (click)="removeTicketType($index)" aria-label="Eliminar tipo">✕</button>
+                        </div>
+                        </div>
+                }
+                <div>
+                    <button type="button" [disabled]="totalTicketsCount() === capacityValue()" class="btn btn-sm btn-outline" (click)="addTicketType()">+ Agregar tipo</button>
+                </div>
+                @if (capacityValue() > 0 && totalTicketsCount() > capacityValue()) {
+                    <div class="text-red-500 text-sm mt-2">
+                        La suma de cantidades de los tipos de boleto excede la capacidad total.
+                    </div>
+                }
             </div>
         </section>
 
@@ -103,4 +137,11 @@
             </div>
         </section>
     </form>
+
+    <!-- <div>
+        {{this.eventForm.invalid | json}}
+        {{this.eventForm.value | json}}
+    </div> -->
 </div>
+
+<shared-loading></shared-loading>
