@@ -7,7 +7,7 @@ import { AuthService } from '../../../auth/services/auth.service';
 import { FormArray, FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CheckoutService } from '../../../shared/services/checkout.service';
 import { HeaderBackComponent } from '../../../shared/components/header-back/header-back.component';
-import { lastValueFrom, Subscription } from 'rxjs';
+import { firstValueFrom, lastValueFrom, Subscription } from 'rxjs';
 import { TicketService } from '../../services/ticket.service';
 import { OrderRequest } from '../../interfaces';
 
@@ -42,7 +42,7 @@ export class BuyTicketPageComponent {
   private eventId: number = this.activatedRoute.snapshot.params['eventId'];
   
     eventResource = resource({
-      loader: () => this.eventService.byId(this.eventId),
+      loader: () =>  firstValueFrom(this.eventService.getEventById(this.eventId)),
     });
   
     get event() {

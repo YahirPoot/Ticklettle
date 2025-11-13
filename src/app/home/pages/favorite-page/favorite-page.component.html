@@ -50,28 +50,28 @@
         </div>
       }
       <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-        @for (eventFav of favorites; track $index) {
+        @for (eventFav of favorites; track eventFav.eventId) {
           <article class="card bg-base-200 shadow-md p-4 flex flex-col gap-3">
             <div>
-              <p class="text-sm text-muted">{{eventFav.organizer}}</p>
-              <h3 class="text-lg font-bold">Evento {{ eventFav.title }}</h3>
+              <p class="text-sm text-muted">{{eventFav.organizingHouseId}}</p>
+              <h3 class="text-lg font-bold">Evento {{ eventFav.name }}</h3>
               <p class="text-sm text-gray-600">{{eventFav.description}}</p>
             </div>
   
             <div class="w-full flex justify-center">
               <figure class="w-28 h-28 md:w-32 md:h-32 shrink-0">
-                <img src="{{eventFav.image}}" alt="Evento {{eventFav.title}}" class="w-full h-full object-cover rounded-bl-lg " />
+                <img src="{{eventFav.imageUrl}}" alt="Evento {{eventFav.name}}" class="w-full h-full object-cover rounded-bl-lg " />
             </figure>
             </div>
   
             <div class="flex items-center justify-between mt-2">
 
-              <a class="btn btn-ghost btn-sm" [routerLink]="['', 'detail-event', eventFav.id]">Ver detalles</a>
+              <a class="btn btn-ghost btn-sm" [routerLink]="['', 'detail-event', eventFav.eventId]">Ver detalles</a>
               <div class="flex items-center gap-2">
                 <button class="btn btn-ghost btn-sm">
                   <mat-icon class="text-red-600">favorite</mat-icon>
                 </button>
-                <button class="btn btn-ghost btn-sm" (click)="deleteFavorite(eventFav.id)">
+                <button class="btn btn-ghost btn-sm" (click)="deleteFavorite(eventFav.eventId)">
                   <mat-icon>delete</mat-icon>
                 </button>
               </div>

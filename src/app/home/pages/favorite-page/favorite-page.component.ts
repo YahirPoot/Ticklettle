@@ -24,7 +24,7 @@ export class FavoritePageComponent {
     return this.favoritesResource.value() || [];
   }
 
-  deleteFavorite(eventId: string | number) {
+  deleteFavorite(eventId: number) {
     this.favoriteEventSvc.delete(eventId);
     this.favoritesResource.reload();
   }

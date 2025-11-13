@@ -5,8 +5,8 @@
             <!-- 1) Imagen del evento -->
             <figure class="md:col-span-5 h-48">
                 <img
-                    [src]="event?.image"
-                    [alt]="event?.title"
+                    [src]="event?.imageUrl"
+                    [alt]="event?.name"
                     class="w-full h-48 sm:h-64 md:h-full object-cover rounded-l-2xl sm:rounded-2xl"
                 />
             </figure>
@@ -17,13 +17,13 @@
             >
                 <div class="bg-base-100 rounded-xl shadow px-6 py-4 text-center w-full max-w-40">
                     <div class="uppercase tracking-wide text-sm font-semibold text-primary">
-                        {{ event?.date | date: 'MMM' }}
+                        {{ event?.dateTime| date: 'MMM' }}
                     </div>
                     <div class="text-4xl font-extrabold leading-none my-1">
-                        {{ event?.date | date: 'dd' }} 
+                        {{ event?.dateTime | date: 'dd' }} 
                     </div>
                     <div class="text-xs opacity-70">
-                        {{ event?.date | date: 'yyyy' }}
+                        {{ event?.dateTime | date: 'yyyy' }}
                     </div>
                 </div>
             </section>
@@ -41,11 +41,11 @@
                     <div class="flex flex-col md:flex-row gap-2 md:gap-4 divide-y md:divide-y-0 md:divide-x divide-base-300 justify-center items-center">
                         <div class="py-2 md:py-0 md:pr-4">
                             <span class="text-sm opacity-70 block">Hora</span>
-                            <span class="text-lg font-medium">{{ event?.date | date: 'HH:mm' }}</span>
+                            <span class="text-lg font-medium">{{ event?.dateTime| date: 'HH:mm' }}</span>
                         </div>
                         <div class="py-2 md:py-0 md:pl-4">
                             <span class="text-sm opacity-70 block">Artista</span>
-                            <span class="text-lg font-medium">{{ event?.title }}</span>
+                            <span class="text-lg font-medium">{{ event?.name }}</span>
                         </div>
                     </div>
                 </div>
@@ -55,11 +55,11 @@
     <div class="card bg-base-200 mt-4 shadow-sm flex flex-col">
         <div class="w-full p-4 flex flex-col md:flex-row gap-6 items-start">
             <div class="flex-1 min-w-0">
-                <h3 class="text-2xl md:text-3xl font-bold mb-6">{{event?.organizer}}</h3>
+                <h3 class="text-2xl md:text-3xl font-bold mb-6">{{event?.organizingHouseId}}</h3>
                 <p class="text-sm md:text-base ">{{event?.description}}</p>
             </div>
             <div class="p-6">
-                <a [routerLink]="['/tickets', 'buy-ticket', event?.id]" class="btn  btn-xl btn-primary">
+                <a [routerLink]="['/tickets', 'buy-ticket', event?.eventId]" class="btn  btn-xl btn-primary">
                     Comprar Boleto
                 </a>
             </div>

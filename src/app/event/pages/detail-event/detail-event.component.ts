@@ -4,6 +4,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { DatePipe } from '@angular/common';
 import { ZonesInterface } from '../../../shared/interfaces';
 import { HeaderBackComponent } from '../../../shared/components/header-back/header-back.component';
+import { firstValueFrom } from 'rxjs';
 
 
 @Component({
@@ -20,8 +21,9 @@ export class DetailEventComponent {
 
   eventResource = resource({
     loader: () => {
-      console.log('Cargando evento con ID:', this.eventId);
-      return this.eventService.byId(this.eventId);
+      return firstValueFrom(
+        this.eventService.getEventById(this.eventId),
+      )
     }
   });
 

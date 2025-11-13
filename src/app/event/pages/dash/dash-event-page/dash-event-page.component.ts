@@ -2,6 +2,7 @@ import { Component, inject, resource } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { RouterLink } from "@angular/router";
 import { EventService } from '../../../services/event.service';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-dash-event-page',
@@ -12,7 +13,7 @@ export class DashEventPageComponent {
   eventService = inject(EventService);
 
   eventResource = resource({
-    loader: () => this.eventService.all(),
+    loader: () => firstValueFrom(this.eventService.getEvents()),
   })
   
   get events() {

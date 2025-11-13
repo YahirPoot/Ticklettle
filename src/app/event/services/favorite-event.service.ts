@@ -1,7 +1,8 @@
 import { inject, Injectable } from '@angular/core';
 import { EventService } from './event.service';
 import { AuthService } from '../../auth/services/auth.service';
-import { Event } from '../interfaces';
+import { EventInterface } from '../interfaces';
+import { firstValueFrom } from 'rxjs';
 
 const KEY = 'favoriteEvents';
 @Injectable({
@@ -31,12 +32,12 @@ export class FavoriteEventService {
     return map[userKey] || [];
   }
 
-  isFavorite(eventId: string | number): boolean {
+  isFavorite(eventId: number): boolean {
     const ids = this.getIdsForCurrentUser();
     return ids.includes(String(eventId));
   } 
 
-  delete(eventId: string | number): void {
+  delete(eventId: number): void {
     const map = this.readAllMap();
     const key = this.getUserKey();
     const list = map[key] ?? [];
@@ -50,7 +51,7 @@ export class FavoriteEventService {
     return;
   }
 
-  async toggle(eventId: string | number): Promise<boolean> {
+  async toggle(eventId: number): Promise<boolean> {
     const map = this.readAllMap();
     const key = this.getUserKey();
     const list = map[key] ?? [];
@@ -69,9 +70,17 @@ export class FavoriteEventService {
     return added;
   }
 
-  async list(): Promise<Event[]> {
+  async list(): Promise<EventInterface[]> {
     const ids = this.getIdsForCurrentUser();
-    const events = await Promise.all(ids.map(id => this.eventService.byId(id)));
-    return events.filter(Boolean) as Event[];
+    const events = await Promise.all(
+      ids.map(id => {
+        const numericId = Number(id);
+        if (Number.isNaN(numericId)) return Promise.resolve(null);
+        // eventService.getEventById(...) usually returns Observable<EventInterface>
+        // convertimos a Promise para Promise.all usando firstValueFrom
+        return firstValueFrom(this.eventService.getEventById(numericId));
+      })
+    );
+    return events.filter(Boolean) as EventInterface[];
   }
 }

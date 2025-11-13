@@ -1,12 +1,12 @@
-export interface Event {
-    id: string | number;
-    title: string;
+export interface EventInterface {
+    eventId: number;
+    name: string;
     description: string;
-    image: string;
-    date: string;     
+    dateTime: string;
     location: string;
-    organizer: string;
-    tags?: string[];
-    featured?: boolean;
-    popular?: boolean;
+    type: string;
+    status: string;
+    imageUrl: string | null;
+    organizingHouseId: number;
+    createdAt: string;
 }
