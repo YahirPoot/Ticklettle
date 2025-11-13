@@ -1,12 +1,11 @@
 import { computed, inject, Injectable, resource, signal } from '@angular/core';
 import { SocialAuthService, SocialUser } from "@abacritt/angularx-social-login";
 import { GoogleLoginProvider } from "@abacritt/angularx-social-login";
-import { catchError, firstValueFrom, map, Observable, of, switchMap } from 'rxjs';
+import { catchError, firstValueFrom, from, map, Observable, of, switchMap, tap } from 'rxjs';
 // import { HttpClient } from '@angular/common/http';
-
 import { Router } from '@angular/router';
 
-import { LoginResponse, RegisterRequest, User } from '../interfaces';
+import { AuthUser, LoginResponse, RegisterRequest, User } from '../interfaces';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment.dev';
 
@@ -32,6 +31,11 @@ export class AuthService {
 
   private _authStatus =  signal<AuthStatus>('checking');
   private _user = signal<User | null>(null);
+  private _token = signal<string | null>(localStorage.getItem('token'));
+
+  checkStatusResource = resource({
+    loader: () => firstValueFrom(this.checkStatus()),
+  })
 
   authStatus = computed<AuthStatus>(() => {
     if (this._authStatus() === 'checking')  return 'checking';
@@ -41,10 +45,9 @@ export class AuthService {
     return 'not-authenticated';
   })
 
-  checkStatusResource = resource({
-    loader: () => firstValueFrom(this.checkStatus()),
-  })
   user = computed(() => this._user());
+
+  token = computed(() => this._token());
 
   login(email: string, password: string): Observable<boolean> {
     return this.http.post<LoginResponse>(`${apiBaseUrl}/Auth/login`, {
@@ -118,19 +121,12 @@ export class AuthService {
 
   checkStatusAuthenticated(): Observable<boolean> {
     if (this._user()) return of(true);
-    const userStr = sessionStorage.getItem('user');
-    if (!userStr) return of(false);
-
-    try {
-      const user = JSON.parse(userStr) as User;
-      this._user.set(user);
-      this._authStatus.set('authenticated');
-      return of(true);
-    } catch (err) {
-      console.warn('checkStatusAuthenticated: usuario en storage inválido', err);
-      this.clearSession();
-      return of(false);
+    const user = sessionStorage.getItem('user');
+    if (user) {
+      this.handleAuthSuccess({ user: JSON.parse(user) });
+      return of(true)
     }
+    return of(false)
   }
 
   checkStatus(): Observable<boolean> {
@@ -169,21 +165,20 @@ export class AuthService {
   }
 
   private handleAuthSuccess(resp: LoginResponse | {user: User}) {
-    const maybeLogin = resp as LoginResponse;
-    const user = maybeLogin?.user ?? (resp as { user: User }).user;
-    if (!user) return false;
-
-    // guardar token/expiration si vienen del backend
-    if (maybeLogin?.token) {
-      localStorage.setItem('token', maybeLogin.token);
-    }
-    if (maybeLogin?.expiration) {
-      localStorage.setItem('token-expiration', maybeLogin.expiration);
-    }
-
+    const login = resp as LoginResponse;
+    const user: User = login.user;
     this._user.set(user);
+    this._token.set(login.token);
     this._authStatus.set('authenticated');
     sessionStorage.setItem('user', JSON.stringify(user));
+
+    if (login.token) {
+      localStorage.setItem('token', login.token);
+    }
+    if (login.expiration) {
+      localStorage.setItem('token-expiration', login.expiration);
+    }
+
     return true;
   }
 
