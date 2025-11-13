@@ -1,8 +1,10 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, computed, inject, resource } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../../../auth/services/auth.service';
 import { DatePipe } from '@angular/common';
+import { ProfileService } from '../../services/profile.service';
+import { firstValueFrom } from 'rxjs';
 
 interface CreditData {
   currentBalance: number, 
@@ -16,8 +18,23 @@ interface CreditData {
 })
 export class ProfilePageComponent { 
   private authService = inject(AuthService);  
+  private profileService = inject(ProfileService);
 
-  user = computed(() => this.authService.user());
+  profileUserResource = resource({
+    loader: async () => {
+      try {
+        return await firstValueFrom(this.profileService.getProfileUser());
+      } catch (err: any) {
+        console.error('profile loader error:', err);
+        return null;
+      }
+    } 
+  })
+
+  get profileUser() {
+    return this.profileUserResource;
+  }
+
 
   now = new Date();
 
@@ -26,8 +43,12 @@ export class ProfilePageComponent {
     currency: 'MEX',
   }
 
+  age = computed(() => {
+    return this.now.getFullYear() - new Date(this.profileUser?.value()?.dateOfBirth || '').getFullYear();
+  })
+
   get role() {
-    const roles = this.user()?.customRole || [];
+    const roles = this.profileUser?.value()?.user.customRole || [];
     if (roles == 1) return 'Organizador';
     if (roles == 0) return 'Asistente';
     return 'Asistente';

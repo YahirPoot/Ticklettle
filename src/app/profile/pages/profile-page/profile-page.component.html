@@ -7,17 +7,17 @@
             <!-- Imagen de Perfil -->
             <!-- Nota: Esta URL es un placeholder. En una app real, usarías la URL del usuario. -->
             <img 
-                [src]="user()?.photoUrl"
-                [alt]="'Foto de' + user()?.firstName" 
+                [src]="profileUser.value()?.user?.photoUrl"
+                [alt]="'Foto de' + profileUser.value()?.user?.firstName" 
                 class="w-24 h-24 object-cover rounded-full shadow-lg shrink-0"
             />
 
             <!-- Nombre y Ubicación -->
             <div class="flex-1 min-w-0">
-                <h2 class="text-xl font-bold">{{ user()?.firstName }} </h2>
+                <h2 class="text-xl font-bold">{{ profileUser.value()?.user?.firstName }} </h2>
                 <div class="flex items-center gap-1 text-sm text-gray-500">
                     <mat-icon class="text-base">location_on</mat-icon>
-                    @if (user()?.customRole == 1) {
+                    @if (profileUser.value()?.user?.customRole == 1) {
                         <span>Organizador</span>
                     } @else {
                         <span>Asistente</span>
@@ -46,7 +46,7 @@
                 <!-- El bg-base-300 simula el color de fondo claro en el diseño de Figma para el input -->
                 <input 
                     type="text" 
-                    [value]="user()?.firstName" 
+                    [value]="profileUser.value()?.user?.firstName" 
                     class="input w-full bg-base-300 border-none focus:outline-none" 
                     readonly
                 />
@@ -57,7 +57,7 @@
                 <label class="text-sm font-medium">Apellido</label>
                 <input 
                     type="text" 
-                    [value]="user()?.lastName" 
+                    [value]="profileUser.value()?.user?.lastName" 
                     class="input w-full bg-base-300 border-none focus:outline-none" 
                     readonly
                 />
@@ -68,7 +68,7 @@
                 <label class="text-sm font-medium">Correo</label>
                 <input 
                     type="email" 
-                    [value]="user()?.email" 
+                    [value]="profileUser.value()?.user?.email" 
                     class="input w-full bg-base-300 border-none focus:outline-none" 
                     readonly
                 />
@@ -76,10 +76,10 @@
 
             <!-- Teléfono -->
             <div class="space-y-1">
-                <label class="text-sm font-medium">Teléfono</label>
+                <label class="text-sm font-medium">Genero: </label>
                 <input 
                     type="text" 
-                    [value]="'9992258882'" 
+                    [value]="profileUser.value()?.gender" 
                     class="input w-full bg-base-300 border-none focus:outline-none" 
                     readonly
                 />

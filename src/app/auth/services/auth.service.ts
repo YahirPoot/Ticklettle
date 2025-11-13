@@ -121,10 +121,21 @@ export class AuthService {
 
   checkStatusAuthenticated(): Observable<boolean> {
     if (this._user()) return of(true);
+
     const user = sessionStorage.getItem('user');
+    const token = localStorage.getItem('token');
+    const tokenExpiration = localStorage.getItem('token-expiration');
     if (user) {
+      this._token.set(token);
       this.handleAuthSuccess({ user: JSON.parse(user) });
-      return of(true)
+      // si existe token en storage, pásalo junto con el user para no sobrescribirlo
+      const parsedUser = JSON.parse(user) as User;
+      if (token || tokenExpiration) {
+        this.handleAuthSuccess({ user: parsedUser, token: token ?? undefined, expiration: tokenExpiration ?? undefined });
+      } else {
+        this.handleAuthSuccess({ user: parsedUser });
+      }
+        return of(true)
     }
     return of(false)
   }
@@ -166,19 +177,22 @@ export class AuthService {
 
   private handleAuthSuccess(resp: LoginResponse | {user: User}) {
     const login = resp as LoginResponse;
-    const user: User = login.user;
+    const user = (login && login.user) ?? (resp as { user: User }).user;
+    if (!user) return false;
+
+    // solo actualizar token si viene en la respuesta (evitar sobrescribir con undefined)
+    if ((login as LoginResponse).token) {
+      const t = (login as any).token as string;
+      this._token.set(t);
+      try { localStorage.setItem('token', t); } catch {}
+    }
+    if ((login as LoginResponse).expiration) {
+      try { localStorage.setItem('token-expiration', (login as LoginResponse).expiration); } catch {}
+    }
+
     this._user.set(user);
-    this._token.set(login.token);
     this._authStatus.set('authenticated');
-    sessionStorage.setItem('user', JSON.stringify(user));
-
-    if (login.token) {
-      localStorage.setItem('token', login.token);
-    }
-    if (login.expiration) {
-      localStorage.setItem('token-expiration', login.expiration);
-    }
-
+    try { sessionStorage.setItem('user', JSON.stringify(user)); } catch {}
     return true;
   }
 
@@ -191,8 +205,7 @@ export class AuthService {
   private clearSession() {
     this._user.set(null);
     this._authStatus.set('not-authenticated');
-    localStorage.clear()
+    localStorage.clear();
     sessionStorage.clear();
   }
-
 }
