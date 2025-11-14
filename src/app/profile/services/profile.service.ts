@@ -1,8 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment.dev';
-import { ProfileUser } from '../interfaces/profile-user.interface';
-import { catchError } from 'rxjs';
+import { ProfileUserResponse } from '../interfaces/profile-user.interface';
 
 const apiBaseUrl = environment.apiBaseUrl;
 
@@ -13,6 +12,6 @@ export class ProfileService {
   private http = inject(HttpClient);
 
   getProfileUser() {
-    return this.http.get<ProfileUser>(`${apiBaseUrl}/Auth/profile`)
+    return this.http.get<ProfileUserResponse>(`${apiBaseUrl}/Auth/profile`)
   }
 }

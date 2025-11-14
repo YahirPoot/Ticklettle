@@ -9,6 +9,9 @@ import { LoadingComponent } from '../../../../shared/components/loading/loading.
 import { LoadingModalService } from '../../../../shared/services/loading-modal.service';
 // import { JsonPipe } from '@angular/common';
 import { AuthService } from '../../../../auth/services/auth.service';
+import { ProfileService } from '../../../../profile/services/profile.service';
+import { firstValueFrom } from 'rxjs';
+import { EventService } from '../../../services/event.service';
 
 
 @Component({
@@ -23,23 +26,24 @@ export class CreateEventPageComponent {
   private readonly authService = inject(AuthService);
   private notificationSvc = inject(NotificationService);
   private loadingService = inject(LoadingModalService);
+  private profileService = inject(ProfileService);
+  private eventService = inject(EventService);
+
+  profileUserValue = computed(() => this.profileService.getProfileUser());
 
   imagePreview = signal<string | null>(null);
   imageFile = signal<File | null>(null);
 
-  userId = computed(() => this.authService.user()?.id);
 
   eventForm = this.fb.group({
-    title: ['', [Validators.required, Validators.minLength(3)]],
+    name: ['', [Validators.required, Validators.minLength(3)]],
     description: ['', [ Validators.minLength(10), Validators.maxLength(500)]],
     location: ['', [Validators.required]],
     // ticketType: ['general', Validators.required],
     date: ['', [Validators.required]],
     time: ['', [Validators.required]],
-    // price: [0, [Validators.required, Validators.min(0)]],
-    // allowReservations: [false],
-    // limitedTickets: [false],
-    organizerId: [this.userId()],
+    type: ['public', [Validators.required]],
+    status: ['active', [Validators.required]],
     capacity: [null],
     tickets: this.fb.array([
       this.fb.group({
@@ -108,7 +112,7 @@ export class CreateEventPageComponent {
     reader.readAsDataURL(file);
   }
 
-  onSubmit() {
+  async onSubmit() {
     // this.eventForm.markAllAsTouched();
     if (this.eventForm.invalid) {
       this.notificationSvc.showNotification('Por favor, corrige los errores en el formulario.', 'error');
@@ -119,26 +123,63 @@ export class CreateEventPageComponent {
 
     this.loadingService.showModal('create', 'Creando evento...');
 
-    const payload = { 
-      ...this.eventForm.value, 
-      // organizerId: this.userId(),
-      image: this.imageFile(), 
-      tickets: (formValue.tickets || []).map((ticket: TicketTypeRequest) => ({
-        type: ticket.type,
-        price: ticket.price,
-        quantity: ticket.quantity
-      }))
-    }; 
+   try {
+      // obtener organizerHouseId desde profile
+      const profile = await firstValueFrom(this.profileService.getProfileUser());
+      const organizerHouseId = profile?.organizingHouses?.[0]?.organizingHouseId;
+      if (!organizerHouseId) {
+        this.notificationSvc.showNotification('No se encontró una casa organizadora asociada a tu perfil.', 'error');
+        this.loadingService.hideModalImmediately();
+        return;
+      }
 
-    this.notificationSvc.showNotification('Evento creado exitosamente.', 'success');  
-    console.log('Crear evento payload', payload);
-    setTimeout(() => {
+      // construir dateTime ISO
+      const date = this.eventForm.get('date')?.value;
+      const time = this.eventForm.get('time')?.value;
+      const dateTimeISO = new Date(`${date}T${time}`).toISOString();
+
+      // preparar tickets payload
+      const formValue = this.eventForm.getRawValue();
+      // FormData
+      const fd = new FormData();
+      fd.append('name', this.eventForm.get('name')?.value!);
+      fd.append('description', this.eventForm.get('description')?.value ?? '');
+      fd.append('dateTime', dateTimeISO);
+      fd.append('location', this.eventForm.get('location')?.value ?? '');
+      fd.append('type', formValue.type ?? 'public'); // ajustar según tu formulario
+      fd.append('status', formValue.status ?? 'active'); // ajustar según convención
+      fd.append('organizingHouseId', String(organizerHouseId));
+
+      if (this.imageFile()) {
+        fd.append('image', this.imageFile() as Blob, (this.imageFile() as File).name);
+      }
+
+      // enviar evento (backend puede aceptar tickets dentro del FormData como JSON)
+      const ticketsPayload = (formValue.tickets || []).map((t: any) => ({
+        name: t.type || 'General',
+        description: t.description ?? '', // si no tienes campo description, dejar vacío
+        price: Number(t.price) || 0,
+        availableQuantity: Number(t.quantity) || 0
+      }));
+      // enviar como JSON blob para multipart
+      fd.append('ticketTypes', new Blob([JSON.stringify(ticketsPayload)], { type: 'application/json' }));
+
+      const created = await firstValueFrom(this.eventService.createEvent(fd));
+
+      this.notificationSvc.showNotification('Evento creado exitosamente.', 'success');
+      // limpieza UI
       this.imageFile.set(null);
       this.eventForm.reset();
       this.tickets.clear();
       this.addTicketType();
+      this.loadingService.hideModalImmediately();
+      this.notificationSvc.showNotification('Evento creado exitosamente.', 'success');
       this.router.navigate(['/admin/events']);
-    }, 3000);
+    } catch (err) {
+      console.error('Error creando evento', err);
+      this.notificationSvc.showNotification('Error al crear el evento.', 'error');
+      this.loadingService.hideModalImmediately();
+    }
   }
 
   onCancel() {

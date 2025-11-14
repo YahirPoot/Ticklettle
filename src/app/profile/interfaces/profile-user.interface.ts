@@ -1,15 +1,21 @@
-export interface ProfileUser{
-    attendeeId: number;
+import { User } from "../../auth/interfaces";
+
+export interface ProfileUserResponse {
+    organizerId: number;
     userId: string;
-    dateOfBirth: string;
-    gender: string;
-    user: {
-        id: string;
-        email: string;
-        firstName: string;
-        lastName: string;
-        customRole: number;
-        createdAt: string; 
-        photoUrl: string;
-    }
+    company: string;
+    taxId: string;
+    fiscalAddress: string;
+    user: User;
+    organizingHouses?: OrganizingHouse[];
+}
+
+export interface OrganizingHouse {
+    organizingHouseId: number;
+    name: string;
+    address: string;
+    contact: string;
+    taxData: string;
+    organizerId: number;
+    eventCount: number;
 }

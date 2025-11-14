@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { firstValueFrom, tap } from 'rxjs';
+import { firstValueFrom, Observable, tap } from 'rxjs';
 import { EventInterface, EventsResponse } from '../interfaces';
 import { environment } from '../../../environments/environment.dev';
 
@@ -24,5 +24,12 @@ export class EventService {
       .pipe(
         tap(res => console.log('console detail event -', res))
       )
+  }
+
+  createEvent(formData: FormData): Observable<{message: string}> {
+    return this.http.post<{message: string}>(`${apiBaseUrl}/Events`, formData)
+      .pipe(
+        tap(response => console.log('Evento creado:', response))
+      );
   }
 }

@@ -7,7 +7,7 @@
                 <div class="space-y-3">
                     <label class="block">
                         <span class="text-sm font-medium text-gray-500">Nombre del evento: </span>
-                        <input type="text" placeholder="Nombre del evento" formControlName="title"
+                        <input type="text" placeholder="Nombre del evento" formControlName="name"
                             class="input input-bordered w-full mt-1" required>
                     </label>
 
@@ -34,6 +34,28 @@
                         <input type="time" formControlName="time"
                             class="input input-bordered w-full mt-1" aria-label="Hora del evento" required>
                     </label>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                        <label class="block">
+                            <span class="text-sm font-medium text-gray-500">Tipo: </span>
+                            <select formControlName="type" class="select input-bordered w-full mt-1" aria-label="Tipo del evento" required>
+                                <option value="public">Público</option>
+                                <option value="private">Privado</option>
+                                <option value="hybrid">Híbrido</option>
+                                <!-- <option value="online">Online</option> -->
+                            </select>
+                        </label>
+                        
+                        <label class="block">
+                            <span class="text-sm font-medium text-gray-500">Status: </span>
+                            <select formControlName="status" class="select input-bordered w-full mt-1" aria-label="Status del evento" required>
+                                <option value="active">Activo</option>
+                                <!-- <option value="draft">Borrador</option> -->
+                                <!-- <option value="cancelled">Cancelado</option> -->
+                                <option value="postponed">Pospuesto</option>
+                            </select>
+                        </label>
+                    </div>
                 </div>
             </div>
             <div>
@@ -84,7 +106,7 @@
                     <div [formGroupName]="$index" class="grid grid-cols-12 gap-2 items-end">
                         <div class="col-span-5">
                             <label class="block text-xs text-gray-500">Tipo</label>
-                            <select class="input input-bordered w-full" formControlName="type">
+                            <select class="select input-bordered w-full" formControlName="type">
                                 <option value="general">General</option>
                                 <option value="vip">VIP</option>
                                 <!-- <option value="">Estudiante</option> -->

@@ -5,6 +5,7 @@ import { AuthService } from '../../../auth/services/auth.service';
 import { DatePipe } from '@angular/common';
 import { ProfileService } from '../../services/profile.service';
 import { firstValueFrom } from 'rxjs';
+import { ProfileUserResponse } from '../../interfaces/profile-user.interface';
 
 interface CreditData {
   currentBalance: number, 
@@ -43,9 +44,6 @@ export class ProfilePageComponent {
     currency: 'MEX',
   }
 
-  age = computed(() => {
-    return this.now.getFullYear() - new Date(this.profileUser?.value()?.dateOfBirth || '').getFullYear();
-  })
 
   get role() {
     const roles = this.profileUser?.value()?.user.customRole || [];

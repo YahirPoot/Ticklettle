@@ -76,10 +76,10 @@
 
             <!-- Teléfono -->
             <div class="space-y-1">
-                <label class="text-sm font-medium">Genero: </label>
+                <label class="text-sm font-medium">Fecha de Creación: </label>
                 <input 
                     type="text" 
-                    [value]="profileUser.value()?.gender ?? 'No especificado'" 
+                    [value]="profileUser.value()?.user?.createdAt | date: 'longDate'" 
                     class="input w-full bg-base-300 border-none focus:outline-none" 
                     readonly
                 />
