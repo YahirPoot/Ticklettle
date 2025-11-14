@@ -79,7 +79,7 @@
                 <label class="text-sm font-medium">Genero: </label>
                 <input 
                     type="text" 
-                    [value]="profileUser.value()?.gender" 
+                    [value]="profileUser.value()?.gender ?? 'No especificado'" 
                     class="input w-full bg-base-300 border-none focus:outline-none" 
                     readonly
                 />

@@ -4,6 +4,9 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { environment } from '../../../../environments/environment.dev';
 import { RegisterRequest, UserRole } from '../../interfaces';
+import { LoadingModalService } from '../../../shared/services/loading-modal.service';
+import { LoadingComponent } from '../../../shared/components/loading/loading.component';
+import { first } from 'rxjs';
 
 const googleClientId = environment.googleClientId;
 declare global {
@@ -12,7 +15,7 @@ declare global {
 
 @Component({
   selector: 'app-register-page',
-  imports: [RouterLink, ReactiveFormsModule],
+  imports: [RouterLink, ReactiveFormsModule, LoadingComponent],
   templateUrl: './register-page.component.html',
 })
 export class RegisterPageComponent implements OnInit, OnDestroy { 
@@ -20,6 +23,7 @@ export class RegisterPageComponent implements OnInit, OnDestroy {
   private readonly activatedRoute = inject(ActivatedRoute)
   private fb = inject(FormBuilder);
   private authService = inject(AuthService);
+  private loadingService = inject(LoadingModalService);
 
   role: 0 | 1 = 0; // 0: asistente, 1: organizador
 
@@ -52,26 +56,19 @@ export class RegisterPageComponent implements OnInit, OnDestroy {
     this.initGsi();
 
     this.activatedRoute.queryParams.subscribe(q => {
-      const role = q['role'];
-      if (role === 1) {
-        this.role = 1;
-        this.registerForm.get('role')?.setValue(1);
-      } else {
-        this.role = 0;
-        this.registerForm.get('role')?.setValue(0);
+      const role = Number(q['role']);
+      if (role === 1 || role === 0) {
+        this.role = role as 0|1;
+        this.registerForm.get('role')?.setValue(this.role);
+        return;
+      }
+      const pr = sessionStorage.getItem('provisional_role');
+      if (pr !== null) {
+        const nr = Number(pr);
+        this.role = nr === 1 ? 1 : 0;
+        this.registerForm.get('role')?.setValue(this.role);
       }
     }) ;
-
-    const prov = localStorage.getItem('provisional_social');
-    if (prov) {
-      const p = JSON.parse(prov);
-      this.registerForm.patchValue({
-        email: p.email ?? '',
-          firstName: p.firstName ?? p.name ?? '',
-          lastName: p.lastName ?? '',
-          photoUrl: p.photoUrl ?? ''
-      })
-    }
 
     this.registerForm.get('role')?.valueChanges.subscribe((v) => {
         this.updateRoleValidators();
@@ -164,31 +161,24 @@ export class RegisterPageComponent implements OnInit, OnDestroy {
     const socialUser = {
       id: payload.sub, 
       email: payload.email,
-      name: payload.name,
+      firstName: payload.name,
+      lastName: '',
       idToken: response.credential,
-      // photoUrl: payload.picture,
-      provider: 'GOOGLE'
+      photoUrl: payload.picture,
+      provider: 'GOOGLE',
     };
 
-    localStorage.setItem('social_user', JSON.stringify(socialUser));
+    sessionStorage.setItem('social_user', JSON.stringify(socialUser));
 
-    this.authService.googleLogin({
-        email: socialUser.email,
-        firstName: (payload.given_name ?? '').toString(),
-        lastName: (payload.family_name ?? '').toString(),
-        googleToken: socialUser.idToken
-      }).subscribe((loggedIn) => {
-        if (loggedIn) {
-          this.router.navigateByUrl('/auth/callback')
-        }
-      });
+    this.router.navigateByUrl('/auth/callback');
+    
   }
 
   onSubmit() {
     if (this.registerForm.invalid) {
       this.registerForm.markAllAsTouched();
       return;
-    }
+    } 
 
     const role = Number(this.registerForm.get('role')?.value) as 0 | 1;
     const payloadAttendee: RegisterRequest = {
@@ -198,7 +188,9 @@ export class RegisterPageComponent implements OnInit, OnDestroy {
       password: this.registerForm.get('password')?.value!,
       dateOfBirth: this.registerForm.get('dateOfBirth')?.value ?? new Date().toISOString(),
       gender: this.registerForm.get('gender')?.value ?? '',
-      photoUrl: this.registerForm.get('photoUrl')?.value ?? ''
+      photoUrl: this.registerForm.get('photoUrl')?.value ?? '',
+      googleToken: '',
+      isGoogleRegistration: false
     };
 
     const payloadOrganizer: RegisterRequest = {
@@ -213,15 +205,20 @@ export class RegisterPageComponent implements OnInit, OnDestroy {
       organizingHouseName: this.registerForm.get('organizingHouseName')?.value ?? '',
       organizingHouseAddress: this.registerForm.get('organizingHouseAddress')?.value ?? '',
       organizingHouseContact: this.registerForm.get('organizingHouseContact')?.value ?? '',
-      organizingHouseTaxData: this.registerForm.get('organizingHouseTaxData')?.value ?? ''
+      organizingHouseTaxData: this.registerForm.get('organizingHouseTaxData')?.value ?? '',
+      googleToken: '',
+      isGoogleRegistration: false
     };
 
     if (role === 1) {
       this.authService.registerOrganizer(payloadOrganizer).subscribe({
         next: ok => {
+          this.loadingService.showModal('create', 'Creando cuenta...');
           if (ok) {
             localStorage.removeItem('provisional_social');
             localStorage.removeItem('provisional_role');
+            localStorage.removeItem('social_user');
+            this.loadingService.hideModalImmediately()
             this.router.navigate(['/auth/callback']);
           }
         },
@@ -232,9 +229,11 @@ export class RegisterPageComponent implements OnInit, OnDestroy {
 
     this.authService.registerAttendee(payloadAttendee).subscribe({
       next: ok => {
+        this.loadingService.showModal('create', 'Creando cuenta...');
         if (ok) {
           localStorage.removeItem('provisional_social');
           localStorage.removeItem('provisional_role');
+          this.loadingService.hideModalImmediately()
           this.router.navigate(['/auth/callback']);
         }
       },

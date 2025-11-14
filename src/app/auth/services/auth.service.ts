@@ -68,7 +68,9 @@ export class AuthService {
     return  this.http.post<LoginResponse>(`${apiBaseUrl}/Auth/register/attendee`,
       attendeeRequest
     ).pipe(
+      tap(resp => console.log('registerAttendee response', resp)),
       map(resp => this.handleAuthSuccess(resp)),
+      
     )
   }
 
@@ -76,6 +78,7 @@ export class AuthService {
     return this.http.post<LoginResponse>(`${apiBaseUrl}/Auth/register/organizer`, 
       organizerRequest
     ).pipe(
+      tap(resp => console.log('registerOrganizer response', resp)),
       map(resp => this.handleAuthSuccess(resp)),
     )
   }
@@ -155,6 +158,7 @@ export class AuthService {
     return this.socialAuthService.signIn(GoogleLoginProvider.PROVIDER_ID);
   }
 
+  // Cierra Sesión en Google usando la librería
   public signOutExternal(): Promise<void> {
     return this.socialAuthService.signOut();
   }

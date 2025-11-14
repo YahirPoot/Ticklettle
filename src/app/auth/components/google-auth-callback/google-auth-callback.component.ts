@@ -19,13 +19,13 @@ export class GoogleAuthCallbackComponent implements OnInit {
   private readonly router = inject(Router);
 
   ngOnInit(): void {
-    const raw = sessionStorage.getItem('user') || localStorage.getItem('user_data');
+    const raw = sessionStorage.getItem('user') || sessionStorage.getItem('social_user');
     if (!raw) {
       this.router.navigate(['/auth/login']);
       return;
     }
     const user = JSON.parse(raw);
 
-    this.authService.googleLogin(user);
+    this.router.navigate(['/auth/select-rol']);
   }
 }

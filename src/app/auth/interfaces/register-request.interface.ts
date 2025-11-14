@@ -6,6 +6,8 @@ export interface AttendeeRegisterRequest {
     dateOfBirth: string,
     gender: string,
     photoUrl: string | File
+    googleToken?: string
+    isGoogleRegistration?: boolean
 }
 
 export interface OrganizerRegisterRequest {
@@ -20,7 +22,18 @@ export interface OrganizerRegisterRequest {
     organizingHouseName: string,
     organizingHouseAddress: string,
     organizingHouseContact: string,
-    organizingHouseTaxData: string
+    organizingHouseTaxData: string,
+    googleToken?: string,
+    isGoogleRegistration?: boolean
 }
 
-export type RegisterRequest = AttendeeRegisterRequest | OrganizerRegisterRequest
+export interface GoogleRegisterRequest {
+    id: number | null, 
+    email: string,
+    name: string,
+    idToken: string,
+    // photoUrl: string,
+    provider: 'GOOGLE'
+}
+
+export type RegisterRequest = AttendeeRegisterRequest | OrganizerRegisterRequest | GoogleRegisterRequest
