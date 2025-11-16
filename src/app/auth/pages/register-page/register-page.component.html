@@ -23,13 +23,13 @@
           <!-- Nombre / Apellidos -->
           <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
             <div class="form-control">
-              <label class="label label-text font-semibold mb-2">Nombre(s)</label>
+              <label class="label label-text font-semibold mb-2">Nombre(s) <span class="text-red-400">*</span></label>
               <input type="text" class="input input-bordered w-full focus:input-neutral mb-2"
                 formControlName="firstName" placeholder="Nombre(s)" required />
             </div>
 
             <div class="form-control">
-              <label class="label label-text font-semibold mb-2">Apellido(s)</label>
+              <label class="label label-text font-semibold mb-2">Apellido(s) <span class="text-red-400">*</span></label>
               <input type="text" class="input input-bordered w-full focus:input-neutral mb-2"
                 formControlName="lastName" placeholder="Apellido(s)" required />
             </div>
@@ -37,7 +37,7 @@
 
           <!-- Email -->
           <div class="form-control">
-            <label class="label label-text font-semibold mb-2">Email</label>
+            <label class="label label-text font-semibold mb-2">Email <span class="text-red-400">*</span></label>
             <input type="email" class="input input-bordered w-full focus:input-neutral mb-2" formControlName="email"
               placeholder="Correo Electrónico" required />
           </div>
@@ -53,15 +53,15 @@
   
               <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
                 <div class="form-control">
-                  <label class="label label-text font-semibold mb-2">Tax ID (RFC)</label>
+                  <label class="label label-text font-semibold mb-2">Tax ID (RFC) <span class="text-xs text-red-400">*</span></label>
                   <input type="text" class="input input-bordered w-full focus:input-neutral mb-2" formControlName="taxId"
-                    placeholder="RFC / Tax ID" />
+                    placeholder="RFC / Tax ID" required />
                 </div>
   
                 <div class="form-control">
-                  <label class="label label-text font-semibold mb-2">Contacto</label>
+                  <label class="label label-text font-semibold mb-2">Contacto <span class="text-xs text-red-400">*</span></label>
                   <input type="text" class="input input-bordered w-full focus:input-neutral mb-2"
-                    formControlName="organizingHouseContact" placeholder="Teléfono / contacto" />
+                    formControlName="organizingHouseContact" placeholder="Teléfono / contacto" required/>
                 </div>
               </div>
   
@@ -72,15 +72,15 @@
               </div>
   
               <div class="form-control">
-                <label class="label label-text font-semibold mb-2">Nombre de la casa organizadora</label>
+                <label class="label label-text font-semibold mb-2">Nombre de la casa organizadora <span class="text-xs text-red-400">*</span></label>
                 <input type="text" class="input input-bordered w-full focus:input-neutral mb-2"
-                  formControlName="organizingHouseName" placeholder="Nombre de la casa organizadora" />
+                  formControlName="organizingHouseName" placeholder="Nombre de la casa organizadora" required/>
               </div>
   
               <div class="form-control">
-                <label class="label label-text font-semibold mb-2">Dirección de la casa organizadora</label>
+                <label class="label label-text font-semibold mb-2">Dirección de la casa organizadora <span class="text-xs text-red-400">*</span></label>
                 <input type="text" class="input input-bordered w-full focus:input-neutral mb-2"
-                  formControlName="organizingHouseAddress" placeholder="Dirección de la casa organizadora" />
+                  formControlName="organizingHouseAddress" placeholder="Dirección de la casa organizadora" required/>
               </div>
   
               <div class="form-control">
@@ -123,15 +123,18 @@
 
           <!-- Passwords -->
           <div class="form-control">
-            <label class="label label-text font-semibold mb-2">Contraseña</label>
+            <label class="label label-text font-semibold mb-2">Contraseña <span class="text-xs text-red-400">*</span></label>
             <input type="password" class="input input-bordered w-full focus:input-neutral mb-2" formControlName="password"
               placeholder="Contraseña" required />
           </div>
 
           <div class="form-control">
-            <label class="label label-text font-semibold mb-2">Confirmar Contraseña</label>
+            <label class="label label-text font-semibold mb-2">Confirmar Contraseña <span class="text-xs text-red-400">*</span></label>
             <input type="password" class="input input-bordered w-full focus:input-neutral mb-2"
               formControlName="confirmPassword" placeholder="Confirmar Contraseña" required />
+              @if (passwordMismatch) {
+                <p class="text-xs text-warning mt-1">Las contraseñas no coinciden.</p>
+              }
           </div>
 
           <div class="form-control">

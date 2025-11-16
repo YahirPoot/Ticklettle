@@ -12,19 +12,19 @@ export interface AttendeeRegisterRequest {
 
 export interface OrganizerRegisterRequest {
     email: string,
-    firstName: string,
-    lastName: string,
-    password: string,
-    photoUrl: string,
-    company: string,
-    taxId: string,
-    fiscalAddress: string,
-    organizingHouseName: string,
-    organizingHouseAddress: string,
-    organizingHouseContact: string,
-    organizingHouseTaxData: string,
-    googleToken?: string,
-    isGoogleRegistration?: boolean
+    firstName: string | '',
+    lastName: string | '',
+    password: string | '',
+    photoUrl: string | '',
+    company: string | '',
+    taxId: string | '',
+    fiscalAddress: string | '',
+    organizingHouseName: string | '',
+    organizingHouseAddress: string | '',
+    organizingHouseContact: string | '',
+    organizingHouseTaxData: string | '',
+    googleToken?: string | '',
+    isGoogleRegistration?: boolean | ''
 }
 
 export interface GoogleRegisterRequest {

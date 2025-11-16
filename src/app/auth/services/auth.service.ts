@@ -83,8 +83,8 @@ export class AuthService {
     )
   }
 
-  googleLogin(payload: { email: string; firstName: string; lastName: string; googleToken: string; }): Observable<boolean> {
-    return this.http.post<any>(`${apiBaseUrl}/Auth/google-login`, payload).pipe(
+  googleLogin(googleToken: string): Observable<boolean> {
+    return this.http.post(`${apiBaseUrl}/Auth/google-login`, {googleToken}).pipe(
       map((resp: any) => {
         // caso éxito con token
         if (resp?.token && resp?.user) {
@@ -95,22 +95,6 @@ export class AuthService {
           this.redirectByRole(role ?? undefined);
           return true;
         }
-
-        // caso: backend indica que el usuario no existe y hay que completar registro
-        // guardamos provisionalmente los datos para completar el registro en el flujo UI
-        if (resp?.isNew) {
-          const provisional = {
-            email: payload.email,
-            firstName: payload.firstName,
-            lastName: payload.lastName,
-            googleToken: payload.googleToken
-          };
-          try { localStorage.setItem('provisional_social', JSON.stringify(provisional)); } catch {}
-          // navegar a selección/registro de rol; el componente de UI leerá provisional_social
-          this.router.navigate(['/auth/select-rol']);
-          return false;
-        }
-
         // otros casos: fallback a error
         console.error('googleLogin: respuesta inesperada', resp);
         return false;

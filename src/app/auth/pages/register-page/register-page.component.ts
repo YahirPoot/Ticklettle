@@ -62,19 +62,31 @@ export class RegisterPageComponent implements OnInit, OnDestroy {
         this.registerForm.get('role')?.setValue(this.role);
         return;
       }
-      const pr = sessionStorage.getItem('provisional_role');
+      const pr = localStorage.getItem('provisional_role');
       if (pr !== null) {
         const nr = Number(pr);
         this.role = nr === 1 ? 1 : 0;
         this.registerForm.get('role')?.setValue(this.role);
       }
-    }) ;
+    });
+
+    const socialRaw = sessionStorage.getItem('social_user') || localStorage.getItem('provisional_social');
+    if (socialRaw) {
+      try {
+        const p = JSON.parse(socialRaw);
+        this.registerForm.patchValue({
+          email: p.email ?? '',
+          firstName: p.firstName ?? '',
+          lastName: p.lastName ?? '',
+          photoUrl: p.photoUrl ?? ''
+        });
+      } catch {}
+    } 
 
     this.registerForm.get('role')?.valueChanges.subscribe((v) => {
         this.updateRoleValidators();
       });
       this.updateRoleValidators();
-      this.registerForm.setValidators(this.passwordsMatchValidator);
   }
 
   ngOnDestroy(): void {
@@ -88,15 +100,15 @@ export class RegisterPageComponent implements OnInit, OnDestroy {
     const role = Number(this.registerForm.get('role')?.value) as 0 | 1;
     if (role === 1) {
       // organizador: requerir algunos campos opcionales según tu API
-      this.registerForm.get('company')?.setValidators([Validators.required, Validators.minLength(2)]);
-      this.registerForm.get('taxId')?.setValidators([Validators.required, Validators.minLength(6)]);
+      this.registerForm.get('company')?.setValidators([ Validators.minLength(2)]);
+      this.registerForm.get('taxId')?.setValidators([ Validators.minLength(6)]);
       // limpiar campos de asistente si aplica
       this.registerForm.get('dateOfBirth')?.clearValidators();
       this.registerForm.get('gender')?.clearValidators();
     } else {
       // asistente: requerir fecha/género si lo deseas
-      this.registerForm.get('dateOfBirth')?.setValidators([Validators.required]);
-      this.registerForm.get('gender')?.setValidators([Validators.required]);
+      // this.registerForm.get('dateOfBirth')?.setValidators();
+      // this.registerForm.get('gender')?.setValidators([Va]);
       this.registerForm.get('company')?.clearValidators();
       this.registerForm.get('taxId')?.clearValidators();
     }
@@ -105,13 +117,21 @@ export class RegisterPageComponent implements OnInit, OnDestroy {
     });
   }
 
-  private passwordsMatchValidator(control: AbstractControl) {
-    const pw = control.get('password')?.value;
-    const cpw = control.get('confirmPassword')?.value;
-
-    return pw && cpw && pw === cpw ? null : { passwordMismatch: true };
+  public verifyPasswords(): boolean {
+    // trigger validator
+    this.registerForm.updateValueAndValidity({ onlySelf: false, emitEvent: true });
+    const mismatch = !!this.registerForm.errors?.['passwordMismatch'];
+    // also check confirmPassword touched state to show messages
+    const cpCtrl = this.registerForm.get('confirmPassword');
+    if (cpCtrl && !cpCtrl.touched) cpCtrl.markAsTouched();
+    return !mismatch;
   }
 
+  // Getter simple para usar en template
+  public get passwordMismatch() {
+    return !!this.registerForm.errors?.['passwordMismatch']
+      || (this.registerForm.get('confirmPassword')?.touched && this.registerForm.get('password')?.value !== this.registerForm.get('confirmPassword')?.value);
+  }
   setRole(r: UserRole) {
     // this.registerForm.get('role')?.setValue(r);
     this.role = r;
@@ -161,26 +181,31 @@ export class RegisterPageComponent implements OnInit, OnDestroy {
     const socialUser = {
       id: payload.sub, 
       email: payload.email,
-      firstName: payload.name,
-      lastName: '',
+      firstName: payload.given_name ?? payload.name ?? '',
+      lastName: payload.family_name ?? '',
+      photoUrl: payload.picture ?? '',
       idToken: response.credential,
-      photoUrl: payload.picture,
-      provider: 'GOOGLE',
+      provider: 'GOOGLE'
     };
 
     sessionStorage.setItem('social_user', JSON.stringify(socialUser));
-
-    this.router.navigateByUrl('/auth/callback');
+    localStorage.setItem('provisional_social', JSON.stringify(socialUser));
+    this.router.navigateByUrl('/auth/select-rol');
     
   }
 
   onSubmit() {
-    if (this.registerForm.invalid) {
-      this.registerForm.markAllAsTouched();
-      return;
-    } 
+      // if (this.registerForm.invalid) {
+      //   this.registerForm.markAllAsTouched();
+      //   return;
+      // } 
 
     const role = Number(this.registerForm.get('role')?.value) as 0 | 1;
+    let socialToken: string | undefined;
+    const raw = sessionStorage.getItem('social_user') || localStorage.getItem('provisional_social');
+    if (raw) {
+      socialToken = JSON.parse(raw).idToken;
+    }
     const payloadAttendee: RegisterRequest = {
       email: this.registerForm.get('email')?.value!,
       firstName: this.registerForm.get('firstName')?.value!,
@@ -189,8 +214,8 @@ export class RegisterPageComponent implements OnInit, OnDestroy {
       dateOfBirth: this.registerForm.get('dateOfBirth')?.value ?? new Date().toISOString(),
       gender: this.registerForm.get('gender')?.value ?? '',
       photoUrl: this.registerForm.get('photoUrl')?.value ?? '',
-      googleToken: '',
-      isGoogleRegistration: false
+      googleToken: socialToken,
+      isGoogleRegistration:  !!socialToken
     };
 
     const payloadOrganizer: RegisterRequest = {
@@ -206,11 +231,12 @@ export class RegisterPageComponent implements OnInit, OnDestroy {
       organizingHouseAddress: this.registerForm.get('organizingHouseAddress')?.value ?? '',
       organizingHouseContact: this.registerForm.get('organizingHouseContact')?.value ?? '',
       organizingHouseTaxData: this.registerForm.get('organizingHouseTaxData')?.value ?? '',
-      googleToken: '',
-      isGoogleRegistration: false
+      googleToken: socialToken,
+      isGoogleRegistration: !!socialToken
     };
 
     if (role === 1) {
+      console.log('Registering organizer with payload:', payloadOrganizer);
       this.authService.registerOrganizer(payloadOrganizer).subscribe({
         next: ok => {
           this.loadingService.showModal('create', 'Creando cuenta...');
