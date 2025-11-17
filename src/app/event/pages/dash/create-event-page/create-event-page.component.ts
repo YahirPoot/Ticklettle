@@ -166,7 +166,8 @@ export class CreateEventPageComponent {
 
     const formValue = this.eventForm.getRawValue();
 
-    this.loadingService.showModal('create', 'Creando evento...');
+    this.loadingService.showModal('create', 'Iniciando creación de evento...');
+    this.eventForm.disable();
 
    try {
       // obtener organizerHouseId desde profile
@@ -182,10 +183,11 @@ export class CreateEventPageComponent {
       const date = this.eventForm.get('date')?.value;
       const time = this.eventForm.get('time')?.value;
       const dateTimeISO = new Date(`${date}T${time}`).toISOString();
+      this.loadingService.hideModalImmediately();
 
       // Subii imagen primeor a  cloudinary (si existe) y obtener imageUrl
+      this.loadingService.showModal('create', 'Subiendo imagen del evento...');
       let imageUrl = '';
-
       const file = this.imageFile();
       if (file) {
         const img = new FormData();
@@ -193,8 +195,6 @@ export class CreateEventPageComponent {
         const uploadRes = await firstValueFrom(this.imageUploadSvc.uploadImageToCloudinary(img));
         imageUrl = uploadRes.url;
       }
-
-
       // Contruir ticketTypes: si el evento es "gratis" forzar price = 0
       const isFree = this.isFree();
       const ticketsPayload = (formValue.tickets || []).map((t: any) => ({
@@ -204,9 +204,12 @@ export class CreateEventPageComponent {
         availableQuantity: Number(t.quantity) || 0
       }));
 
+      
+      this.loadingService.showModal('create', 'Subiendo imagen de los productos...');
       // Preparar productos: subir imágenes y mapear campos
       const productsPayload = [] as ProductRequest[];
       for (let i = 0; i < this.products.length; i++) {
+        this.loadingService.showModal('create', `Subiendo imagen de producto ${i + 1}/${this.products.length}...`);
         const pCtrl = this.products.at(i);
         const pRaw = pCtrl.getRawValue();
         const file = this.productFiles[i];
@@ -231,6 +234,7 @@ export class CreateEventPageComponent {
         });
       }
 
+      this.loadingService.showModal('create', 'Ya casi terminando...');
       const createeEventRequest: CreateEventRequest = {
         name: this.eventForm.get('name')?.value!,
         description: this.eventForm.get('description')?.value ?? '',
@@ -244,9 +248,9 @@ export class CreateEventPageComponent {
         products: productsPayload
       }
 
-      const created = await firstValueFrom(this.eventService.createEvent(createeEventRequest));
-
+      await firstValueFrom(this.eventService.createEvent(createeEventRequest));
       this.notificationSvc.showNotification('Evento creado exitosamente.', 'success');
+
       // limpieza UI
       this.imageFile.set(null);
       this.eventForm.reset();
@@ -259,6 +263,7 @@ export class CreateEventPageComponent {
       console.error('Error creando evento', err);
       this.notificationSvc.showNotification('Error al crear el evento.', 'error');
       this.loadingService.hideModalImmediately();
+      this.eventForm.enable();
     }
   }
 
