@@ -1,4 +1,5 @@
 import { Component, computed, inject, signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { FormArray, FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 
@@ -12,11 +13,13 @@ import { AuthService } from '../../../../auth/services/auth.service';
 import { ProfileService } from '../../../../profile/services/profile.service';
 import { firstValueFrom } from 'rxjs';
 import { EventService } from '../../../services/event.service';
+import { ImageCloudinaryUploadService } from '../../../../shared/services/image-cloudinary-upload.service';
+import { CreateEventRequest, ProductRequest } from '../../../interfaces';
 
 
 @Component({
   selector: 'app-create-event-page',
-  imports: [ReactiveFormsModule, MatIcon, LoadingComponent],
+  imports: [CommonModule, ReactiveFormsModule, MatIcon, LoadingComponent],
   templateUrl: './create-event-page.component.html',
 })
 export class CreateEventPageComponent { 
@@ -28,11 +31,15 @@ export class CreateEventPageComponent {
   private loadingService = inject(LoadingModalService);
   private profileService = inject(ProfileService);
   private eventService = inject(EventService);
+  private imageUploadSvc = inject(ImageCloudinaryUploadService);
 
   profileUserValue = computed(() => this.profileService.getProfileUser());
 
   imagePreview = signal<string | null>(null);
   imageFile = signal<File | null>(null);
+  // files & previews for products
+  productFiles: (File | null)[] = [];
+  productPreviews: string[] = [];
 
 
   eventForm = this.fb.group({
@@ -42,19 +49,56 @@ export class CreateEventPageComponent {
     // ticketType: ['general', Validators.required],
     date: ['', [Validators.required]],
     time: ['', [Validators.required]],
-    type: ['public', [Validators.required]],
-    status: ['active', [Validators.required]],
+    type: ['Gratis', [Validators.required]],
     capacity: [null],
-    tickets: this.fb.array([
-      this.fb.group({
-        type: ['general'],
-        price: [0, [Validators.min(0)]],
-        quantity: [0, [Validators.min(0)]]
-      })
-    ]),
+    tickets: this.fb.array([]),
+    products: this.fb.array([]),
     sellMerch: [false],
     postEventContent: [false]
   });
+
+  isFree(): boolean {
+    return (this.eventForm.get('type')?.value ?? '').toString() === 'Gratis';
+  }
+
+  get products(): FormArray {
+    return this.eventForm.get('products') as FormArray;
+  }
+
+  addProduct() {
+    this.products.push(this.fb.group({
+      name: ['', [Validators.required]],
+      description: [''],
+      productPrice: [0, [Validators.min(0)]],
+      stock: [0, [Validators.min(0)]],
+      imageUrl: ['']
+    }));
+    // keep parallel arrays in sync
+    this.productFiles.push(null);
+    this.productPreviews.push('');
+  }
+
+  removeProduct(idx: number) {
+    if (this.products.length <= 0) return;
+    this.products.removeAt(idx);
+    this.productFiles.splice(idx, 1);
+    this.productPreviews.splice(idx, 1);
+  }
+
+  onProductFileChange(e: Event, idx: number) {
+    const input = e.target as HTMLInputElement;
+    const file = input.files?.[0] || null;
+    this.productFiles[idx] = file;
+    if (!file) {
+      this.productPreviews[idx] = '';
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      this.productPreviews[idx] = reader.result as string;
+    };
+    reader.readAsDataURL(file);
+  }
 
   get tickets(): FormArray {
     return this.eventForm.get('tickets') as FormArray;
@@ -79,7 +123,7 @@ export class CreateEventPageComponent {
   addTicketType() {
     this.tickets.push(this.fb.group({
       type: ['general'],
-      price: [0, [Validators.min(0)]],
+      ticketPrice: [0, [Validators.min(0)]],
       quantity: [0, [Validators.min(0)]]
     }))
   }
@@ -116,10 +160,11 @@ export class CreateEventPageComponent {
     // this.eventForm.markAllAsTouched();
     if (this.eventForm.invalid) {
       this.notificationSvc.showNotification('Por favor, corrige los errores en el formulario.', 'error');
+      console.log(this.eventForm.invalid)
       return;
     }
 
-    const formValue = this.eventForm.getRawValue()
+    const formValue = this.eventForm.getRawValue();
 
     this.loadingService.showModal('create', 'Creando evento...');
 
@@ -138,33 +183,68 @@ export class CreateEventPageComponent {
       const time = this.eventForm.get('time')?.value;
       const dateTimeISO = new Date(`${date}T${time}`).toISOString();
 
-      // preparar tickets payload
-      const formValue = this.eventForm.getRawValue();
-      // FormData
-      const fd = new FormData();
-      fd.append('name', this.eventForm.get('name')?.value!);
-      fd.append('description', this.eventForm.get('description')?.value ?? '');
-      fd.append('dateTime', dateTimeISO);
-      fd.append('location', this.eventForm.get('location')?.value ?? '');
-      fd.append('type', formValue.type ?? 'public'); // ajustar según tu formulario
-      fd.append('status', formValue.status ?? 'active'); // ajustar según convención
-      fd.append('organizingHouseId', String(organizerHouseId));
+      // Subii imagen primeor a  cloudinary (si existe) y obtener imageUrl
+      let imageUrl = '';
 
-      if (this.imageFile()) {
-        fd.append('image', this.imageFile() as Blob, (this.imageFile() as File).name);
+      const file = this.imageFile();
+      if (file) {
+        const img = new FormData();
+        img.append('imageFile', file, file.name);
+        const uploadRes = await firstValueFrom(this.imageUploadSvc.uploadImageToCloudinary(img));
+        imageUrl = uploadRes.url;
       }
 
-      // enviar evento (backend puede aceptar tickets dentro del FormData como JSON)
+
+      // Contruir ticketTypes: si el evento es "gratis" forzar price = 0
+      const isFree = this.isFree();
       const ticketsPayload = (formValue.tickets || []).map((t: any) => ({
-        name: t.type || 'General',
+        name: t.type || 'pago',
         description: t.description ?? '', // si no tienes campo description, dejar vacío
-        price: Number(t.price) || 0,
+        price: isFree ? 0 : Number(t.ticketPrice) || 0,
         availableQuantity: Number(t.quantity) || 0
       }));
-      // enviar como JSON blob para multipart
-      fd.append('ticketTypes', new Blob([JSON.stringify(ticketsPayload)], { type: 'application/json' }));
 
-      const created = await firstValueFrom(this.eventService.createEvent(fd));
+      // Preparar productos: subir imágenes y mapear campos
+      const productsPayload = [] as ProductRequest[];
+      for (let i = 0; i < this.products.length; i++) {
+        const pCtrl = this.products.at(i);
+        const pRaw = pCtrl.getRawValue();
+        const file = this.productFiles[i];
+        let prodImageUrl = pRaw.imageUrl || '';
+        if (file) {
+          const pd = new FormData();
+          pd.append('imageFile', file, file.name);
+          try {
+            const up = await firstValueFrom(this.imageUploadSvc.uploadImageToCloudinary(pd));
+            prodImageUrl = up.url;
+          } catch (err) {
+            console.warn('Error subiendo imagen de producto', err);
+          }
+        }
+
+        productsPayload.push({
+          name: pRaw.name || '',
+          description: pRaw.description || '',
+          price: Number(pRaw.productPrice),
+          stock: Number(pRaw.stock) || 0,
+          imageUrl: prodImageUrl
+        });
+      }
+
+      const createeEventRequest: CreateEventRequest = {
+        name: this.eventForm.get('name')?.value!,
+        description: this.eventForm.get('description')?.value ?? '',
+        dateTime: dateTimeISO,
+        location: this.eventForm.get('location')?.value ?? '',
+        type: isFree ? 'Gratis' : 'Pago', // ajustar según tu formulario
+        status: 'Activo', // siempre Activo al crear el evento
+        organizingHouseId: organizerHouseId,
+        imageUrl: imageUrl,
+        ticketTypes: ticketsPayload,
+        products: productsPayload
+      }
+
+      const created = await firstValueFrom(this.eventService.createEvent(createeEventRequest));
 
       this.notificationSvc.showNotification('Evento creado exitosamente.', 'success');
       // limpieza UI

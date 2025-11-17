@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { firstValueFrom, Observable, tap } from 'rxjs';
-import { EventInterface, EventsResponse } from '../interfaces';
+import { CreateEventRequest, EventInterface, EventsResponse } from '../interfaces';
 import { environment } from '../../../environments/environment.dev';
 
 const apiBaseUrl = environment.apiBaseUrl;
@@ -12,12 +12,20 @@ const apiBaseUrl = environment.apiBaseUrl;
 export class EventService {
   private http = inject(HttpClient);
 
-  getEvents() {
+  getEventsAttendee() {
     return this.http.get<EventsResponse>(`${apiBaseUrl}/Events`)
     .pipe(
       tap(response => console.log('Eventos obtenidos:', response))
     )
   }
+
+  getEventsOrganizer() {
+    return this.http.get<EventInterface[]>(`${apiBaseUrl}/Events`)
+    .pipe(
+      tap(res => console.log('Eventos obtenidos organizador:', res))
+    )
+  }
+
 
   getEventById(eventId: number) {
     return this.http.get<EventInterface>(`${apiBaseUrl}/Events/${eventId}`)
@@ -26,8 +34,8 @@ export class EventService {
       )
   }
 
-  createEvent(formData: FormData): Observable<{message: string}> {
-    return this.http.post<{message: string}>(`${apiBaseUrl}/Events`, formData)
+  createEvent(createEventRequest: CreateEventRequest): Observable<CreateEventRequest> {
+    return this.http.post<CreateEventRequest>(`${apiBaseUrl}/Events`, createEventRequest)
       .pipe(
         tap(response => console.log('Evento creado:', response))
       );

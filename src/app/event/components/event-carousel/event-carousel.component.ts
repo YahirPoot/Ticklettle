@@ -16,11 +16,11 @@ export class EventCarouselComponent {
 
 
   popularesResource = resource({
-    loader: () => firstValueFrom(this.eventService.getEvents()).then(res => res.items), 
+    loader: () => firstValueFrom(this.eventService.getEventsAttendee()).then(res => res.items), 
   });
 
   proximosResource = resource({
-    loader: () => firstValueFrom(this.eventService.getEvents()).then(res => res.items), 
+    loader: () => firstValueFrom(this.eventService.getEventsAttendee()).then(res => res.items), 
   });
 
 

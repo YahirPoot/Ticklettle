@@ -109,7 +109,7 @@ export class AuthService {
   checkStatusAuthenticated(): Observable<boolean> {
     if (this._user()) return of(true);
 
-    const user = sessionStorage.getItem('user');
+    const user = localStorage.getItem('user');
     const token = localStorage.getItem('token');
     const tokenExpiration = localStorage.getItem('token-expiration');
     if (user) {
@@ -180,7 +180,7 @@ export class AuthService {
 
     this._user.set(user);
     this._authStatus.set('authenticated');
-    try { sessionStorage.setItem('user', JSON.stringify(user)); } catch {}
+    try { localStorage.setItem('user', JSON.stringify(user)); } catch {}
     return true;
   }
 
@@ -194,6 +194,5 @@ export class AuthService {
     this._user.set(null);
     this._authStatus.set('not-authenticated');
     localStorage.clear();
-    sessionStorage.clear();
   }
 }

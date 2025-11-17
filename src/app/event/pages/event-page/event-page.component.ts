@@ -14,7 +14,7 @@ export class EventPageComponent {
   private eventService = inject(EventService);
 
   featuredEventResource = resource({
-    loader: () => firstValueFrom(this.eventService.getEvents()).then(res => res.items[0]),
+    loader: () => firstValueFrom(this.eventService.getEventsAttendee()).then(res => res.items[0]),
   })
 
   get featuredEvent() {

@@ -1,16 +1,22 @@
 import { TicketTypeRequest } from "../../ticket/interfaces";
 
-export interface EventCreateRequest {
-    title: string;
+export interface CreateEventRequest{
+    name: string;
     description: string;
+    dateTime: string;
     location: string;
-    date?: string;
-    time?: string;
-    capacity?: number | null;
-    tickets: TicketTypeRequest[];
-    sellMerch: boolean;
-    postEventContent: boolean;
-    image?: string | File | null;
-    organizerId?: string | number;
-    tags?: string[];
+    type: string;
+    status: string | 'Activo';
+    organizingHouseId: number;
+    imageUrl: string;
+    ticketTypes: TicketTypeRequest[];
+    products: ProductRequest[];
+};
+
+export interface ProductRequest {
+    name: string;
+    description: string;
+    price: number;
+    stock: number;
+    imageUrl: string;
 }
