@@ -158,11 +158,11 @@ export class CreateEventPageComponent {
 
   async onSubmit() {
     // this.eventForm.markAllAsTouched();
-    if (this.eventForm.invalid) {
-      this.notificationSvc.showNotification('Por favor, corrige los errores en el formulario.', 'error');
-      console.log(this.eventForm.invalid)
-      return;
-    }
+    // if (this.eventForm.invalid) {
+    //   this.notificationSvc.showNotification('Por favor, corrige los errores en el formulario.', 'error');
+    //   console.log(this.eventForm.invalid)
+    //   return;
+    // }
 
     const formValue = this.eventForm.getRawValue();
 
