@@ -29,29 +29,6 @@
       </div> -->
   
       <!-- Grid de tarjetas -->
-<<<<<<< HEAD
-      @if (favorites.length === 0) {
-        <div class="card bg-base-200 border border-base-300 rounded-lg p-6 flex flex-col items-center justify-center gap-4 w-full">
-          <svg class="w-16 h-16 text-red-500 animate-pulse" viewBox="0 0 24 24" fill="none" aria-hidden="true" role="img">
-            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 1 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z"
-                  stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="fill-current/5"/>
-          </svg>
-        
-          <h3 class="text-2xl font-semibold">Aún no tienes favoritos</h3>
-        
-          <p class="text-sm text-gray-500 max-w-lg text-center">
-            Marca con el corazón los eventos que te interesen para encontrarlos fácilmente más tarde.
-          </p>
-        
-          <div class="flex gap-3">
-            <a routerLink="/" class="btn btn-primary" aria-label="Explorar eventos">
-              Explorar Eventos
-            </a>
-          </div>
-        </div>
-      }
-=======
->>>>>>> bf0d4cd69b70b79089b1ea5737e2082d9b3f57b0
       <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
         @for (eventFav of favorites; track eventFav.eventId) {
           <article class="card bg-base-200 shadow-md p-4 flex flex-col gap-3">

@@ -188,7 +188,7 @@ export class RegisterPageComponent implements OnInit, OnDestroy {
       provider: 'GOOGLE'
     };
 
-    this.loadingService.showModal('create', 'Cargando información de Google...');
+    // this.loadingService.showModal('create', 'Cargando información de Google...');
     sessionStorage.setItem('social_user', JSON.stringify(socialUser));
     localStorage.setItem('provisional_social', JSON.stringify(socialUser));
     this.router.navigateByUrl('/auth/select-rol');
