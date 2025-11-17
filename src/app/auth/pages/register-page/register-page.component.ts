@@ -43,7 +43,7 @@ export class RegisterPageComponent implements OnInit, OnDestroy {
     organizingHouseContact: [''],
     organizingHouseTaxData: [''],
     // campos asistente
-    dateOfBirth: [''],
+    dateOfBirth: [null],
     gender: [''],
     photoUrl: [''],
     confirmPassword: ['', [Validators.required, Validators.minLength(6)]]
@@ -188,6 +188,7 @@ export class RegisterPageComponent implements OnInit, OnDestroy {
       provider: 'GOOGLE'
     };
 
+    this.loadingService.showModal('create', 'Cargando información de Google...');
     sessionStorage.setItem('social_user', JSON.stringify(socialUser));
     localStorage.setItem('provisional_social', JSON.stringify(socialUser));
     this.router.navigateByUrl('/auth/select-rol');
@@ -200,23 +201,36 @@ export class RegisterPageComponent implements OnInit, OnDestroy {
       //   return;
       // } 
 
+    this.loadingService.showModal('create', 'Creando cuenta...');
     const role = Number(this.registerForm.get('role')?.value) as 0 | 1;
     let socialToken: string | undefined;
     const raw = sessionStorage.getItem('social_user') || localStorage.getItem('provisional_social');
     if (raw) {
       socialToken = JSON.parse(raw).idToken;
     }
+    // normalize dateOfBirth: send ISO string when present, otherwise null
+    const rawDob = this.registerForm.get('dateOfBirth')?.value;
+    let dobIso: string | null = null;
+    if (rawDob) {
+      const d = new Date(rawDob);
+      dobIso = isNaN(d.getTime()) ? null : d.toISOString();
+    }
+
     const payloadAttendee: RegisterRequest = {
       email: this.registerForm.get('email')?.value!,
       firstName: this.registerForm.get('firstName')?.value!,
       lastName: this.registerForm.get('lastName')?.value!,
       password: this.registerForm.get('password')?.value!,
-      dateOfBirth: this.registerForm.get('dateOfBirth')?.value ?? new Date().toISOString(),
+      dateOfBirth: dobIso,
       gender: this.registerForm.get('gender')?.value ?? '',
       photoUrl: this.registerForm.get('photoUrl')?.value ?? '',
-      googleToken: socialToken,
-      isGoogleRegistration:  !!socialToken
+      // ensure backend always receives a string (empty when not provided)
+      googleToken: socialToken ?? '',
+      // explicit boolean
+      isGoogleRegistration: Boolean(socialToken)
     };
+
+    console.log('payloadAttendee', payloadAttendee);
 
     const payloadOrganizer: RegisterRequest = {
       email: this.registerForm.get('email')?.value!,
@@ -239,7 +253,6 @@ export class RegisterPageComponent implements OnInit, OnDestroy {
       console.log('Registering organizer with payload:', payloadOrganizer);
       this.authService.registerOrganizer(payloadOrganizer).subscribe({
         next: ok => {
-          this.loadingService.showModal('create', 'Creando cuenta...');
           if (ok) {
             localStorage.removeItem('provisional_social');
             localStorage.removeItem('provisional_role');
@@ -255,7 +268,6 @@ export class RegisterPageComponent implements OnInit, OnDestroy {
 
     this.authService.registerAttendee(payloadAttendee).subscribe({
       next: ok => {
-        this.loadingService.showModal('create', 'Creando cuenta...');
         if (ok) {
           localStorage.removeItem('provisional_social');
           localStorage.removeItem('provisional_role');
@@ -263,7 +275,12 @@ export class RegisterPageComponent implements OnInit, OnDestroy {
           this.router.navigate(['/auth/callback']);
         }
       },
-      error: err => console.error('Error registrar attendee', err)
+      error: err => {
+        console.error('Error registrar attendee', err);
+        try {
+          console.error('server error body:', err?.error ?? err);
+        } catch (e) {}
+      }
     });
   }
 }

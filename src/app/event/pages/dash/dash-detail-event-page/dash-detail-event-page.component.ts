@@ -38,6 +38,10 @@ export class DashDetailEventPageComponent {
     return this.ticketResource.value();
   }
 
+  get prroductsByEvent() {
+    return this.eventById?.products || [];
+  }
+
   goBack() {
     return this.router.navigate(['/admin/events'], { relativeTo: this.activedRoute });
   }

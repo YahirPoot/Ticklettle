@@ -55,7 +55,8 @@
     <div class="card bg-base-200 mt-4 shadow-sm flex flex-col">
         <div class="w-full p-4 flex flex-col md:flex-row gap-6 items-start">
             <div class="flex-1 min-w-0">
-                <h3 class="text-2xl md:text-3xl font-bold mb-6">{{event?.organizingHouseId}}</h3>
+                <span class="text-sm text-gray-400">Casa organizadora</span>
+                <h3 class="text-2xl md:text-3xl font-bold mb-6">{{event?.organizingHouse?.name}}</h3>
                 <p class="text-sm md:text-base ">{{event?.description}}</p>
             </div>
             <div class="p-6">
@@ -69,18 +70,24 @@
                 <table class="table-sm md:table w-full bg-base-100">
                     <thead>
                         <tr>
-                            <th>Zona</th>
                             <th>Tipo</th>
+                            <th>Cantidad disponibles</th>
                             <th class="text-right">Precio</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @for (item of zones; track $index) {
+                        @for (typeTicket of event?.ticketTypes; track $index) {
                             <tr>
-                                <td class="text-sm font-semibold sm:text-lg">{{ item.name }}</td>
-                                <td class="text-sm md:text-base">{{ item.type }}</td>
-                                <td class="text-right text-sm font-sans md:text-lg">${{ item.price }}</td>
+                                <td class="text-sm font-semibold sm:text-lg uppercase">{{ typeTicket.name }}</td>
+                                <td class="text-sm md:text-base">{{ typeTicket.availableQuantity }}</td>
+                                <td class="text-right text-sm font-sans md:text-lg">${{ typeTicket.price }}</td>
                             </tr>
+                        } 
+                        <!-- empty -->
+                        @empty {
+                            <div class="text-center py-4 italic text-gray-500">
+                                No hay tipos de boletos disponibles.
+                            </div>
                         }
                     </tbody>
                 </table>

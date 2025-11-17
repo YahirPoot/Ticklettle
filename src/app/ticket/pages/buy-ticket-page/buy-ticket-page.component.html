@@ -8,7 +8,7 @@
                 <p class="text-sm text-neutral mt-2">Ubicación: {{ event?.location }}</p>
             </div> -->
             <div class="card bg-base-200 shadow-sm flex-1 flex items-center justify-center overflow-hidden rounded-lg">
-                <figure class="w-full h-full flex items-center justify-center">
+                <figure class="w-full h-full flex items-center justify-center"> 
                     <img [src]="event?.imageUrl" [alt]="event?.name" class="w-full h-full object-cover" />
                 </figure>
             </div>
@@ -19,7 +19,17 @@
                     <div class="card bg-base-200 p-3 rounded-lg shadow-sm">
                         <label class="text-sm font-medium mb-2 block">Selecciona la Sección</label>
                         <div class="space-y-2 max-h-48 sm:max-h-56 overflow-auto pr-1">
-                            @for (zone of zones; track zone.id) {
+                            @if (loading()) {
+                                <div class="space-y-2">
+                                    <div class="skeleton h-12 rounded-lg w-full"></div>
+                                    <div class="skeleton h-12 rounded-lg w-full"></div>
+                                    <div class="skeleton h-12 rounded-lg w-full"></div>
+                                    <div class="skeleton h-12 rounded-lg w-full"></div>
+                                </div>
+                            }
+
+                            @if (!loading()) {
+                            @for (tt of ticketTypes; track tt.ticketTypeId) {
                                 <button
                                     type="button"
                                     class="w-full text-left p-3 rounded-lg border transition flex items-center justify-between text-sm hover:border-primary group md:text-base"
@@ -29,14 +39,15 @@
                                     [attr.aria-pressed]="qtyAt($index) > 0"
                                 >
                                     <div class="min-w-0">
-                                        <div class="font-medium truncate"
-                                            [class.text-primary]="qtyAt($index) > 0">{{ zone.name }}</div>
-                                        <div class="text-xs text-neutral/70 truncate">{{ zone.type }}</div>
+                                        <div class="font-medium truncate uppercase"
+                                            [class.text-primary]="qtyAt($index)> 0">{{ tt.name }}</div>
+                                        <div class="text-xs text-neutral/70 truncate">Cantidades dispnibles: {{ tt.availableQuantity }}</div>
                                     </div>
                                     <div class="text-sm font-semibold ml-3"
                                         [class.text-primary]="qtyAt($index) > 0"
-                                    >${{ zone.price }}</div>
+                                    >${{ tt.price }}</div>
                                 </button>
+                            }
                             }
                         </div>
                     </div>
@@ -53,7 +64,7 @@
                             <div class="card p-3 bg-base-200 rounded-lg shadow-sm">
                                 <div class="flex flex-col sm:flex-row items-center sm:items-start justify-between gap-3">
                                     <div class="min-w-0 flex-1">
-                                        <div class="font-semibold truncate">{{ zones[idx].name }}</div>
+                                        <div class="font-semibold truncate">{{ ticketTypes[idx]?.name }}</div>
                                         <div class="text-xs text-neutral mt-1">Comprar boletos</div>
                                     </div>
                                     <div class="flex items-center gap-2">
