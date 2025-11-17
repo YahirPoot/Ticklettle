@@ -188,6 +188,7 @@ export class RegisterPageComponent implements OnInit, OnDestroy {
       provider: 'GOOGLE'
     };
 
+    this.loadingService.showModal('create', 'Cargando información de Google...');
     sessionStorage.setItem('social_user', JSON.stringify(socialUser));
     localStorage.setItem('provisional_social', JSON.stringify(socialUser));
     this.router.navigateByUrl('/auth/select-rol');
@@ -200,6 +201,7 @@ export class RegisterPageComponent implements OnInit, OnDestroy {
       //   return;
       // } 
 
+    this.loadingService.showModal('create', 'Creando cuenta...');
     const role = Number(this.registerForm.get('role')?.value) as 0 | 1;
     let socialToken: string | undefined;
     const raw = sessionStorage.getItem('social_user') || localStorage.getItem('provisional_social');
@@ -251,7 +253,6 @@ export class RegisterPageComponent implements OnInit, OnDestroy {
       console.log('Registering organizer with payload:', payloadOrganizer);
       this.authService.registerOrganizer(payloadOrganizer).subscribe({
         next: ok => {
-          this.loadingService.showModal('create', 'Creando cuenta...');
           if (ok) {
             localStorage.removeItem('provisional_social');
             localStorage.removeItem('provisional_role');
@@ -267,7 +268,6 @@ export class RegisterPageComponent implements OnInit, OnDestroy {
 
     this.authService.registerAttendee(payloadAttendee).subscribe({
       next: ok => {
-        this.loadingService.showModal('create', 'Creando cuenta...');
         if (ok) {
           localStorage.removeItem('provisional_social');
           localStorage.removeItem('provisional_role');
