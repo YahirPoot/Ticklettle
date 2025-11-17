@@ -29,6 +29,7 @@
       </div> -->
   
       <!-- Grid de tarjetas -->
+<<<<<<< HEAD
       @if (favorites.length === 0) {
         <div class="card bg-base-200 border border-base-300 rounded-lg p-6 flex flex-col items-center justify-center gap-4 w-full">
           <svg class="w-16 h-16 text-red-500 animate-pulse" viewBox="0 0 24 24" fill="none" aria-hidden="true" role="img">
@@ -49,36 +50,61 @@
           </div>
         </div>
       }
+=======
+>>>>>>> bf0d4cd69b70b79089b1ea5737e2082d9b3f57b0
       <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-        @for (eventFav of favorites; track $index) {
+        @for (eventFav of favorites; track eventFav.eventId) {
           <article class="card bg-base-200 shadow-md p-4 flex flex-col gap-3">
             <div>
-              <p class="text-sm text-muted">{{eventFav.organizer}}</p>
-              <h3 class="text-lg font-bold">Evento {{ eventFav.title }}</h3>
+              <p class="text-sm text-muted">{{eventFav.organizingHouseId}}</p>
+              <h3 class="text-lg font-bold">Evento {{ eventFav.name }}</h3>
               <p class="text-sm text-gray-600">{{eventFav.description}}</p>
             </div>
   
             <div class="w-full flex justify-center">
               <figure class="w-28 h-28 md:w-32 md:h-32 shrink-0">
-                <img src="{{eventFav.image}}" alt="Evento {{eventFav.title}}" class="w-full h-full object-cover rounded-bl-lg " />
+                <img src="{{eventFav.imageUrl}}" alt="Evento {{eventFav.name}}" class="w-full h-full object-cover rounded-bl-lg " />
             </figure>
             </div>
   
             <div class="flex items-center justify-between mt-2">
 
-              <a class="btn btn-ghost btn-sm" [routerLink]="['', 'detail-event', eventFav.id]">Ver detalles</a>
+              <a class="btn btn-ghost btn-sm" [routerLink]="['', 'detail-event', eventFav.eventId]">Ver detalles</a>
               <div class="flex items-center gap-2">
                 <button class="btn btn-ghost btn-sm">
                   <mat-icon class="text-red-600">favorite</mat-icon>
                 </button>
-                <button class="btn btn-ghost btn-sm" (click)="deleteFavorite(eventFav.id)">
+                <button class="btn btn-ghost btn-sm" (click)="deleteFavorite(eventFav.eventId)">
                   <mat-icon>delete</mat-icon>
                 </button>
               </div>
             </div>
           </article>
         }
+        @empty {
+          <div class="max-w-6xl">
+            <div class="card bg-base-200 border border-base-300 rounded-lg p-6 flex flex-col items-center justify-center gap-4 w-full">
+              <svg class="w-16 h-16 text-red-500 animate-pulse" viewBox="0 0 24 24" fill="none" aria-hidden="true" role="img">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 1 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z"
+                      stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="fill-current/5"/>
+              </svg>
+            
+              <h3 class="text-2xl font-semibold">Aún no tienes favoritos</h3>
+            
+              <p class="text-sm text-gray-500 max-w-lg text-center">
+                Marca con el corazón los eventos que te interesen para encontrarlos fácilmente más tarde.
+              </p>
+            
+              <div class="flex gap-3">
+                <a routerLink="/" class="btn btn-primary" aria-label="Explorar eventos">
+                  Explorar eventos
+                </a>
+              </div>
+            </div>
+          </div>
+        }
       </div>
+
     </div>
   }
 

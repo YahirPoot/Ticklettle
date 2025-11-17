@@ -13,6 +13,5 @@ export class ProfilePageComponent {
   private authService = inject(AuthService);  
 
   isAuthenticated = computed(() => this.authService.authStatus() === 'authenticated');
-  user = computed(() => this.authService.user());
 
 }

@@ -4,6 +4,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { DatePipe } from '@angular/common';
 import { ZonesInterface } from '../../../shared/interfaces';
 import { HeaderBackComponent } from '../../../shared/components/header-back/header-back.component';
+import { firstValueFrom } from 'rxjs';
 
 
 @Component({
@@ -20,8 +21,9 @@ export class DetailEventComponent {
 
   eventResource = resource({
     loader: () => {
-      console.log('Cargando evento con ID:', this.eventId);
-      return this.eventService.byId(this.eventId);
+      return firstValueFrom(
+        this.eventService.getEventById(this.eventId),
+      )
     }
   });
 
@@ -30,10 +32,10 @@ export class DetailEventComponent {
   }
 
   zones: ZonesInterface[] = [
-    { id: 1, name: 'Zona Platinum', type: 'Adulto', price: 2500 },
-    { id: 2, name: 'Zona Oro', type: 'Adulto', price: 2000 },
-    { id: 3, name: 'Primer Nivel', type: 'Adulto', price: 1750 },
-    { id: 4, name: 'Segundo Nivel', type: 'Adulto', price: 1500 },
+    { id: 1, name: 'General', type: 'Adulto', price: 2500 },
+    { id: 2, name: 'VIP', type: 'Adulto', price: 2000 },
+    { id: 3, name: 'PREMIUN', type: 'Adulto', price: 1750 },
+    // { id: 4, name: 'Segundo Nivel', type: 'Adulto', price: 1500 },
   ]
 
   goBack() {

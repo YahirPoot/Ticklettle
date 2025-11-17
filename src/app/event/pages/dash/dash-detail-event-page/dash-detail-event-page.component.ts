@@ -5,6 +5,7 @@ import { HeaderBackComponent } from '../../../../shared/components/header-back/h
 import { EventService } from '../../../services/event.service';
 import { DatePipe } from '@angular/common';
 import { TicketService } from '../../../../ticket/services/ticket.service';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-dash-detail-event-page',
@@ -21,7 +22,7 @@ export class DashDetailEventPageComponent {
 
   eventResource = resource({
     loader: () => {
-        return this.eventService.byId(this.eventId);
+        return  firstValueFrom(this.eventService.getEventById(this.eventId));
       }
   });
 

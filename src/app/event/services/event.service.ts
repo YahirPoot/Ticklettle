@@ -1,7 +1,10 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { firstValueFrom } from 'rxjs';
-import { Event } from '../interfaces';
+import { firstValueFrom, Observable, tap } from 'rxjs';
+import { CreateEventRequest, EventInterface, EventsResponse } from '../interfaces';
+import { environment } from '../../../environments/environment.dev';
+
+const apiBaseUrl = environment.apiBaseUrl;
 
 @Injectable({
   providedIn: 'root'
@@ -9,43 +12,32 @@ import { Event } from '../interfaces';
 export class EventService {
   private http = inject(HttpClient);
 
-  private readAll(): Event[] {
-    return JSON.parse(localStorage.getItem('events') || '[]');
+  getEventsAttendee() {
+    return this.http.get<EventsResponse>(`${apiBaseUrl}/Events`)
+    .pipe(
+      tap(response => console.log('Eventos obtenidos:', response))
+    )
   }
 
-  private writeAll(events: Event[]) {
-    localStorage.setItem('events', JSON.stringify(events));  
+  getEventsOrganizer() {
+    return this.http.get<EventInterface[]>(`${apiBaseUrl}/Events`)
+    .pipe(
+      tap(res => console.log('Eventos obtenidos organizador:', res))
+    )
   }
 
-  private async ensureSeed(): Promise<void> {
-    if (this.readAll().length) return;
 
-    const events = await firstValueFrom(this.http.get<Event[]>('/mock/events.json'));
-    this.writeAll(events || []);
+  getEventById(eventId: number) {
+    return this.http.get<EventInterface>(`${apiBaseUrl}/Events/${eventId}`)
+      .pipe(
+        tap(res => console.log('console detail event -', res))
+      )
   }
 
-  async all(): Promise<Event[]> {
-    await this.ensureSeed();
-    return this.readAll();
-  }
-
-  async featured(): Promise<Event | null> { 
-    const all = await this.all();
-    return all.find(e => e.featured) ?? null; 
-  }
-
-  async popular(): Promise<Event[]> { 
-    const all = await this.all(); 
-    return all.filter(e => e.popular); 
-  }
-
-  async upcoming(): Promise<Event[]> {
-    const all = await this.all(); const now = new Date();
-    return all.filter(e => new Date(e.date) > now).sort((a,b)=>+new Date(a.date)-+new Date(b.date ));
-  }
-  
-  async byId(id: string | number): Promise<Event | null> {
-    const all = await this.all(); 
-    return all.find((e) => e.id == id) ?? null;
+  createEvent(createEventRequest: CreateEventRequest): Observable<CreateEventRequest> {
+    return this.http.post<CreateEventRequest>(`${apiBaseUrl}/Events`, createEventRequest)
+      .pipe(
+        tap(response => console.log('Evento creado:', response))
+      );
   }
 }

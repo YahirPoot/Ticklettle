@@ -1,70 +1,163 @@
 <div class="grid grid-cols-1 md:grid-cols-2">
-    <div class="bg-base-200 w-full">
-        <div class="flex flex-col p-4 items-center justify-center">
-            <h3 class="text-xl truncate uppercase font-bold">Registro</h3>
-            <p class="text-center text-sm text-gray-600 mt-4">
-                ¿Tienes una cuenta? <a [routerLink]="'/auth/login'" class="text-blue-600 hover:underline">Iniciar Sesión</a>
-            </p>
-            <div class="mt-3">
-                <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
-                    <!-- Select rol -->
-                    <div class="form-control flex md:flex-row flex-col gap-2 items-center justify-between">
-                        <button type="button" class="btn btn-outline" 
-                            [class.btn-primary]="registerForm.get('role')?.value === 'organizador'"
-                            [class.btn-active]="registerForm.get('role')?.value === 'organizador'"
-                            (click)="setRole('organizador')">Organizador</button>
-                        <button type="button" class="btn btn-outline" 
-                            [class.btn-primary]="registerForm.get('role')?.value === 'asistente'"
-                            [class.btn-active]="registerForm.get('role')?.value === 'asistente'"
-                            (click)="setRole('asistente')">Asistente</button>
-                    </div>
-                    <div class="form-control">
-                        <label class="label label-text font-semibold mb-2">Nombre Completo: </label>
-                        <input type="text" class="input input-bordered w-full focus:input-neutral mb-2" formControlName="name" placeholder="Nombre Completo" required/>
-                    </div>
-                    <div class="form-control">
-                        <label class="label label-text font-semibold mb-2">Correo Electrónico: </label>
-                        <input type="email" class="input input-bordered w-full focus:input-neutral mb-2" formControlName="email" placeholder="Correo Electrónico" required/>
-                    </div>
-                    <!-- Campos para ASISTENTE -->
-                    <div [hidden]="!isOrganizer">
-                        <div class="form-control">
-                            <label class="label label-text font-semibold mb-2">Razón Social: </label>
-                            <input type="text" class="input input-bordered w-full focus:input-neutral mb-2" formControlName="razonSocial" placeholder="Razón Social" />
-                        </div>
-                        <div class="form-control">
-                            <label class="label label-text font-semibold mb-2">RFC: </label>
-                            <input type="text" class="input input-bordered w-full focus:input-neutral mb-2" formControlName="rfc" placeholder="RFC" />
-                        </div>
-                        <div class="form-control">
-                            <label class="label label-text font-semibold mb-2">Teléfono: </label>
-                            <input type="tel" class="input input-bordered w-full focus:input-neutral mb-2" formControlName="telefono" placeholder="Teléfono" />
-                        </div>
-                    </div>
-                    <div class="form-control">
-                        <label class="label label-text font-semibold mb-2">Contraseña: </label>
-                        <input type="password" class="input input-bordered w-full focus:input-neutral mb-2" formControlName="password" placeholder="Contraseña" required/>
-                    </div>
-                    <div class="form-control">
-                        <label class="label label-text font-semibold mb-2">Confirmar Contraseña: </label>
-                        <input type="password" class="input input-bordered w-full focus:input-neutral mb-2" formControlName="confirmPassword"   placeholder="Confirmar Contraseña" required/>
-                    </div>
-                    <div class="form-control">
-                        <label class="flex items-center gap-3">
-                            <input type="checkbox" class="checkbox mt-1" />
-                            <div>
-                                <div class="font-medium">Acepto las Políticas de Privacidad</div>                            
-                            </div>  
-                        </label>
-                    </div>
-                    <div class="mt-4 w-full">
-                        <button type="submit" class="btn btn-neutral w-full">Crear Cuenta</button>
-                        <div class="divider text-gray-600"> o </div>
-                        <div id="g_id_signin" class="w-full flex justify-center"></div>
-                    </div>
-                </form>
+
+  <div class="bg-base-200 w-full">
+    <div class="flex flex-col p-4 items-center justify-center">
+      <h3 class="text-xl truncate uppercase font-bold">Registro</h3>
+      <p class="text-center text-sm text-gray-600 mt-4">
+        ¿Tienes una cuenta? <a [routerLink]="'/auth/login'" class="text-blue-600 hover:underline">Iniciar Sesión</a>
+      </p>
+      <div class="mt-3 w-full max-w-xl">
+        <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+          <!-- Select rol -->
+          <div class="form-control flex md:flex-row flex-col gap-2 items-center justify-between mb-4">
+            <button type="button" class="btn btn-outline"
+              [class.btn-primary]="registerForm.get('role')?.value === 1"
+              [class.btn-active]="registerForm.get('role')?.value === 1"
+              (click)="setRole(1)">Organizador</button>
+
+            <button type="button" class="btn btn-outline"
+              [class.btn-primary]="registerForm.get('role')?.value === 0"
+              [class.btn-active]="registerForm.get('role')?.value === 0"
+              (click)="setRole(0)">Asistente</button>
+          </div>
+
+          <!-- Nombre / Apellidos -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+            <div class="form-control">
+              <label class="label label-text font-semibold mb-2">Nombre(s) <span class="text-red-400">*</span></label>
+              <input type="text" class="input input-bordered w-full focus:input-neutral mb-2"
+                formControlName="firstName" placeholder="Nombre(s)" required />
             </div>
-        </div>
+
+            <div class="form-control">
+              <label class="label label-text font-semibold mb-2">Apellido(s) <span class="text-red-400">*</span></label>
+              <input type="text" class="input input-bordered w-full focus:input-neutral mb-2"
+                formControlName="lastName" placeholder="Apellido(s)" required />
+            </div>
+          </div>
+
+          <!-- Email -->
+          <div class="form-control">
+            <label class="label label-text font-semibold mb-2">Email <span class="text-red-400">*</span></label>
+            <input type="email" class="input input-bordered w-full focus:input-neutral mb-2" formControlName="email"
+              placeholder="Correo Electrónico" required />
+          </div>
+
+          <!-- Campos específicos ORGANIZADOR -->
+          @if (isOrganizer) {
+            <div class="space-y-2">
+              <div class="form-control">
+                <label class="label label-text font-semibold mb-2">Empresa / Razón social</label>
+                <input type="text" class="input input-bordered w-full focus:input-neutral mb-2" formControlName="company"
+                  placeholder="Empresa / Razón social" />
+              </div>
+  
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                <div class="form-control">
+                  <label class="label label-text font-semibold mb-2">Tax ID (RFC) <span class="text-xs text-red-400">*</span></label>
+                  <input type="text" class="input input-bordered w-full focus:input-neutral mb-2" formControlName="taxId"
+                    placeholder="RFC / Tax ID" required />
+                </div>
+  
+                <div class="form-control">
+                  <label class="label label-text font-semibold mb-2">Contacto <span class="text-xs text-red-400">*</span></label>
+                  <input type="text" class="input input-bordered w-full focus:input-neutral mb-2"
+                    formControlName="organizingHouseContact" placeholder="Teléfono / contacto" required/>
+                </div>
+              </div>
+  
+              <div class="form-control">
+                <label class="label label-text font-semibold mb-2">Dirección fiscal</label>
+                <input type="text" class="input input-bordered w-full focus:input-neutral mb-2"
+                  formControlName="fiscalAddress" placeholder="Dirección fiscal" />
+              </div>
+  
+              <div class="form-control">
+                <label class="label label-text font-semibold mb-2">Nombre de la casa organizadora <span class="text-xs text-red-400">*</span></label>
+                <input type="text" class="input input-bordered w-full focus:input-neutral mb-2"
+                  formControlName="organizingHouseName" placeholder="Nombre de la casa organizadora" required/>
+              </div>
+  
+              <div class="form-control">
+                <label class="label label-text font-semibold mb-2">Dirección de la casa organizadora <span class="text-xs text-red-400">*</span></label>
+                <input type="text" class="input input-bordered w-full focus:input-neutral mb-2"
+                  formControlName="organizingHouseAddress" placeholder="Dirección de la casa organizadora" required/>
+              </div>
+  
+              <div class="form-control">
+                <label class="label label-text font-semibold mb-2">Datos fiscales adicionales</label>
+                <input type="text" class="input input-bordered w-full focus:input-neutral mb-2"
+                  formControlName="organizingHouseTaxData" placeholder="Datos fiscales adicionales" />
+              </div>
+            </div>
+          }
+
+          <!-- Campos específicos ASISTENTE -->
+          @if (!isOrganizer) {
+            <div class="space-y-2">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                <div class="form-control">
+                  <label class="label label-text font-semibold mb-2">Fecha de nacimiento</label>
+                  <input type="date" class="input input-bordered w-full focus:input-neutral mb-2"
+                    formControlName="dateOfBirth" />
+                </div>
+  
+                <div class="form-control">
+                  <label class="label label-text font-semibold mb-2">Género</label>
+                  <select class="select select-bordered w-full" formControlName="gender">
+                    <option value="">Seleccionar</option>
+                    <option value="male">Masculino</option>
+                    <option value="female">Femenino</option>
+                    <option value="other">Otro</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          }
+
+          <!-- Photo (optional) -->
+          <div class="form-control">
+            <label class="label label-text font-semibold mb-2">Foto (URL)</label>
+            <input type="text" class="input input-bordered w-full focus:input-neutral mb-2" formControlName="photoUrl"
+              placeholder="URL de la foto (opcional)" />
+          </div>
+
+          <!-- Passwords -->
+          <div class="form-control">
+            <label class="label label-text font-semibold mb-2">Contraseña <span class="text-xs text-red-400">*</span></label>
+            <input type="password" class="input input-bordered w-full focus:input-neutral mb-2" formControlName="password"
+              placeholder="Contraseña" required />
+          </div>
+
+          <div class="form-control">
+            <label class="label label-text font-semibold mb-2">Confirmar Contraseña <span class="text-xs text-red-400">*</span></label>
+            <input type="password" class="input input-bordered w-full focus:input-neutral mb-2"
+              formControlName="confirmPassword" placeholder="Confirmar Contraseña" required />
+              @if (passwordMismatch) {
+                <p class="text-xs text-warning mt-1">Las contraseñas no coinciden.</p>
+              }
+          </div>
+
+          <div class="form-control">
+            <label class="flex items-center gap-3">
+              <input type="checkbox" class="checkbox mt-1" />
+              <div>
+                <div class="font-medium">Acepto las Políticas de Privacidad</div>
+              </div>
+            </label>
+          </div>
+
+          <div class="mt-4 w-full">
+            <button type="submit" class="btn btn-neutral w-full">Crear cuenta</button>
+            <div class="divider text-gray-600"> o </div>
+            <div id="g_id_signin" class="w-full flex justify-center"></div>
+          </div>
+        </form>
+      </div>
     </div>
-    <div class="w-full"></div>
+  </div>
+
+  <div class="w-full"></div>
 </div>
+
+<shared-loading />

@@ -4,10 +4,11 @@ import { SocialLoginModule, SocialAuthServiceConfig, GoogleLoginProvider } from 
 
 
 import { routes } from './app.routes';
-import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
 import { provideServiceWorker } from '@angular/service-worker';
 import { environment } from '../environments/environment.dev';
-import { UserRepositoryService } from './auth/services/user-repository.service';
+import { authInterceptor } from './auth/interceptors/auth.interceptor';
+// import { UserRepositoryService } from './auth/services/user-repository.service';
 
 const googleClientId = environment.googleClientId;
 
@@ -30,19 +31,24 @@ export const appConfig: ApplicationConfig = {
     provideBrowserGlobalErrorListeners(),
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
-    provideHttpClient(),
+    provideHttpClient(
+      withFetch(),
+      withInterceptors([
+        authInterceptor
+      ])
+    ),
     importProvidersFrom(SocialLoginModule),
     { provide: 'SocialAuthServiceConfig', useValue: socialConfigValue }, provideServiceWorker('ngsw-worker.js', {
             enabled: !isDevMode(),
             registrationStrategy: 'registerWhenStable:30000'
           }), 
-      {
-        provide: APP_INITIALIZER,
-        multi: true,
-        useFactory: () => {
-          const seeder = inject(UserRepositoryService);
-          return () => seeder.seed();
-        }
-      }
+      // {
+      //   provide: APP_INITIALIZER,
+      //   multi: true,
+      //   useFactory: () => {
+      //     const seeder = inject(UserRepositoryService);
+      //     return () => seeder.seed();
+      //   }
+      // }
   ]
 };

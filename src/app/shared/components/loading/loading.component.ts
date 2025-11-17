@@ -13,7 +13,7 @@ import { NgClass } from '@angular/common';
         <div class="modal-box max-w-xs border-0 shadow-lg">
           <div class="flex items-center justify-center gap-3 py-4">
             <span [class]="'loading loading-spinner loading-xl'" [ngClass]="alertType"></span>
-            <span class="text-sm font-medium text-neutral-content">
+            <span class="text-sm font-medium">
               {{ loadingService.state().message }}
             </span>
           </div>

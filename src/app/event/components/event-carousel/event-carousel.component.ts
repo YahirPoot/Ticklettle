@@ -1,7 +1,7 @@
 import { Component, ElementRef, inject, resource, ViewChild } from '@angular/core';
 import { EventCardComponent } from "../event-card/event-card.component";
 import { EventService } from '../../services/event.service';
-import { Event } from '../../interfaces';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'event-carousel',
@@ -13,14 +13,24 @@ export class EventCarouselComponent {
   @ViewChild('popularesCarousel', { read: ElementRef }) popularCarousel!: ElementRef<HTMLElement>;
   @ViewChild('proximosCarousel', { read: ElementRef }) proximosCarousel!: ElementRef<HTMLElement>;
 
+
+
   popularesResource = resource({
-    loader: () => this.eventService.popular(), 
+    loader: () => firstValueFrom(this.eventService.getEventsAttendee()).then(res => res.items), 
   });
 
-  proximosResource = resource<Event[], unknown>({
-    loader: () => this.eventService.upcoming(),
+  proximosResource = resource({
+    loader: () => firstValueFrom(this.eventService.getEventsAttendee()).then(res => res.items), 
   });
 
+
+  get populares() {
+    return this.popularesResource.value();
+  }
+
+  get proximos() {
+    return this.proximosResource.value();
+  }
 
   private resolveElement(container: ElementRef<HTMLElement> | HTMLElement | null): HTMLElement | null {
     if (!container) return null;

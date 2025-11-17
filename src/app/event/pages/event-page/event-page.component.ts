@@ -3,6 +3,7 @@ import { EventCarouselComponent } from '../../components/event-carousel/event-ca
 import { EventService } from '../../services/event.service';
 import { DatePipe, SlicePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'event-page',
@@ -13,7 +14,7 @@ export class EventPageComponent {
   private eventService = inject(EventService);
 
   featuredEventResource = resource({
-    loader: () => this.eventService.featured(),
+    loader: () => firstValueFrom(this.eventService.getEventsAttendee()).then(res => res.items[0]),
   })
 
   get featuredEvent() {

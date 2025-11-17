@@ -3,6 +3,8 @@ import { Router, RouterLink } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { environment } from '../../../../environments/environment.dev';
 import { AuthService } from '../../services/auth.service';
+import { LoadingComponent } from '../../../shared/components/loading/loading.component';
+import { LoadingModalService } from '../../../shared/services/loading-modal.service';
 
 declare global {
   interface Window { google?: any; }
@@ -12,13 +14,14 @@ const googleClientId = environment.googleClientId;
 
 @Component({
   selector: 'app-login-page',
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule, RouterLink, LoadingComponent],
   templateUrl: './login-page.component.html'
 })
 export class LoginPageComponent implements OnInit, OnDestroy {
   private router = inject(Router);
   private fb = inject(FormBuilder);
   private authService = inject(AuthService);
+  private loadingService = inject(LoadingModalService);
 
   showError = signal(false);
   
@@ -86,15 +89,14 @@ export class LoginPageComponent implements OnInit, OnDestroy {
         photoUrl: payload.picture,
         idToken: response.credential
       };
-      // guardar en localStorage (solo para pruebas)
-      // localStorage.setItem('socialUser', JSON.stringify(socialUser));
-      // console.log('GSI user', socialUser);
 
+      
 
-      this.authService.handleExternalLogin(socialUser).then(() => {
-        this.router.navigate(['/auth/callback']);
+      this.authService.googleLogin(socialUser.idToken).subscribe((loggedIn) => {
+        if (loggedIn) {
+          this.router.navigateByUrl('/auth/callback')
+        }
       });
-      // redirigir
   }
 
   onSubmit() {
@@ -109,15 +111,19 @@ export class LoginPageComponent implements OnInit, OnDestroy {
     const { email = '', password = '' } = this.loginForm.value;
     console.log('Login con', { email, password });
 
+    this.loadingService.showModal('create', 'Iniciando sesión...');
+
     this.authService.login(email!, password!).subscribe((isAuthenticated) => {
+      this.loadingService.hideModalImmediately();
       if (isAuthenticated) {
         this.router.navigateByUrl('/auth/callback');
         return;
       }
-
+      this.loadingService.hideModalImmediately();
     this.showError.set(true);
       setTimeout(() => {
         this.showError.set(false);
+        
       }, 4000);
     });
   }

@@ -10,12 +10,12 @@ export const noAuthenticatedGuard: CanMatchFn = async (route, segments) => {
   const isAuthenticated = await firstValueFrom(authService.checkStatus());
 
 
-  const roles = authService.user()?.roles ?? [];
+  const role = authService.user()?.customRole;
 
-  if (roles.includes('organizador')) {
+  if (role == (1)) {
     router.navigate(['/admin/dashboard']);
     return false;
-  } else if (roles.includes('asistente')) {
+  } else if (role == 0) {
     router.navigateByUrl('/');
     return false;
 

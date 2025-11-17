@@ -1,5 +1,6 @@
 export interface TicketTypeRequest {
-    type: string | null;
-    price: number | null;
-    quantity: number | null;
+    name: string; // Seria el tipo de boleto (General, VIP, etc.)
+    description: string;
+    price: number;
+    availableQuantity: number;
 }

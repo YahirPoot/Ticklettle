@@ -15,7 +15,7 @@ export class NotFoundPageComponent {
   user = computed(() =>  this.authService.user());
 
   goBack() {
-    if (this.user()?.roles!.includes('organizador')) {
+    if (this.user()?.customRole == 1) {
       this.router.navigate(['/admin/dashboard']);
       return;
     } else {
