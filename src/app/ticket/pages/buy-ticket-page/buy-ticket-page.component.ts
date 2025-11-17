@@ -9,14 +9,14 @@ import { CheckoutService } from '../../../shared/services/checkout.service';
 import { HeaderBackComponent } from '../../../shared/components/header-back/header-back.component';
 import { firstValueFrom, lastValueFrom, Subscription } from 'rxjs';
 import { TicketService } from '../../services/ticket.service';
-import { OrderRequest } from '../../interfaces';
+import { OrderRequest, TypeTicketInterface } from '../../interfaces';
 
 @Component({
   selector: 'app-buy-ticket-page',
   imports: [ReactiveFormsModule, HeaderBackComponent],
   templateUrl: './buy-ticket-page.component.html',
 })
-export class BuyTicketPageComponent {
+export class BuyTicketPageComponent implements OnInit {
   private activatedRoute = inject(ActivatedRoute);
   private fb = inject(FormBuilder);
   private readonly router = inject(Router);
@@ -26,31 +26,21 @@ export class BuyTicketPageComponent {
   private checkoutService = inject(CheckoutService);
   authService = inject(AuthService);
   private ticketService = inject(TicketService);
-  private sseSub?: Subscription;
 
   loading = signal(false);
 
-  zones: ZonesInterface[] = [
-    { id: 1,  name: 'Zona Platinum', type: 'Adulto', price: 2500 },
-    { id: 2, name: 'Zona Oro', type: 'Adulto', price: 2000 },
-    { id: 3, name: 'Primer Nivel', type: 'Adulto', price: 1750 },
-    { id: 4, name: 'Segundo Nivel', type: 'Adulto', price: 1500 },
-  ]
+  // populated from the event's ticketTypes
+  ticketTypes: TypeTicketInterface[] = [];
 
   isAuthenticated = computed(() => this.authService.authStatus() === 'authenticated');
 
   private eventId: number = this.activatedRoute.snapshot.params['eventId'];
-  
-    eventResource = resource({
-      loader: () =>  firstValueFrom(this.eventService.getEventById(this.eventId)),
-    });
-  
-    get event() {
-      return this.eventResource.value();
-    }
+
+  // event loaded in ngOnInit
+  event: any | undefined;
 
   formBuyTicket = this.fb.group({
-    quantities: this.fb.array(this.zones.map(() => this.fb.control(0, [Validators.min(0), Validators.max(5)]))),
+    quantities: this.fb.array([]),
   });
 
   get quantities(): FormArray {
@@ -66,7 +56,7 @@ export class BuyTicketPageComponent {
   }
   
   totalPrice() {
-    return this.zones.reduce((sum, zone, index) =>  sum + zone.price * (this.qtyAt(index) ?? 0), 0);
+    return this.ticketTypes.reduce((sum, tt, index) => sum + (Number(tt.price) || 0) * (this.qtyAt(index) ?? 0), 0);
   }
 
   canIncrease(i: number) {
@@ -98,7 +88,7 @@ export class BuyTicketPageComponent {
   
   totalTicketsForZone(index: number) {
     const qty = this.qtyAt(index);
-    const price = this.zones[index].price;
+    const price = this.ticketTypes[index]?.price ?? 0;
     return qty * price;
   }
 
@@ -113,19 +103,35 @@ export class BuyTicketPageComponent {
     return this.quantities.at(index).setValue(0);
   }
 
+  async ngOnInit(): Promise<void> {
+    this.loading.set(true);
+    try {
+      const evt = await firstValueFrom(this.eventService.getEventById(this.eventId));
+      this.event = evt;
+      this.ticketTypes = evt?.ticketTypes ?? [];
+      const controls = this.ticketTypes.map(() => this.fb.control(0, [Validators.min(0), Validators.max(5)]));
+      this.formBuyTicket.setControl('quantities', this.fb.array(controls) as unknown as FormArray);
+    } catch (err) {
+      console.error('Error loading event ticket types', err);
+    } finally {
+      this.loading.set(false);
+    }
+  }
+
   async onSubmit() {
     // if (!this.isAuthenticated()) {
     //   this.notificationService.showNotification('Debes iniciar sesión para comprar boletos.', 'warning');
     //   return;
     // }
     
-    const items = this.zones
-    .map((zone, index) => ({
-        title: zone.name,
-        unitPrice: zone.price,
-        unit_amount: zone.price,
+    const items = this.ticketTypes
+      .map((tt: any, index: number) => ({
+        title: tt.name,
+        unitPrice: tt.price,
+        unit_amount: tt.price,
         quantity: this.qtyAt(index),
-      })).filter(it => it.quantity > 0);
+      }))
+      .filter((it: any) => it.quantity > 0);
       
       if (items.length === 0) {
         this.notificationService.showNotification('Debes seleccionar al menos un boleto para continuar.', 'warning');
