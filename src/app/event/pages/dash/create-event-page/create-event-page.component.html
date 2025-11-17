@@ -1,57 +1,68 @@
 <div class="min-h-screen w-full p-2">
     <form [formGroup]="eventForm" (ngSubmit)="onSubmit()" class="w-full p-4 space-y-6">
+
+        <!-- Información general -->
         <section class="grid grid-cols-1 md:grid-cols-2 gap-4 items-start" aria-labelledby="general-info">
             <div>
                 <h2 id="general-info" class="text-xl font-semibold mb-3">Información General</h2>
 
                 <div class="space-y-3">
+
+                    <!-- Nombre -->
                     <label class="block">
-<<<<<<< HEAD
-                        <span class="text-sm font-medium text-gray-500">Nombre del evento: </span>
-                        <input type="text" placeholder="" formControlName="title"
-=======
-                        <span class="text-sm font-medium text-gray-500">Nombre del evento <span class="text-sm text-red-400">*</span></span>
-                        <input type="text" placeholder="Nombre del evento" formControlName="name"
->>>>>>> bf0d4cd69b70b79089b1ea5737e2082d9b3f57b0
-                            class="input input-bordered w-full mt-1" required>
+                        <span class="text-sm font-medium text-gray-500">
+                            Nombre del evento <span class="text-sm text-red-400">*</span>
+                        </span>
+                        <input 
+                            type="text" 
+                            placeholder="Nombre del evento" 
+                            formControlName="name"
+                            class="input input-bordered w-full mt-1" 
+                            required
+                        >
                     </label>
 
+                    <!-- Descripción -->
                     <label class="block">
-<<<<<<< HEAD
-                        <span class="text-sm font-medium text-gray-500">Descripción: </span>
-                        <textarea formControlName="description" rows="4" placeholder=""
-=======
-                        <span class="text-sm font-medium text-gray-500">Descripción </span>
-                        <textarea formControlName="description" rows="4" placeholder="Descripción breve"
->>>>>>> bf0d4cd69b70b79089b1ea5737e2082d9b3f57b0
-                            class="textarea textarea-bordered w-full mt-1" aria-label="Descripción del evento"></textarea>
+                        <span class="text-sm font-medium text-gray-500">Descripción</span>
+                        <textarea 
+                            formControlName="description" 
+                            rows="4" 
+                            placeholder="Descripción breve"
+                            class="textarea textarea-bordered w-full mt-1" 
+                            aria-label="Descripción del evento">
+                        </textarea>
                     </label>
 
+                    <!-- Ubicación -->
                     <label class="block">
-<<<<<<< HEAD
-                        <span class="text-sm font-medium text-gray-500">Ubicación: </span>
-                        <input type="text" placeholder="" formControlName="location"
-=======
-                        <span class="text-sm font-medium text-gray-500">Ubicación <span class="text-sm text-red-400">*</span></span>
-                        <input type="text" placeholder="Lugar o dirección" formControlName="location"
->>>>>>> bf0d4cd69b70b79089b1ea5737e2082d9b3f57b0
+                        <span class="text-sm font-medium text-gray-500">
+                            Ubicación <span class="text-sm text-red-400">*</span>
+                        </span>
+                        <input 
+                            type="text" 
+                            placeholder="Lugar o dirección" 
+                            formControlName="location"
                             class="input input-bordered w-full mt-1">
                     </label>
 
+                    <!-- Fecha -->
                     <label class="block">
-                        <span class="text-sm font-medium text-gray-500">Fecha: <span class="text-sm text-red-400">*</span></span>
+                        <span class="text-sm font-medium text-gray-500">Fecha <span class="text-sm text-red-400">*</span></span>
                         <input type="date" formControlName="date"
-                            class="input input-bordered w-full mt-1" aria-label="Fecha del evento" required="">
+                            class="input input-bordered w-full mt-1" aria-label="Fecha del evento" required>
                     </label>
 
+                    <!-- Hora -->
                     <label class="block">
                         <span class="text-sm font-medium text-gray-500">Hora <span class="text-sm text-red-400">*</span></span>
                         <input type="time" formControlName="time"
                             class="input input-bordered w-full mt-1" aria-label="Hora del evento" required>
                     </label>
 
+                    <!-- Tipo -->
                     <label class="block">
-                        <span class="text-sm font-medium text-gray-500">Tipo:  <span class="text-sm text-red-400">*</span></span>
+                        <span class="text-sm font-medium text-gray-500">Tipo <span class="text-sm text-red-400">*</span></span>
                         <select formControlName="type" class="select input-bordered w-full mt-1" aria-label="Tipo del evento" required>
                             <option value="Gratis">Gratis</option>
                             <option value="Pago">Pago</option>
@@ -59,14 +70,17 @@
                     </label>
                 </div>
             </div>
+
+            <!-- Imagen -->
             <div>
                 <div class="flex items-start justify-end mb-3">
                     <button type="submit" class="btn btn-lg btn-primary">Publicar Evento</button>
                 </div>
+
                 <h3 class="text-lg font-medium mb-2">Imagen del Evento</h3>
 
                 <div class="border border-dashed rounded-lg p-3 flex flex-col items-center gap-3">
-                    <div class="w-full h-56 bg-base-200 rounded-md overflow-hidden flexx items-center justify-center">
+                    <div class="w-full h-56 bg-base-200 rounded-md overflow-hidden flex items-center justify-center">
                         @if (imagePreview()) {
                             <img [src]="imagePreview()" alt="preview" class="w-full h-full object-cover">
                         }
@@ -83,6 +97,7 @@
             </div>
         </section>
 
+        <!-- Boletos -->
         <section class="grid-cols-1 md:grid-cols-2 gap-4" aria-labelledby="ticket-config">
             <div>
                 <h2 id="ticket-config" class="text-xl font-semibold mb-3">Configuración de Boletos</h2>
@@ -91,8 +106,9 @@
                     <label class="block">
                         <span class="text-sm font-medium text-gray-500">Capacidad total (tope)</span>
                         <input type="number" min="0" formControlName="capacity" class="input input-bordered w-full mt-1">
-                        <p class="text-xs text-neutral mt-1">Define el limite máximo de asistentes. La suma de tickets no puede exceder esta cifra</p>
+                        <p class="text-xs text-neutral mt-1">La suma de tickets no puede exceder esta cifra.</p>
                     </label>
+
                     <div class="block">
                         <span class="text-sm font-medium text-gray-500">Total tickets configurados</span>
                         <div class="mt-1 text-lg font-semibold">
@@ -103,6 +119,7 @@
             </div>
 
             <div class="space-y-3" formArrayName="tickets">
+
                 @for (ticket of tickets.controls; track $index ) {
                     <div [formGroupName]="$index" class="grid grid-cols-12 gap-2 items-end">
                         <div class="col-span-5">
@@ -110,26 +127,35 @@
                             <select class="select input-bordered w-full" formControlName="type">
                                 <option value="general">General</option>
                                 <option value="vip">VIP</option>
-                                <!-- <option value="">Estudiante</option> -->
                                 <option value="early">Oro</option>
                             </select>
                         </div>
+
                         <div class="col-span-3">
                             <label class="block text-xs text-gray-500">Precio</label>
-                            <input type="number" min="0" step="0.01" formControlName="ticketPrice" class="input input-bordered w-full mt-1" />
+                            <input type="number" min="0" step="0.01" formControlName="ticketPrice"
+                                class="input input-bordered w-full mt-1" />
                         </div>
+
                         <div class="col-span-3">
                             <label class="block text-xs text-gray-500">Cantidad</label>
                             <input type="number" min="0" class="input input-bordered w-full" formControlName="quantity" />
                         </div>
+
                         <div class="col-span-1">
                             <button type="button" class="btn btn-ghost" (click)="removeTicketType($index)" aria-label="Eliminar tipo">✕</button>
                         </div>
-                        </div>
+                    </div>
                 }
+
                 <div>
-                    <button type="button" [disabled]="totalTicketsCount() === capacityValue()" class="btn btn-sm btn-outline" (click)="addTicketType()">+ Agregar tipo</button>
+                    <button type="button" 
+                        [disabled]="totalTicketsCount() === capacityValue()" 
+                        class="btn btn-sm btn-outline" 
+                        (click)="addTicketType()">+ Agregar tipo
+                    </button>
                 </div>
+
                 @if (capacityValue() > 0 && totalTicketsCount() > capacityValue()) {
                     <div class="text-warning text-sm mt-2">
                         La suma de cantidades de los tipos de boleto excede la capacidad total.
@@ -138,6 +164,7 @@
             </div>
         </section>
 
+        <!-- Monetización -->
         <section class="bg-base-100 rounded-lg p-4">
             <h2 class="text-lg font-semibold mb-3">Opciones de Monetización</h2>
 
@@ -146,73 +173,70 @@
                     <input type="checkbox" formControlName="sellMerch" class="checkbox mt-1" />
                     <div>
                         <div class="font-medium">Venta de mercancía</div>
-                        <div class="text-xs text-neutral">Permitir ventas de artículos físicos/merch durante el evento.</div>
+                        <div class="text-xs text-neutral">Permite vender artículos físicos/merch durante el evento.</div>
                     </div>  
                 </label>
-
-                <!-- <label class="flex items-start gap-3">
-                    <input type="checkbox" formControlName="postEventContent" class="checkbox mt-1" />
-                    <div>
-                        <div class="font-medium">Contenido post-evento</div>
-                        <div class="text-xs text-neutral">Ofrecer grabaciones o contenido exclusivo después del evento.</div>
-                    </div>
-                </label> -->
             </div>
         </section>
 
-        <!-- Productos: mostrar formulario dinámico si sellMerch está activo -->
+        <!-- Productos -->
         @if (eventForm.get('sellMerch')?.value) {
             <section class="bg-base-100 rounded-lg p-4">
                 <h2 class="text-lg font-semibold mb-3">Productos</h2>
     
                 <div formArrayName="products" class="space-y-3">
+
                     @for (product of products.controls; track $index) {
                         <div [formGroupName]="$index" class="grid grid-cols-12 gap-3 items-end border rounded p-3">
+                            
                             <div class="col-span-4">
                                 <label class="block">
                                     <span class="text-sm font-medium text-gray-500">Nombre</span>
                                     <input type="text" formControlName="name" class="input input-bordered w-full mt-1" />
                                 </label>
                             </div>
+
                             <div class="col-span-3">
                                 <label class="block">
                                     <span class="text-sm font-medium text-gray-500">Precio</span>
                                     <input type="number" min="0" step="0.01" formControlName="productPrice" class="input input-bordered w-full mt-1" />
                                 </label>
                             </div>
+
                             <div class="col-span-2">
                                 <label class="block">
                                     <span class="text-sm font-medium text-gray-500">Stock</span>
                                     <input type="number" min="0" formControlName="stock" class="input input-bordered w-full mt-1" />
                                 </label>
                             </div>
+
                             <div class="col-span-3">
                                 <label class="block">
                                     <span class="text-sm font-medium text-gray-500">Imagen</span>
                                     <input type="file" accept="image/*" (change)="onProductFileChange($event, $index)" class="file-input file-input-bordered w-full mt-1" />
                                 </label>
+
                                 @if (productPreviews[$index]) {
                                     <img [src]="productPreviews[$index]" class="w-24 h-24 object-cover mt-2 rounded" />
                                 }
                             </div>
+
                             <div class="col-span-12 text-right">
                                 <button type="button" class="btn btn-sm btn-outline" (click)="removeProduct($index)">Eliminar</button>
                             </div>
+
                         </div>
                     }
-    
+
                     <div>
                         <button type="button" class="btn btn-sm btn-outline" (click)="addProduct()">+ Agregar producto</button>
                     </div>
+
                 </div>
             </section>
         }
+
     </form>
 
-    <!-- <div>
-        {{this.eventForm.invalid | json}}
-        {{this.eventForm.value | json}}
-    </div> -->
+    <shared-loading></shared-loading>
 </div>
-
-<shared-loading></shared-loading>
