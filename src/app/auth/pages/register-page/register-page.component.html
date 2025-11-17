@@ -19,18 +19,18 @@
                             (click)="setRole('asistente')">Asistente</button>
                     </div>
                     <div class="form-control">
-                        <label class="label label-text font-semibold mb-2">Nombre completo: </label>
-                        <input type="text" class="input input-bordered w-full focus:input-neutral mb-2" formControlName="name" placeholder="Nombre completo" required/>
+                        <label class="label label-text font-semibold mb-2">Nombre Completo: </label>
+                        <input type="text" class="input input-bordered w-full focus:input-neutral mb-2" formControlName="name" placeholder="Nombre Completo" required/>
                     </div>
                     <div class="form-control">
-                        <label class="label label-text font-semibold mb-2">Email: </label>
-                        <input type="email" class="input input-bordered w-full focus:input-neutral mb-2" formControlName="email" placeholder="Correo Electronico" required/>
+                        <label class="label label-text font-semibold mb-2">Correo Electrónico: </label>
+                        <input type="email" class="input input-bordered w-full focus:input-neutral mb-2" formControlName="email" placeholder="Correo Electrónico" required/>
                     </div>
                     <!-- Campos para ASISTENTE -->
                     <div [hidden]="!isOrganizer">
                         <div class="form-control">
-                            <label class="label label-text font-semibold mb-2">Razón social: </label>
-                            <input type="text" class="input input-bordered w-full focus:input-neutral mb-2" formControlName="razonSocial" placeholder="Razón social" />
+                            <label class="label label-text font-semibold mb-2">Razón Social: </label>
+                            <input type="text" class="input input-bordered w-full focus:input-neutral mb-2" formControlName="razonSocial" placeholder="Razón Social" />
                         </div>
                         <div class="form-control">
                             <label class="label label-text font-semibold mb-2">RFC: </label>
@@ -53,12 +53,12 @@
                         <label class="flex items-center gap-3">
                             <input type="checkbox" class="checkbox mt-1" />
                             <div>
-                                <div class="font-medium">Acepto las Politicas de Privacidad</div>                            
+                                <div class="font-medium">Acepto las Políticas de Privacidad</div>                            
                             </div>  
                         </label>
                     </div>
                     <div class="mt-4 w-full">
-                        <button type="submit" class="btn btn-neutral w-full">Crear cuenta</button>
+                        <button type="submit" class="btn btn-neutral w-full">Crear Cuenta</button>
                         <div class="divider text-gray-600"> o </div>
                         <div id="g_id_signin" class="w-full flex justify-center"></div>
                     </div>

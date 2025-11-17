@@ -1,5 +1,5 @@
 <div class="min-h-screen w-full p-4">
-    <shared-header-back [title]="'Compr tus boletos'" (back)="goBack()"/>
+    <shared-header-back [title]="'Comprar tus Boletos'" (back)="goBack()"/>
     <div class="w-full mx-auto grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
         <div class="flex flex-col gap-4 p-2 h-full">
             <!-- <div class="card bg-base-100 p-4 rounded-lg shadow-sm">
@@ -17,7 +17,7 @@
         <aside class="p-2">
             <form [formGroup]="formBuyTicket" (ngSubmit)="onSubmit()" class="space-y-4">
                     <div class="card bg-base-200 p-3 rounded-lg shadow-sm">
-                        <label class="text-sm font-medium mb-2 block">Selecciona la sección</label>
+                        <label class="text-sm font-medium mb-2 block">Selecciona la Sección</label>
                         <div class="space-y-2 max-h-48 sm:max-h-56 overflow-auto pr-1">
                             @for (zone of zones; track zone.id) {
                                 <button
@@ -42,7 +42,7 @@
                     </div>
                     <div class="mt-4">
                         <div class="card bg-base-200 p-3 rounded-lg shadow-sm">
-                            <h4 class="font-semibold mb-2">Información adicional</h4>
+                            <h4 class="font-semibold mb-2">Información Adicional</h4>
                             <p class="text-sm text-neutral/80 mb-2">Descripción: {{ event?.description }}</p>
                             <p class="text-sm text-neutral/80">Políticas y detalles del evento disponibles en la página del organizador.</p>
                         </div>
@@ -72,7 +72,7 @@
                     </div>
                     <div class="mt-4">
                         <div class="flex items-center justify-end mb-3">
-                            <div class="font-semibold">Total boletos: {{ totalTickets() }} — Total: ${{ totalPrice() }}</div>
+                            <div class="font-semibold">Boletos: {{ totalTickets() }} — Total: ${{ totalPrice() }}</div>
                         </div>
                         @if (totalTickets() >= 5) {
                             <span class="text-xs text-warning">Has alcanzado el máximo de boletos por compra (5).</span>

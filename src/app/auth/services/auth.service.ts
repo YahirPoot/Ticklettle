@@ -1,7 +1,7 @@
-import { computed, inject, Injectable, signal } from '@angular/core';
+import { computed, inject, Injectable, resource, signal } from '@angular/core';
 import { SocialAuthService, SocialUser } from "@abacritt/angularx-social-login";
 import { GoogleLoginProvider } from "@abacritt/angularx-social-login";
-import { catchError, from, map, Observable, of, switchMap, tap } from 'rxjs';
+import { catchError, firstValueFrom, from, map, Observable, of, switchMap, tap } from 'rxjs';
 // import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 
@@ -41,6 +41,10 @@ export class AuthService {
   })
 
   user = computed(() => this._user());
+
+  checkStatusAuth = resource({
+    loader: ()  => firstValueFrom(this.checkStatus()),
+  })
 
   login(email: string, password: string): Observable<boolean> {
     const user = this.userRepository.verifyCredentials(email, password);

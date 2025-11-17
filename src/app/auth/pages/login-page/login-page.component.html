@@ -4,15 +4,15 @@
         <form [formGroup]="loginForm" (ngSubmit)="onSubmit()"
             class="flex flex-col gap-2">
             <div class="form-control">
-                <label class="label label-text font-semibold mb-2">Email: </label>
-                <input type="email" class="input input-bordered w-full focus:input-neutral mb-2" formControlName="email" placeholder="Correo Electronico" required/>
+                <label class="label label-text font-semibold mb-2">Correo Electrónico: </label>
+                <input type="email" class="input input-bordered w-full focus:input-neutral mb-2" formControlName="email" placeholder="Correo Electrónico" required/>
             </div>
             <div class="form-control mb-6 relative">
                 <label class="label label-text font-semibold mb-2">Contraseña:</label>
                 <input  
                   type="password"
                     class="input input-bordered w-full focus:input-neutral password" 
-                    formControlName="password" required placeholder="Contaseña"
+                    formControlName="password" required placeholder="Contraseña"
                 />
                 
             </div>

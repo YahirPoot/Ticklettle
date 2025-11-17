@@ -165,7 +165,7 @@ export class UserRepositoryService {
       users.forEach(u => this.upsert({ ...u, isRegistered: true }));
       localStorage.setItem(KEY_SEEDED, 'true');
     } catch (e) {
-      console.warn('No se pudo cargar el seed de usuarios:', e);
+      console.warn('No se pudo cargar el feed de usuarios:', e);
     }
   }
   
