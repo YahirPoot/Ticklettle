@@ -194,5 +194,6 @@ export class AuthService {
     this._user.set(null);
     this._authStatus.set('not-authenticated');
     localStorage.clear();
+    sessionStorage.clear();
   }
 }

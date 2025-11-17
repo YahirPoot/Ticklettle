@@ -3,7 +3,7 @@ export interface AttendeeRegisterRequest {
     firstName: string,
     lastName: string,
     password: string,
-    dateOfBirth: string,
+    dateOfBirth: string | null,
     gender: string,
     photoUrl: string | File
     googleToken?: string

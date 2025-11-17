@@ -71,6 +71,9 @@
                             >
                                 <mat-icon class="text-base">edit</mat-icon>
                             </a>
+                            <button class="btn btn-sm hover:btn-error btn-circle">
+                                <mat-icon class="text-base">delete</mat-icon>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -113,22 +116,6 @@
                                         <td>{{ticket.status}}</td>
                                     </tr>
                                 }
-                                <!-- <tr class="hover:bg-base-200">
-                                    <th>2</th>
-                                    <td>Jose Perez</td>
-                                    <td>jose@example.com</td>
-                                    <td>PayPal</td>
-                                    <td>12/12/2023</td>
-                                    <td>Inactivo</td>
-                                </tr>
-                                <tr class="hover:bg-base-200">
-                                    <th>3</th>
-                                    <td>Estefania Pacheco</td>
-                                    <td>estefania.pacheco@example.com</td>
-                                    <td>Tarjeta de Credito</td>
-                                    <td>12/12/2023</td>
-                                    <td>Activo</td>
-                                </tr> -->
                             </tbody>
                         </table>
                     </div>
@@ -155,57 +142,33 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr>
-                                        <th>
-                                            <div class="flex items-center gap-3">
-                                                <div class="avatar">
-                                                    <div class="mask mask-squircle h-12 w-12">
-                                                        <img src="https://img.freepik.com/psd-gratis/refrescante-bebida-cola-fria-vaso-salpicaduras_632498-25634.jpg?semt=ais_hybrid&w=740&q=80" alt="Producto 1">
+                                    @for (product of prroductsByEvent; track $index) {
+                                        <tr>
+                                            <th>
+                                                <div class="flex items-center gap-3">
+                                                    <div class="avatar">
+                                                        <div class="mask mask-squircle h-12 w-12">
+                                                            <img [src]="'assets/default_image.png' " [alt]="'Imagen del producto ' + product.name" />
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                        </th>
-                                        <th>
-                                            Bebida Cola
-                                            <br />
-                                            <span class="badge badge-ghost badge-sm">Bebida</span>
-                                        </th>
-                                        <td>
-                                            $20.00
-                                        </td>
-                                        <td>
-                                            35
-                                        </td>
-                                        <td>
-                                            $200.00
-                                        </td>
-                                    </tr>
-                                    <!-- row 2 -->
-                                    <tr>
-                                        <th>
-                                            <div class="flex items-center gap-3">
-                                                <div class="avatar">
-                                                    <div class="mask mask-squircle h-12 w-12">
-                                                        <img src="https://png.pngtree.com/png-vector/20210630/ourmid/pngtree-t-shirt-clothes-casual-shirt-png-image_3544180.jpg" alt="Producto 2">
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </th>
-                                        <td>
-                                            Camiseta Oficial
-                                            <br />
-                                            <span class="badge badge-ghost badge-sm">Ropa</span>
-                                        </td>
-                                        <td>
-                                            $150.00
-                                        </td>
-                                        <td>
-                                            20
-                                        </td>
-                                        <td>
-                                            $3000.00
-                                        </td>
-                                    </tr>
+                                            </th>
+                                            <th>
+                                                {{ product.name }}
+                                                <br />
+                                                <!-- <span class="badge badge-ghost badge-sm">{{ product. }}</span> -->
+                                            </th>
+                                            <td>
+                                                $ {{ product.price }}
+                                            </td>
+                                            <td>
+                                                {{ product.stock }}
+                                            </td>
+                                            <td>
+                                                $ 0
+                                            </td>
+                                        </tr>
+                                    }
                                 </tbody>
                             </table>
                         </div>
