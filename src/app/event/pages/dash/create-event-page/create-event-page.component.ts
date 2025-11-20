@@ -14,7 +14,8 @@ import { ProfileService } from '../../../../profile/services/profile.service';
 import { firstValueFrom } from 'rxjs';
 import { EventService } from '../../../services/event.service';
 import { ImageCloudinaryUploadService } from '../../../../shared/services/image-cloudinary-upload.service';
-import { CreateEventRequest, ProductRequest } from '../../../interfaces';
+import { CreateEventFormValue, CreateEventRequest, ProductRequest } from '../../../interfaces';
+import { CreateEventUseCase } from '../../../use-cases/create-event.usecase';
 
 
 @Component({
@@ -26,12 +27,11 @@ export class CreateEventPageComponent {
   private fb = inject(FormBuilder);
   private router = inject(Router);
   
-  private readonly authService = inject(AuthService);
   private notificationSvc = inject(NotificationService);
   private loadingService = inject(LoadingModalService);
   private profileService = inject(ProfileService);
   private eventService = inject(EventService);
-  private imageUploadSvc = inject(ImageCloudinaryUploadService);
+  private createEventUseCase = inject(CreateEventUseCase);
 
   profileUserValue = computed(() => this.profileService.getProfileUser());
 
@@ -157,111 +157,56 @@ export class CreateEventPageComponent {
   }
 
   async onSubmit() {
-    // this.eventForm.markAllAsTouched();
-    // if (this.eventForm.invalid) {
-    //   this.notificationSvc.showNotification('Por favor, corrige los errores en el formulario.', 'error');
-    //   console.log(this.eventForm.invalid)
-    //   return;
-    // }
+    if (this.eventForm.invalid) {
+      this.notificationSvc.showNotification('Por favor, completa correctamente el formulario.');
+      return;
+    }
 
-    const formValue = this.eventForm.getRawValue();
+    const formRaw = this.eventForm.getRawValue();
 
-    this.loadingService.showModal('create', 'Iniciando creación de evento...');
-    this.eventForm.disable();
+    // Mapeo a CreateEventFormValue interface
+    const formValue: CreateEventFormValue = {
+      name: (formRaw.name ?? '').toString(),
+      description: formRaw.description ?? undefined,
+      date: (formRaw.date ?? '').toString(),
+      time: (formRaw.time ?? '').toString(),
+      location: formRaw.location ?? undefined,
+      type: (formRaw.type ?? 'Gratis').toString(),
+      capacity: formRaw.capacity ?? null,
+      sellMerch: Boolean(formRaw.sellMerch),
+      tickets: (formRaw.tickets || []).map((t: any) => ({
+        type: (t?.type ?? 'general').toString(),
+        ticketPrice: Number(t?.ticketPrice ?? t?.price ?? 0),
+        quantity: Number(t?.quantity ?? 0)
+      })),
+      products: (formRaw.products || []).map((p: any) => ({
+        name: (p?.name ?? '').toString(),
+        description: p?.description ?? undefined,
+        productPrice: Number(p?.productPrice ?? p?.price ?? 0),
+        stock: Number(p?.stock ?? 0),
+        imageUrl: p?.imageUrl ?? undefined
+      })),
+      postEventContent: Boolean(formRaw.postEventContent)
+    };
 
-   try {
-      // obtener organizerHouseId desde profile
-      const profile = await firstValueFrom(this.profileService.getProfileUser());
-      const organizerHouseId = profile?.organizingHouses?.[0]?.organizingHouseId;
-      if (!organizerHouseId) {
-        this.notificationSvc.showNotification('No se encontró una casa organizadora asociada a tu perfil.', 'error');
-        this.loadingService.hideModalImmediately();
-        return;
-      }
+    this.loadingService.showModal('create', 'Creando evento, por favor espera...');
 
-      // construir dateTime ISO
-      const date = this.eventForm.get('date')?.value;
-      const time = this.eventForm.get('time')?.value;
-      const dateTimeISO = new Date(`${date}T${time}`).toISOString();
-      this.loadingService.hideModalImmediately();
+    try {
+      await this.createEventUseCase.execute({
+        formValue,
+        eventImageFile: this.imageFile(),
+        productsFiles: this.productFiles
+      });
 
-      // Subii imagen primeor a  cloudinary (si existe) y obtener imageUrl
-      this.loadingService.showModal('create', 'Subiendo imagen del evento...');
-      let imageUrl = '';
-      const file = this.imageFile();
-      if (file) {
-        const img = new FormData();
-        img.append('imageFile', file, file.name);
-        const uploadRes = await firstValueFrom(this.imageUploadSvc.uploadImageToCloudinary(img));
-        imageUrl = uploadRes.url;
-      }
-      // Contruir ticketTypes: si el evento es "gratis" forzar price = 0
-      const isFree = this.isFree();
-      const ticketsPayload = (formValue.tickets || []).map((t: any) => ({
-        name: t.type || 'pago',
-        description: t.description ?? '', // si no tienes campo description, dejar vacío
-        price: isFree ? 0 : Number(t.ticketPrice) || 0,
-        availableQuantity: Number(t.quantity) || 0
-      }));
-
-      
-      this.loadingService.showModal('create', 'Subiendo imagen de los productos...');
-      // Preparar productos: subir imágenes y mapear campos
-      const productsPayload = [] as ProductRequest[];
-      for (let i = 0; i < this.products.length; i++) {
-        this.loadingService.showModal('create', `Subiendo imagen de producto ${i + 1}/${this.products.length}...`);
-        const pCtrl = this.products.at(i);
-        const pRaw = pCtrl.getRawValue();
-        const file = this.productFiles[i];
-        let prodImageUrl = pRaw.imageUrl || '';
-        if (file) {
-          const pd = new FormData();
-          pd.append('imageFile', file, file.name);
-          try {
-            const up = await firstValueFrom(this.imageUploadSvc.uploadImageToCloudinary(pd));
-            prodImageUrl = up.url;
-          } catch (err) {
-            console.warn('Error subiendo imagen de producto', err);
-          }
-        }
-
-        productsPayload.push({
-          name: pRaw.name || '',
-          description: pRaw.description || '',
-          price: Number(pRaw.productPrice),
-          stock: Number(pRaw.stock) || 0,
-          imageUrl: prodImageUrl
-        });
-      }
-
-      this.loadingService.showModal('create', 'Ya casi terminando...');
-      const createeEventRequest: CreateEventRequest = {
-        name: this.eventForm.get('name')?.value!,
-        description: this.eventForm.get('description')?.value ?? '',
-        dateTime: dateTimeISO,
-        location: this.eventForm.get('location')?.value ?? '',
-        type: isFree ? 'Gratis' : 'Pago', // ajustar según tu formulario
-        status: 'Activo', // siempre Activo al crear el evento
-        organizingHouseId: organizerHouseId,
-        imageUrl: imageUrl,
-        ticketTypes: ticketsPayload,
-        products: productsPayload
-      }
-
-      await firstValueFrom(this.eventService.createEvent(createeEventRequest));
-      this.notificationSvc.showNotification('Evento creado exitosamente.', 'success');
-
-      // limpieza UI
       this.imageFile.set(null);
       this.eventForm.reset();
       this.tickets.clear();
       this.addTicketType();
-      this.loadingService.hideModalImmediately();
-      this.notificationSvc.showNotification('Evento creado exitosamente.', 'success');
       this.router.navigate(['/admin/events']);
     } catch (err) {
       console.error('Error creando evento', err);
       this.notificationSvc.showNotification('Error al crear el evento.', 'error');
+    } finally {
       this.loadingService.hideModalImmediately();
       this.eventForm.enable();
     }
