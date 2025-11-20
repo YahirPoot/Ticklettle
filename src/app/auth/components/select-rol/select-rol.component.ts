@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { RegisterRequest } from '../../interfaces';
+import { NotificationService } from '../../../shared/services/notification.service';
 
 @Component({
   selector: 'app-select-rol',
@@ -11,6 +12,8 @@ import { RegisterRequest } from '../../interfaces';
 export class SelectRolComponent {
   private readonly router = inject(Router);
   private readonly authService = inject(AuthService);
+  private notificationSvc = inject(NotificationService);
+
   public async choose(role: 0 | 1) {
     const socialRaw = sessionStorage.getItem('social_user') || localStorage.getItem('provisional_social');
     if (!socialRaw) {
@@ -57,14 +60,13 @@ export class SelectRolComponent {
           localStorage.removeItem('provisional_role');
           sessionStorage.removeItem('social_user');
           this.router.navigateByUrl('/auth/callback');
-        } else {
-          localStorage.setItem('provisional_role', String(role));
-          this.router.navigate(['/auth/register'], { queryParams: { role }});
         }
       },
       error: () => {
-        localStorage.setItem('provisional_role', String(role));
-        this.router.navigate(['/auth/register'], { queryParams: { role }});
+        this.notificationSvc.showNotification('No se pudo registrar con Google. Por favor, completa el formulario de registro.', 'error');
+        localStorage.clear();
+        sessionStorage.clear();
+        this.router.navigate(['/auth/register'], { queryParams: { role: 0 }});
       }
     });
   }
