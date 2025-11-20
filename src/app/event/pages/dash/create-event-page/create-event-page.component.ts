@@ -1,20 +1,13 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormArray, FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { MatIcon } from "@angular/material/icon";
 
 import { NotificationService } from '../../../../shared/services/notification.service';
-import { TicketTypeRequest } from '../../../../ticket/interfaces';
-import { MatIcon } from "@angular/material/icon";
 import { LoadingComponent } from '../../../../shared/components/loading/loading.component';
 import { LoadingModalService } from '../../../../shared/services/loading-modal.service';
-// import { JsonPipe } from '@angular/common';
-import { AuthService } from '../../../../auth/services/auth.service';
-import { ProfileService } from '../../../../profile/services/profile.service';
-import { firstValueFrom } from 'rxjs';
-import { EventService } from '../../../services/event.service';
-import { ImageCloudinaryUploadService } from '../../../../shared/services/image-cloudinary-upload.service';
-import { CreateEventFormValue, CreateEventRequest, ProductRequest } from '../../../interfaces';
+import { CreateEventFormValue } from '../../../interfaces';
 import { CreateEventUseCase } from '../../../use-cases/create-event.usecase';
 
 
@@ -29,18 +22,13 @@ export class CreateEventPageComponent {
   
   private notificationSvc = inject(NotificationService);
   private loadingService = inject(LoadingModalService);
-  private profileService = inject(ProfileService);
-  private eventService = inject(EventService);
   private createEventUseCase = inject(CreateEventUseCase);
-
-  profileUserValue = computed(() => this.profileService.getProfileUser());
 
   imagePreview = signal<string | null>(null);
   imageFile = signal<File | null>(null);
   // files & previews for products
   productFiles: (File | null)[] = [];
   productPreviews: string[] = [];
-
 
   eventForm = this.fb.group({
     name: ['', [Validators.required, Validators.minLength(3)]],
