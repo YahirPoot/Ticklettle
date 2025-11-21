@@ -7,7 +7,7 @@
             <!-- Imagen de Perfil -->
             <!-- Nota: Esta URL es un placeholder. En una app real, usarías la URL del usuario. -->
             <img 
-                src="'{{profileUser.value()?.user?.photoUrl}}' || 'assets/profile_user.png'"
+                [src]="profileUser.value()?.user?.photoUrl || 'assets/profile_user.png'"
                 [alt]="'Foto de' + profileUser.value()?.user?.firstName" 
                 class="w-24 h-24 object-cover rounded-full shadow-lg shrink-0"
             />
