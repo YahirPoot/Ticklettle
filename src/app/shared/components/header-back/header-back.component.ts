@@ -10,7 +10,7 @@ import { Router, UrlTree } from '@angular/router';
         <button (click)="onBack()" class="btn btn-ghost btn-circle text-gray-600 hover:bg-gray-100 mr-4">
             <mat-icon>arrow_back</mat-icon>
         </button>
-        <h1 class="text-3xl font-bold text-gray-800">{{ title() }}</h1>
+        <h1 class="text-3xl font-bold">{{ title() }}</h1>
     </header>
   `,
 })

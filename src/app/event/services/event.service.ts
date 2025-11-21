@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { firstValueFrom, Observable, tap } from 'rxjs';
-import { CreateEventRequest, EventInterface, EventsResponse } from '../interfaces';
+import { catchError, Observable, tap } from 'rxjs';
+import { CreateEventRequest, EventInterface, EventsResponse, UpdateEventRequest } from '../interfaces';
 import { environment } from '../../../environments/environment.dev';
 
 const apiBaseUrl = environment.apiBaseUrl;
@@ -20,7 +20,7 @@ export class EventService {
   }
 
   getEventsOrganizer() {
-    return this.http.get<EventInterface[]>(`${apiBaseUrl}/Events`)
+    return this.http.get<EventsResponse>(`${apiBaseUrl}/Events`)
     .pipe(
       tap(res => console.log('Eventos obtenidos organizador:', res))
     )
@@ -38,6 +38,17 @@ export class EventService {
     return this.http.post<CreateEventRequest>(`${apiBaseUrl}/Events`, createEventRequest)
       .pipe(
         tap(response => console.log('Evento creado:', response))
+      );
+  }
+
+  updateEvent(eventId: number, updateEventRequest: UpdateEventRequest): Observable<EventInterface> {
+    return this.http.put<EventInterface>(`${apiBaseUrl}/Events/${eventId}`, updateEventRequest)
+      .pipe(
+        tap(response => console.log('Evento actualizado:', response)),
+        catchError(error => {
+          console.log('Error al actualizar el evento:', error);
+          throw error;
+        })
       );
   }
 }

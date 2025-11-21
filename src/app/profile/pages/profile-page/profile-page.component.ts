@@ -33,7 +33,7 @@ export class ProfilePageComponent {
   })
 
   get profileUser() {
-    console.log('profileUserResource', this.profileUserResource.value());
+    // console.log('profileUserResource', this.profileUserResource.value());
     return this.profileUserResource;
   }
 

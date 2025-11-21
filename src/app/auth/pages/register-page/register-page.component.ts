@@ -7,6 +7,7 @@ import { RegisterRequest, UserRole } from '../../interfaces';
 import { LoadingModalService } from '../../../shared/services/loading-modal.service';
 import { LoadingComponent } from '../../../shared/components/loading/loading.component';
 import { first } from 'rxjs';
+import { NotificationService } from '../../../shared/services/notification.service';
 
 const googleClientId = environment.googleClientId;
 declare global {
@@ -24,6 +25,7 @@ export class RegisterPageComponent implements OnInit, OnDestroy {
   private fb = inject(FormBuilder);
   private authService = inject(AuthService);
   private loadingService = inject(LoadingModalService);
+  private notificationService = inject(NotificationService);
 
   role: 0 | 1 = 0; // 0: asistente, 1: organizador
 
@@ -33,7 +35,7 @@ export class RegisterPageComponent implements OnInit, OnDestroy {
     email: ['', [Validators.required, Validators.email]],
     firstName: ['', [Validators.required]],
     lastName: ['', [Validators.required]],
-    password: ['', [Validators.required, Validators.minLength(6)]],
+    password: ['', [  Validators.minLength(6)]],
     // campos organizador
     company: [''],
     taxId: [''],
@@ -286,7 +288,11 @@ export class RegisterPageComponent implements OnInit, OnDestroy {
             this.router.navigate(['/auth/callback']);
           }
         },
-        error: err => console.error('Error registrar organizer', err)
+        error: err => {
+          console.error('Error registrar organizer', err);
+          this.notificationService.showNotification('Error al registrar organizador. Inténtalo de nuevo.', 'error');
+          this.loadingService.hideModalImmediately()
+        }
       });
       return;
     }
@@ -302,9 +308,8 @@ export class RegisterPageComponent implements OnInit, OnDestroy {
       },
       error: err => {
         console.error('Error registrar attendee', err);
-        try {
-          console.error('server error body:', err?.error ?? err);
-        } catch (e) {}
+        this.notificationService.showNotification('Error al registrar asistente. Inténtalo de nuevo.', 'error');
+        this.loadingService.hideModalImmediately();
       }
     });
   }

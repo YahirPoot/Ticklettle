@@ -1,4 +1,6 @@
 <div class="min-h-screen w-full p-2">
+    <shared-header-back [title]="'Crear Nuevo Evento'" (back)="goBack()" />
+
     <form [formGroup]="eventForm" (ngSubmit)="onSubmit()" class="w-full p-4 space-y-6">
 
         <!-- Información general -->
@@ -82,6 +84,12 @@
                             <p class="text-sm text-error mt-1">Campo obligatorio</p>
                         }
                     </label>
+
+                    <label class="block">
+                        <span class="text-sm font-medium text-gray-500">Capacidad total (tope)</span>
+                        <input type="number" min="0" formControlName="capacity" class="input input-bordered w-full mt-1">
+                        <p class="text-xs text-neutral mt-1">La suma de tickets no puede exceder esta cifra (0 = ilimitado).</p>
+                    </label>
                 </div>
             </div>
 
@@ -112,71 +120,67 @@
         </section>
 
         <!-- Boletos -->
-        <section class="grid-cols-1 md:grid-cols-2 gap-4" aria-labelledby="ticket-config">
-            <div>
-                <h2 id="ticket-config" class="text-xl font-semibold mb-3">Configuración de Boletos</h2>
-
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <label class="block">
-                        <span class="text-sm font-medium text-gray-500">Capacidad total (tope)</span>
-                        <input type="number" min="0" formControlName="capacity" class="input input-bordered w-full mt-1">
-                        <p class="text-xs text-neutral mt-1">La suma de tickets no puede exceder esta cifra.</p>
-                    </label>
-
-                    <div class="block">
-                        <span class="text-sm font-medium text-gray-500">Total tickets configurados</span>
-                        <div class="mt-1 text-lg font-semibold">
-                            {{ totalTicketsCount() }}
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="space-y-3" formArrayName="tickets">
-
-                @for (ticket of tickets.controls; track $index ) {
-                    <div [formGroupName]="$index" class="grid grid-cols-12 gap-2 items-end">
-                        <div class="col-span-5">
-                            <label class="block text-xs text-gray-500">Tipo</label>
-                            <select class="select input-bordered w-full" formControlName="type">
-                                <option value="general">General</option>
-                                <option value="vip">VIP</option>
-                                <option value="early">Oro</option>
-                            </select>
-                        </div>
-
-                        <div class="col-span-3">
-                            <label class="block text-xs text-gray-500">Precio</label>
-                            <input type="number" min="0" step="0.01" formControlName="ticketPrice"
-                                class="input input-bordered w-full mt-1" />
-                        </div>
-
-                        <div class="col-span-3">
-                            <label class="block text-xs text-gray-500">Cantidad</label>
-                            <input type="number" min="0" class="input input-bordered w-full" formControlName="quantity" />
-                        </div>
-
-                        <div class="col-span-1">
-                            <button type="button" class="btn btn-ghost" (click)="removeTicketType($index)" aria-label="Eliminar tipo">✕</button>
-                        </div>
-                    </div>
-                }
-
+        @if (!isFree()) {
+            <section class="grid-cols-1 md:grid-cols-2 gap-4" aria-labelledby="ticket-config">
                 <div>
-                    <button type="button" 
-                        [disabled]="totalTicketsCount() === capacityValue()" 
-                        class="btn btn-sm btn-outline" 
-                        (click)="addTicketType()">+ Agregar tipo
-                    </button>
-                </div>
-
-                @if (capacityValue() > 0 && totalTicketsCount() > capacityValue()) {
-                    <div class="text-warning text-sm mt-2">
-                        La suma de cantidades de los tipos de boleto excede la capacidad total.
+                    <h2 id="ticket-config" class="text-xl font-semibold mb-3">Configuración de Boletos</h2>
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div class="block">
+                            <span class="text-sm font-medium text-gray-500">Total tickets configurados</span>
+                            <div class="mt-1 text-lg font-semibold">
+                                {{ totalTicketsCount() }}
+                            </div>
+                        </div>
                     </div>
-                }
-            </div>
-        </section>
+                </div>
+    
+                <div class="space-y-3" formArrayName="tickets">
+    
+                    @for (ticket of tickets.controls; track $index ) {
+                        <div [formGroupName]="$index" class="grid grid-cols-12 gap-2 items-end">
+                            <div class="col-span-5">
+                                <label class="block text-xs text-gray-500">Tipo</label>
+                                <select class="select input-bordered w-full" formControlName="type">
+                                    <option value="general">General</option>
+                                    <option value="vip">VIP</option>
+                                    <option value="early">Oro</option>
+                                </select>
+                            </div>
+    
+                            <div class="col-span-3">
+                                <label class="block text-xs text-gray-500">Precio</label>
+                                <input type="number" min="0" step="0.01" formControlName="ticketPrice"
+                                    class="input input-bordered w-full mt-1" />
+                            </div>
+    
+                            <div class="col-span-3">
+                                <label class="block text-xs text-gray-500">Cantidad</label>
+                                <input type="number" min="0" class="input input-bordered w-full" formControlName="quantity" />
+                            </div>
+    
+                            <div class="col-span-1">
+                                <button type="button" class="btn btn-ghost" (click)="removeTicketType($index)" aria-label="Eliminar tipo">✕</button>
+                            </div>
+                        </div>
+                    }
+    
+                    <div>
+                        <button type="button" 
+                            [disabled]="totalTicketsCount() === capacityValue()" 
+                            class="btn btn-sm btn-outline" 
+                            (click)="addTicketType()">+ Agregar tipo
+                        </button>
+                    </div>
+    
+                    @if (capacityValue() > 0 && totalTicketsCount() > capacityValue()) {
+                        <div class="text-warning text-sm mt-2">
+                            La suma de cantidades de los tipos de boleto excede la capacidad total.
+                        </div>
+                    }
+                </div>
+            </section>
+        }
 
         <!-- Monetización -->
         <section class="bg-base-100 rounded-lg p-4">

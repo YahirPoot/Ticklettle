@@ -15,6 +15,9 @@
 
 @if (eventResource.hasValue()) {
     <div class="flex flex-col">
+        <div class="m-3t-4 mb-2 text-2xl font-semibold">
+            Mis Eventos
+        </div>
         <div class="flex items-center justify-start">
             <div class="collapse collapse-arrow w-60 border border-base-300 bg-base-100 rounded-box">
                 <input type="checkbox" />
@@ -27,8 +30,8 @@
             </div>
         </div>
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-2 w-ful mt-4">
-            @for (event of events.value(); track $index) {
-                <div class="card bg-base-100 shadow-sm flex flex-col overflow-hidden">
+            @for (event of events.value()?.items; track $index) {
+                <div class="card bg-base-200 shadow-sm flex flex-col overflow-hidden">
                     <div class="flex flex-col md:flex-row items-stretch">
                         <!-- Info -->
                         <div class="p-4 flex-1 min-w-0 items-end justify-end">
