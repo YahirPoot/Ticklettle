@@ -1,31 +1,50 @@
-<div>
-    <div class="mb-6">
-        <h2 class="text-xl font-bold px-4">Ticklette</h2>
-        <div class="mt-5 mb-5"></div>
+<div class="h-full flex flex-col gap-6 p-4 rounded-r-md border-r border-gray-200">
+    <div class="flex items-center gap-3 px-1">
+        <div>
+            <h2 class="text-lg font-bold">Ticklette</h2>
+            <p class="text-xs text-gray-500">Explora eventos</p>
+        </div>
     </div>
-    @for (route of routes; track $index) {
-        <li class="mb-4">
-            <button [routerLink]="route.path === '' ? '/' : ['/', route.path]"
-                routerLinkActive="btn bg-base-200"
-                [routerLinkActiveOptions]="route.path === '' ? { exact: true } : { exact: false }"
-            >   
+    <div class="px-1">
+        @if (this.isAuthenticated()) {
             <div class="flex items-center gap-3">
-                <mat-icon>{{ route.icon }}</mat-icon>
-                <span class="is-drawer-close:hidden">{{ route.title }}</span>
+                <div class="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-medium">U</div>
+                <div class="flex-1">
+                    <div class="text-sm font-medium">Mi Perfil</div>
+                    <a [routerLink]="['/profile']" class="text-xs text-gray-400 hover:underline">Ver perfil</a>
+                </div>
             </div>
-            </button>
-        </li>
-    }
-    @if (this.isAuthenticated()) {
-        <li>
-            <a
-            (click)="authService.logout()"
-                class="w-full flex items-center gap-2 px-4 py-2 hover:bg-base-300 hover:text-black transition-all duration-200"
-                role="button"
-            >
-                <mat-icon>logout</mat-icon>
-                <span>Cerrar Sesión</span>
-            </a>
-        </li>
-    }
+        } @else {
+            <div class="flex items-center gap-3">
+                <a [routerLink]="['/auth/login']" class="btn btn-sm btn-ghost w-full">Iniciar sesión</a>
+            </div>
+        }
+    </div>
+    <div class="flex-1 overflow-auto px-1 mb-10">
+        @for (route of routes; track $index) {
+            <li class="mb-4">
+                <button [routerLink]="route.path === '' ? '/' : ['/', route.path]"
+                    routerLinkActive="btn bg-base-200"
+                    [routerLinkActiveOptions]="route.path === '' ? { exact: true } : { exact: false }"
+                >   
+                <div class="flex items-center gap-3">
+                    <mat-icon>{{ route.icon }}</mat-icon>
+                    <span class="is-drawer-close:hidden">{{ route.title }}</span>
+                </div>
+                </button>
+            </li>
+        }
+    </div>
+    <div class="pt-3 border-t border-gray-100 px-1">
+        <div class="flex items-center justify-between gap-3">
+            @if (this.isAuthenticated()) {
+                <button (click)="authService.logout()" class="text-sm text-red-600 hover:underline flex items-center gap-2">
+                    <mat-icon class="text-red-600">logout</mat-icon>
+                    Cerrar sesión
+                </button>
+            } @else {
+                <a [routerLink]="['/auth/register']" class="text-sm text-indigo-600 hover:underline">Crear cuenta</a>
+            }
+        </div>
+    </div>
 </div>
