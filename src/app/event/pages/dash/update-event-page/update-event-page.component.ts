@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject, signal } from '@angular/core';
+import { Component, computed, effect, inject, input, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { EventService } from '../../../services/event.service';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
@@ -8,10 +8,12 @@ import { LoadingModalService } from '../../../../shared/services/loading-modal.s
 import { LoadingComponent } from '../../../../shared/components/loading/loading.component';
 import { resource } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
+import { MatIconModule } from '@angular/material/icon';
+import { ImageCloudinaryUploadService } from '../../../../shared/services/image-cloudinary-upload.service';
 
 @Component({
   selector: 'app-update-event-page',
-  imports: [ReactiveFormsModule, LoadingComponent],
+  imports: [ReactiveFormsModule, LoadingComponent, MatIconModule],
   templateUrl: './update-event-page.component.html',
 })
 export class UpdateEventPageComponent {
@@ -20,10 +22,14 @@ export class UpdateEventPageComponent {
   private fb = inject(FormBuilder);
 
   private eventService = inject(EventService);
+  private imageUploadService = inject(ImageCloudinaryUploadService);
   private notificationService = inject(NotificationService);
   private loadingService = inject(LoadingModalService);
 
   readonly eventId: number = this.activateRoute.snapshot.params['eventId'];
+
+  imagePreview = signal<string | null>(null);
+  imageFile = signal<File | null>(null);
 
   // resource con loader que captura eventId por clausura
   eventResource = resource({
@@ -54,6 +60,20 @@ export class UpdateEventPageComponent {
     });
   }
 
+  onFileChange(e: Event) {
+    const input = e.target as HTMLInputElement;
+    const file = input.files?.[0] ?? null;
+
+    if (!file) return; 
+      this.imageFile.set(file);
+
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.imagePreview.set(reader.result as string);
+    }
+    reader.readAsDataURL(file);
+  }
+
   hasChanges(): boolean {
     const current = this.updateEventForm.value;
     const original = this.originalValues();
@@ -79,6 +99,8 @@ export class UpdateEventPageComponent {
   private fillForm(event: EventInterface): void {
     this.originalValues.set(event);
 
+    this.imagePreview.set(event.imageUrl ||  null);
+
     const [date = '', timeFull = ''] = (event.dateTime ?? '').split('T');
     const time = timeFull ? timeFull.substring(0, 5) : '';
 
@@ -90,7 +112,7 @@ export class UpdateEventPageComponent {
       location: event.location ?? '',
       type: event.type ?? '',
       status: event.status ?? '',
-      imageUrl: event.imageUrl ?? '',
+      imageUrl: event.imageUrl,
     }, { emitEvent: false });
 
     this.updateEventForm.markAsPristine();
@@ -131,6 +153,27 @@ export class UpdateEventPageComponent {
     const timePart = (form.time && form.time.length >= 5) ? form.time : '00:00';
     const dateTime = `${datePart}T${timePart}`;
 
+    let imageToUpload = form.imageUrl ?? '';
+    if (this.imageFile()) {
+      this.notificationService.showNotification('Has seleccionado una nueva imagen.', 'info');
+      const imageFile = new FormData();
+      imageFile.append('imageFile', this.imageFile() as File, (this.imageFile() as File).name);
+      // subir imagen de forma sincrónica (podría mejorarse)
+      this.loadingService.showModal('update', 'Subiendo imagen...');
+      const uploadImage = this.imageUploadService.uploadImageToCloudinary(imageFile).subscribe({
+        next: (res) => {
+          imageToUpload = res.url ?? '';
+          this.loadingService.hideModal();
+        },
+        error: (err) => {
+          this.loadingService.hideModal();
+          this.notificationService.showNotification('Error al subir la imagen. Inténtalo de nuevo.', 'error');
+          console.error('Error uploading image:', err);
+          return;
+        }
+      });
+    }
+
     const updateRequest = {
       name: form.name ?? '',
       description: form.description ?? '',
@@ -138,7 +181,7 @@ export class UpdateEventPageComponent {
       location: form.location ?? '',
       type: form.type ?? '',
       status: form.status ?? '',
-      imageUrl: form.imageUrl ?? '',
+      imageUrl: imageToUpload ?? '',
     };
 
     this.loadingService.showModal('update', 'Actualizando evento...');

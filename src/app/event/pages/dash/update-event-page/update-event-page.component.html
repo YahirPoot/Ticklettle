@@ -76,12 +76,13 @@
                     <button type="submit" class="btn btn-lg btn-primary" [disabled]="!hasChanges() || !isLoaded()">Actualizar Evento</button>
                 </div>
 
-                <!-- <h3 class="text-lg font-medium mb-2">Imagen del Evento</h3> -->
+                <h3 class="text-lg font-medium mb-2">Imagen del Evento</h3>
 
-                <!-- <div class="border border-dashed rounded-lg p-3 flex flex-col items-center gap-3">
+                <div class="border border-dashed rounded-lg p-3 flex flex-col items-center gap-3">
                     <div class="w-full h-56 bg-base-200 rounded-md overflow-hidden flex items-center justify-center">
                         @if (imagePreview()) {
                             <img [src]="imagePreview()" alt="preview" class="w-full h-full object-cover">
+                            <div class="absolute bottom-2 right-2 bg-black/50 text-white text-xs px-2 py-1 rounded">Imagen actual</div>
                         }
                         @if (!imagePreview()) {
                             <div class="text-sm text-neutral flex items-center justify-center h-full">
@@ -92,7 +93,7 @@
 
                     <input type="file" accept="image/*" (change)="onFileChange($event)" class="file-input file-input-bordered w-full">
                     <p class="text-xs text-neutral">Formatos permitidos: JPG, PNG, GIF. Tamaño máximo: 2MB</p>
-                </div> -->
+                </div>
             </div>
         </section>
 
