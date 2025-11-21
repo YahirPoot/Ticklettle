@@ -111,6 +111,33 @@
                   formControlName="organizingHouseTaxData" placeholder="Datos fiscales adicionales" />
               </div>
             </div>
+            @if (!isSocial) {
+              <div class="form-control">
+                <label class="label label-text font-semibold mb-2">Contraseña <span class="text-xs text-red-400">*</span></label>
+                <input type="password" class="input input-bordered w-full focus:input-neutral mb-2" formControlName="password"
+                  placeholder="Contraseña" required />
+                  @if (registerForm.get('password')?.touched && registerForm.get('password')?.hasError('required')) {
+                    <p class="text-xs text-error mt-1">Campo Obligatorio</p>
+                  }
+                  @if (registerForm.get('password')?.touched && registerForm.get('password')?.hasError('minlength')) {
+                    <p class="text-xs text-error mt-1">La contraseña debe tener al menos 6 caracteres.</p>
+                  }
+              </div>
+
+              <div class="form-control">
+                <label class="label label-text font-semibold mb-2">Confirmar Contraseña <span class="text-xs text-red-400">*</span></label>
+                <input type="password" class="input input-bordered w-full focus:input-neutral mb-2"
+                  formControlName="confirmPassword" placeholder="Confirmar Contraseña" required />
+                  @if (registerForm.get('confirmPassword')?.touched && registerForm.get('confirmPassword')?.hasError('required')) {
+                    <p class="text-xs text-error mt-1">Campo Obligatorio</p>
+                  }
+                  @if (passwordMismatch) {
+                    <p class="text-xs text-warning mt-1">Las contraseñas no coinciden.</p>
+                  }
+              </div>
+            } @else {
+              <div class="alert alert-info mt-2">Registro con Google detectado: no es necesario establecer una contraseña.</div>
+            }
           }
 
           <!-- Campos específicos ASISTENTE -->
@@ -134,49 +161,36 @@
                 </div>
               </div>
             </div>
-            <div class="form-control">
-              <label class="label label-text font-semibold mb-2">Contraseña <span class="text-xs text-red-400">*</span></label>
-              <input type="password" class="input input-bordered w-full focus:input-neutral mb-2" formControlName="password"
-                placeholder="Contraseña" />
-            </div>
-  
-            <div class="form-control">
-              <label class="label label-text font-semibold mb-2">Confirmar Contraseña <span class="text-xs text-red-400">*</span></label>
-              <input type="password" class="input input-bordered w-full focus:input-neutral mb-2"
-                formControlName="confirmPassword" placeholder="Confirmar Contraseña" />
-                @if (passwordMismatch) {
-                  <p class="text-xs text-warning mt-1">Las contraseñas no coinciden.</p>
-                }
-            </div>
+            @if (!isSocial) {
+              <div class="form-control">
+                <label class="label label-text font-semibold mb-2">Contraseña <span class="text-xs text-red-400">*</span></label>
+                <input type="password" class="input input-bordered w-full focus:input-neutral mb-2" formControlName="password"
+                  placeholder="Contraseña" />
+                  @if (registerForm.get('password')?.touched && registerForm.get('password')?.hasError('required')) {
+                    <p class="text-xs text-error mt-1">Campo Obligatorio</p>
+                  }
+                  @if (registerForm.get('password')?.touched && registerForm.get('password')?.hasError('minlength')) {
+                    <p class="text-xs text-error mt-1">La contraseña debe tener al menos 6 caracteres.</p>
+                  }
+              </div>
+
+              <div class="form-control">
+                <label class="label label-text font-semibold mb-2">Confirmar Contraseña <span class="text-xs text-red-400">*</span></label>
+                <input type="password" class="input input-bordered w-full focus:input-neutral mb-2"
+                  formControlName="confirmPassword" placeholder="Confirmar Contraseña" />
+                  @if (registerForm.get('confirmPassword')?.touched && registerForm.get('confirmPassword')?.hasError('required')) {
+                    <p class="text-xs text-error mt-1">Campo Obligatorio</p>
+                  }
+                  @if (passwordMismatch) {
+                    <p class="text-xs text-warning mt-1">Las contraseñas no coinciden.</p>
+                  }
+              </div>
+            } @else {
+              <div class="alert alert-info mt-2">Registro con Google detectado: no es necesario establecer una contraseña.</div>
+            }
           }
 
           <!-- Photo URL control removed from the form UI. Value is injected from social login or sent empty if none. -->
-
-          <!-- Passwords -->
-          <div class="form-control">
-            <label class="label label-text font-semibold mb-2">Contraseña <span class="text-xs text-red-400">*</span></label>
-            <input type="password" class="input input-bordered w-full focus:input-neutral mb-2" formControlName="password"
-              placeholder="Contraseña" required />
-              @if (registerForm.get('password')?.touched && registerForm.get('password')?.hasError('required')) {
-                <p class="text-xs text-error mt-1">Campo Obligatorio</p>
-              }
-              @if (registerForm.get('password')?.touched && registerForm.get('password')?.hasError('minlength')) {
-                <p class="text-xs text-error mt-1">La contraseña debe tener al menos 6 caracteres.</p>
-              }
-          </div>
-
-          <div class="form-control">
-            <label class="label label-text font-semibold mb-2">Confirmar Contraseña <span class="text-xs text-red-400">*</span></label>
-            <input type="password" class="input input-bordered w-full focus:input-neutral mb-2"
-              formControlName="confirmPassword" placeholder="Confirmar Contraseña" required />
-              @if (registerForm.get('confirmPassword')?.touched && registerForm.get('confirmPassword')?.hasError('required')) {
-                <p class="text-xs text-error mt-1">Campo Obligatorio</p>
-              }
-              @if (passwordMismatch) {
-                <p class="text-xs text-warning mt-1">Las contraseñas no coinciden.</p>
-              }
-          </div>
-
           <div class="form-control">
             <label class="flex items-center gap-3">
               <input type="checkbox" class="checkbox mt-1" formControlName="privacyPolicies" />

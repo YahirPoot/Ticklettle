@@ -53,6 +53,9 @@ export class RegisterPageComponent implements OnInit, OnDestroy {
     privacyPolicies: [false, [Validators.requiredTrue]]
   }, { validators: [this.passwordsMatchValidator.bind(this)] });
 
+  // Indica si el registro viene de un social login (Google)
+  private isSocialLogin = false;
+
   private clientId = googleClientId;
   private mounted = false;
 
@@ -84,6 +87,8 @@ export class RegisterPageComponent implements OnInit, OnDestroy {
           lastName: p.lastName ?? '',
           photoUrl: p.photoUrl ?? ''
         });
+        // activar modo social para no exigir contraseña
+        this.setSocialMode(true);
       } catch {}
     } 
 
@@ -91,6 +96,21 @@ export class RegisterPageComponent implements OnInit, OnDestroy {
         this.updateRoleValidators();
       });
       this.updateRoleValidators();
+  }
+
+  // Exponer al template si estamos en modo social
+  public get isSocial() {
+    return this.isSocialLogin;
+  }
+
+  // genera password aleatoria si se necesita (solo para backend)
+  private generateRandomPassword(length = 12) {
+    const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+-=';
+    let out = '';
+    for (let i = 0; i < length; i++) {
+      out += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return out;
   }
 
   ngOnDestroy(): void {
@@ -107,6 +127,20 @@ export class RegisterPageComponent implements OnInit, OnDestroy {
       return { passwordMismatch: true };
     }
     return null;
+  }
+
+  private setSocialMode(enabled: boolean) {
+    this.isSocialLogin = enabled;
+    if (enabled) {
+      // quitar requerimientos de contraseña
+      this.registerForm.get('password')?.clearValidators();
+      this.registerForm.get('confirmPassword')?.clearValidators();
+    } else {
+      this.registerForm.get('password')?.setValidators([Validators.minLength(6)]);
+      this.registerForm.get('confirmPassword')?.setValidators([Validators.required, Validators.minLength(6)]);
+    }
+    this.registerForm.get('password')?.updateValueAndValidity();
+    this.registerForm.get('confirmPassword')?.updateValueAndValidity();
   }
 
   private updateRoleValidators() {
@@ -233,7 +267,12 @@ export class RegisterPageComponent implements OnInit, OnDestroy {
     let socialToken: string | undefined;
     const raw = sessionStorage.getItem('social_user') || localStorage.getItem('provisional_social');
     if (raw) {
-      socialToken = JSON.parse(raw).idToken;
+      const p = JSON.parse(raw);
+      socialToken = p.idToken;
+      // asegurar modo social
+      this.setSocialMode(true);
+    } else {
+      this.setSocialMode(false);
     }
     // normalize dateOfBirth: send ISO string when present, otherwise null
     const rawDob = this.registerForm.get('dateOfBirth')?.value;
@@ -243,11 +282,15 @@ export class RegisterPageComponent implements OnInit, OnDestroy {
       dobIso = isNaN(d.getTime()) ? null : d.toISOString();
     }
 
+    // Si es social y no se proporcionó contraseña, generamos una temporal para enviar al backend
+    const providedPassword = this.registerForm.get('password')?.value;
+    const finalPassword = (socialToken && !providedPassword) ? this.generateRandomPassword() : providedPassword;
+
     const payloadAttendee: RegisterRequest = {
       email: this.registerForm.get('email')?.value!,
       firstName: this.registerForm.get('firstName')?.value!,
       lastName: this.registerForm.get('lastName')?.value!,
-      password: this.registerForm.get('password')?.value!,
+      password: finalPassword!,
       dateOfBirth: dobIso,
       gender: this.registerForm.get('gender')?.value ?? '',
       photoUrl: this.registerForm.get('photoUrl')?.value ?? '',
@@ -263,7 +306,7 @@ export class RegisterPageComponent implements OnInit, OnDestroy {
       email: this.registerForm.get('email')?.value!,
       firstName: this.registerForm.get('firstName')?.value!,
       lastName: this.registerForm.get('lastName')?.value!,
-      password: this.registerForm.get('password')?.value!,
+      password: finalPassword!,
       photoUrl: this.registerForm.get('photoUrl')?.value ?? '',
       company: this.registerForm.get('company')?.value ?? '',
       taxId: this.registerForm.get('taxId')?.value ?? '',
