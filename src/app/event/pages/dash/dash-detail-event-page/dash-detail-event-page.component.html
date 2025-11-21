@@ -42,6 +42,7 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
                 <!-- LEFT -->
                 <div class="flex flex-col justify-start space-y-3 pl-14 py-8">
+                    <span class="badge badge-sm badge-accent badge-outline">{{eventById?.eventId}} - {{eventById?.status}}</span>
                     <h2 class="text-lg md:text-2xl font-bold leading-tight">{{eventById?.name}}</h2>
                     <p class="text-sm text-gray-600 line-clamp-3">{{eventById?.description}}</p>
 
@@ -66,7 +67,7 @@
 
                     <div class="mt-2 flex justify-end items-center gap-3">
                         <a [routerLink]="['/admin', 'events', 'update-event', eventById?.eventId]"
-                           class="btn btn-sm btn-ghost btn-circle">
+                            class="btn btn-sm btn-ghost btn-circle">
                             <mat-icon class="text-base">edit</mat-icon>
                         </a>
                     </div>
@@ -77,12 +78,91 @@
         <!-- BOLETOS -->
         <div class="mt-4">
             <div class="flex flex-col">
+                <div class="flex items-center justify-between">
+                    <span class="text-lg md:text-xl font-semibold">Tipos de Boletos</span>
+                    <span class="text-sm text-gray-500">{{ eventById?.ticketTypes?.length || 0}} tipos </span>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-3">
+                    @for (ticketType of eventById?.ticketTypes; track $index) {
+                        <div class="card p-4 bg-base-200 rounded-lg shadow-sm flex flex-col">
+                            <div class="flex items-start justify-between gap-4">
+                                <div class="flex-1">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <div class="text-md font-semibold capitalize">{{ticketType.name}}</div>
+                                        </div>
+                                        <div class="text-right">
+                                            <div class="text-lg font-bold">${{ticketType.price}}</div>
+                                            <div class="text-xs text-base-content">ID: {{ticketType.ticketTypeId}}</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="mt-3">
+                                        <div class="text-sm text-base-content">
+                                            Disponibles: <span class="badge badge-lg">{{ticketType.availableQuantity}}</span>
+                                            &nbsp;·&nbsp;
+                                            Vendidos: <span class="badge badge-lg badge-primary">{{ticketType.soldQuantity}}</span>
+                                        </div>
+
+                                        <!-- <div class="w-full bg-base-200 h-2 rounded mt-2 overflow-hidden">
+                                            <div
+                                                class="bg-indigo-600 h-2"
+                                                style="width: {{ ( (ticketType.availableQuantity + ticketType.soldQuantity) > 0 ? (ticketType.soldQuantity / (ticketType.availableQuantity + ticketType.soldQuantity) * 100) : 0 ) }}%;">
+                                            </div>
+                                        </div>
+                                    
+                                        <div class="text-xs text-gray-400 mt-2">
+                                            {{ (ticketType.availableQuantity + ticketType.soldQuantity) > 0 ? ((ticketType.soldQuantity / (ticketType.availableQuantity + ticketType.soldQuantity)) * 100) | number:'1.0-0' : 0 }}% vendidos
+                                        </div> -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <div class="mt-6">
+                <div class="flex items-center justify-between">
+                    <span class="text-lg md:text-xl font-semibold">Productos</span>
+                    <span class="text-sm text-gray-500">{{ eventById?.products?.length || 0 }} items</span>
+                </div>
+            
+                @if (eventById?.products?.length) {
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-3">
+                        @for (product of eventById?.products; track $index) {
+                            <div class="card p-4 bg-base-100 rounded-lg shadow-sm flex flex-col">
+                                <div class="h-40 bg-base-200 rounded overflow-hidden flex items-center justify-center">
+                                    <!-- Si tu API devuelve imagen, reemplaza product.imageUrl -->
+                                    <img [src]="product.name " [alt]="product.name" class="w-full h-full object-cover" />
+                                </div>
+                            
+                                <div class="mt-3 flex-1">
+                                    <div class="font-semibold">{{ product.name }}</div>
+                                    <div class="text-sm text-gray-500 mt-1">{{ product.description || 'Sin descripción' }}</div>
+                                    <div class="text-sm text-gray-600 mt-2">Stock: <span class="font-medium">{{ product.stock }}</span></div>
+                                </div>
+                            
+                                <div class="mt-3 flex items-center justify-between">
+                                    <div class="text-lg font-bold">${{ product.price }}</div>
+                                    <button class="btn btn-sm btn-outline btn-secondary">Editar producto</button>
+                                    <button class="btn btn-sm btn-outline btn-error">Eliminar     producto</button>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                } @else {
+                    <div class="mt-3 text-sm text-gray-500">No hay productos asociados a este evento.</div>
+                }
+            </div>
+            <!-- <div class="flex flex-col">
                 <span class="text-lg md:text-2xl font-semibold">Boletos Vendidos</span>
 
                 <label class="input input-bordered input-sm mt-2 w-full max-w-xs">
                     <svg class="h-4 w-4 opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                         <g stroke-linejoin="round" stroke-linecap="round" stroke-width="2.5" fill="none"
-                           stroke="currentColor">
+                            stroke="currentColor">
                             <circle cx="11" cy="11" r="8"></circle>
                             <path d="m21 21-4.3-4.3"></path>
                         </g>
@@ -122,10 +202,10 @@
                     <span class="text-md font-light truncate">Total de boletos vendidos: 200</span>
                     <span class="text-md font-light truncate">Ingreso Total: $4000.00</span>
                 </div>
-            </div>
+            </div> -->
 
             <!-- PRODUCTOS VENDIDOS + TARJETA RESUMEN -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-2 mt-4">
+            <!-- <div class="grid grid-cols-1 md:grid-cols-2 gap-2 mt-4">
                 <div class="flex flex-col justify-center items-start">
                     <span class="text-lg md:text-2xl font-semibold mb-2">Productos Vendidos</span>
 
@@ -179,7 +259,7 @@
                     <span class="mt-4 text-lg font-medium truncate">Stock Restante Promedio:</span>
                     <span class="mt-2 text-xl font-light">80</span>
                 </div>
-            </div>
+            </div> -->
         </div>
     </div>
 </div>
