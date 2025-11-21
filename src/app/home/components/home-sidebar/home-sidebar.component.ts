@@ -13,6 +13,7 @@ export class HomeSidebarComponent {
   authService = inject(AuthService);
 
   isAuthenticated = computed(() => this.authService.authStatus() === 'authenticated');
+  user = computed(() => this.authService.user());
   routes = homeRoutes
     .flatMap((route) =>
       route.children?.map((childRoute) => ({

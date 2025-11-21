@@ -70,6 +70,10 @@
                             class="btn btn-sm btn-ghost btn-circle">
                             <mat-icon class="text-base">edit</mat-icon>
                         </a>
+                        <a [routerLink]="['/admin', 'events', 'event-analytics', eventById?.eventId]"
+                            class="btn btn-sm btn-ghost btn-circle">
+                            <mat-icon class="text-base">insights</mat-icon>
+                        </a>
                     </div>
                 </div>
             </div>
@@ -126,7 +130,13 @@
             <div class="mt-6">
                 <div class="flex items-center justify-between">
                     <span class="text-lg md:text-xl font-semibold">Productos</span>
-                    <span class="text-sm text-gray-500">{{ eventById?.products?.length || 0 }} items</span>
+                    <div class="flex items-center justify-between gap-3">
+                        <span class="text-sm text-gray-500">{{ eventById?.products?.length || 0 }} items</span>
+                        <div>
+                            <button class="btn btn-sm btn-secondary btn-dash">Agregar Producto</button>
+                        </div>
+                    </div>
+
                 </div>
             
                 @if (eventById?.products?.length) {
@@ -156,110 +166,6 @@
                     <div class="mt-3 text-sm text-gray-500">No hay productos asociados a este evento.</div>
                 }
             </div>
-            <!-- <div class="flex flex-col">
-                <span class="text-lg md:text-2xl font-semibold">Boletos Vendidos</span>
-
-                <label class="input input-bordered input-sm mt-2 w-full max-w-xs">
-                    <svg class="h-4 w-4 opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                        <g stroke-linejoin="round" stroke-linecap="round" stroke-width="2.5" fill="none"
-                            stroke="currentColor">
-                            <circle cx="11" cy="11" r="8"></circle>
-                            <path d="m21 21-4.3-4.3"></path>
-                        </g>
-                    </svg>
-                    <input class="flex-1" type="search" placeholder="Buscar boleto..." />
-                </label>
-
-                <div class="overflow-x-auto mt-3">
-                    <table class="table w-full bg-base-200">
-                        <thead>
-                            <tr class="font-semibold text-sm">
-                                <th>#</th>
-                                <th>Comprador</th>
-                                <th>Correo</th>
-                                <th>Método de Pago</th>
-                                <th>Fecha</th>
-                                <th>Estado</th>
-                            </tr>
-                        </thead>
-
-                        <tbody class="text-sm">
-                            @for (ticket of allTickets; track $index) {
-                                <tr class="hover:bg-base-200">
-                                    <th>{{ticket.id}}</th>
-                                    <td>{{ticket.buyer.name}}</td>
-                                    <td>{{ticket.buyer.correo}}</td>
-                                    <td>{{ticket.method_payment}}</td>
-                                    <td>{{ticket.parchaseDate}}</td>
-                                    <td>{{ticket.status}}</td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>
-
-                <div class="w-full flex flex-row items-center justify-between mt-1">
-                    <span class="text-md font-light truncate">Total de boletos vendidos: 200</span>
-                    <span class="text-md font-light truncate">Ingreso Total: $4000.00</span>
-                </div>
-            </div> -->
-
-            <!-- PRODUCTOS VENDIDOS + TARJETA RESUMEN -->
-            <!-- <div class="grid grid-cols-1 md:grid-cols-2 gap-2 mt-4">
-                <div class="flex flex-col justify-center items-start">
-                    <span class="text-lg md:text-2xl font-semibold mb-2">Productos Vendidos</span>
-
-                    <div class="overflow-x-auto">
-                        <table class="table bg-base-200">
-                            <thead>
-                                <tr>
-                                    <th>Imagen</th>
-                                    <th>Producto</th>
-                                    <th>Precio</th>
-                                    <th>Stock</th>
-                                    <th>Vendidos</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @for (product of prroductsByEvent; track $index) {
-                                    <tr>
-                                        <th>
-                                            <div class="flex items-center gap-3">
-                                                <div class="avatar">
-                                                    <div class="mask mask-squircle h-12 w-12">
-                                                        <img [src]="product.name || 'assets/defualt_image.png'"
-                                                            [alt]="product.name" />
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </th>
-                                        <th>
-                                            {{ product.name }}
-                                            <br />
-                                        </th>
-                                        <td>$ {{product.price}}</td>
-                                        <td>{{product.stock}}</td>
-                                        <td>0</td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <div class="mt-2">
-                        <button class="btn">+ Agregar Producto</button>
-                    </div>
-                </div>
-
-                <div class="card bg-base-200 p-6 flex flex-col items-center justify-start">
-                    <span class="text-lg font-medium truncate">Ventas Totales:</span>
-                    <span class="mt-2 text-2xl font-light">$3,200.00</span>
-                    <span class="mt-4 text-lg font-medium truncate">Productos Vendidos:</span>
-                    <span class="mt-2 text-xl font-light">160</span>
-                    <span class="mt-4 text-lg font-medium truncate">Stock Restante Promedio:</span>
-                    <span class="mt-2 text-xl font-light">80</span>
-                </div>
-            </div> -->
         </div>
     </div>
 </div>

@@ -35,6 +35,17 @@
             </li>
         }
     </div>
+    <div>
+        <hr class="text-gray-400">
+        @if (user()?.customRole === 1) {
+            <div class="mt-4">
+                <a [routerLink]="['/admin/dashboard']" class="btn btn-sm btn-ghost w-full flex items-center gap-2">
+                    <mat-icon>dashboard</mat-icon>
+                    <span class="is-drawer-close:hidden">Panel Administrativo</span>
+                </a>
+            </div>
+        }
+    </div>
     <div class="pt-3 border-t border-gray-100 px-1">
         <div class="flex items-center justify-between gap-3">
             @if (this.isAuthenticated()) {

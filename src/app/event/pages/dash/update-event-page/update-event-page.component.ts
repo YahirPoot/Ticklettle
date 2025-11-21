@@ -10,10 +10,11 @@ import { resource } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { MatIconModule } from '@angular/material/icon';
 import { ImageCloudinaryUploadService } from '../../../../shared/services/image-cloudinary-upload.service';
+import { HeaderBackComponent } from '../../../../shared/components/header-back/header-back.component';
 
 @Component({
   selector: 'app-update-event-page',
-  imports: [ReactiveFormsModule, LoadingComponent, MatIconModule],
+  imports: [ReactiveFormsModule, LoadingComponent, MatIconModule, HeaderBackComponent],
   templateUrl: './update-event-page.component.html',
 })
 export class UpdateEventPageComponent {
@@ -199,5 +200,9 @@ export class UpdateEventPageComponent {
         console.error('Error updating event:', err);
       }
     });
+  }
+
+  goBack() {
+    window.history.back();
   }
 }

@@ -1,4 +1,5 @@
 <div class="min-h-screen w-full p-2">
+    <shared-header-back [title]="'Actualizar Evento'" (back)="goBack()" />
     <form  [formGroup]="updateEventForm"  (ngSubmit)="onSubmit()" class="w-full p-4 space-y-6">
 
         <!-- Información general -->

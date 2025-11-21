@@ -9,11 +9,12 @@ import { LoadingComponent } from '../../../../shared/components/loading/loading.
 import { LoadingModalService } from '../../../../shared/services/loading-modal.service';
 import { CreateEventFormValue } from '../../../interfaces';
 import { CreateEventUseCase } from '../../../use-cases/create-event.usecase';
+import { HeaderBackComponent } from '../../../../shared/components/header-back/header-back.component';
 
 
 @Component({
   selector: 'app-create-event-page',
-  imports: [CommonModule, ReactiveFormsModule, MatIcon, LoadingComponent],
+  imports: [CommonModule, ReactiveFormsModule, MatIcon, LoadingComponent, HeaderBackComponent],
   templateUrl: './create-event-page.component.html',
 })
 export class CreateEventPageComponent { 
@@ -248,5 +249,9 @@ export class CreateEventPageComponent {
 
   onCancel() {
     this.router.navigate(['/admin/events']);
+  }
+
+  goBack() {
+    window.history.back();
   }
 }

@@ -1,4 +1,6 @@
 <div class="min-h-screen w-full p-2">
+    <shared-header-back [title]="'Crear Nuevo Evento'" (back)="goBack()" />
+
     <form [formGroup]="eventForm" (ngSubmit)="onSubmit()" class="w-full p-4 space-y-6">
 
         <!-- Información general -->
