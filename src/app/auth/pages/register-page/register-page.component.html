@@ -27,12 +27,18 @@
               <label class="label label-text font-semibold mb-2">Nombre(s) <span class="text-red-400">*</span></label>
               <input type="text" class="input input-bordered w-full focus:input-neutral mb-2"
                 formControlName="firstName" placeholder="Nombre(s)" required />
+                @if (registerForm.get('firstName')?.touched && registerForm.get('firstName')?.hasError('required')) {
+                  <p class="text-xs text-error mt-1" >Campo Obligatorio</p>
+                }
             </div>
 
             <div class="form-control">
               <label class="label label-text font-semibold mb-2">Apellido(s) <span class="text-red-400">*</span></label>
               <input type="text" class="input input-bordered w-full focus:input-neutral mb-2"
                 formControlName="lastName" placeholder="Apellido(s)" required />
+                @if (registerForm.get('lastName')?.touched && registerForm.get('lastName')?.hasError('required')) {
+                  <p class="text-xs text-error mt-1">Campo Obligatorio</p>
+                }
             </div>
           </div>
 
@@ -41,6 +47,9 @@
             <label class="label label-text font-semibold mb-2">Email <span class="text-red-400">*</span></label>
             <input type="email" class="input input-bordered w-full focus:input-neutral mb-2" formControlName="email"
               placeholder="Correo Electrónico" required />
+              @if (registerForm.get('email')?.touched && registerForm.get('email')?.hasError('required') || registerForm.get('email')?.touched && registerForm.get('email')?.hasError('email')) {
+                <p class="text-xs text-error mt-1">Campo Obligatorio o Email inválido</p>
+              }
           </div>
 
           <!-- Campos específicos ORGANIZADOR -->
@@ -57,12 +66,18 @@
                   <label class="label label-text font-semibold mb-2">Tax ID (RFC) <span class="text-xs text-red-400">*</span></label>
                   <input type="text" class="input input-bordered w-full focus:input-neutral mb-2" formControlName="taxId"
                     placeholder="RFC / Tax ID" required />
+                    @if (registerForm.get('taxId')?.touched && registerForm.get('taxId')?.hasError('required')) {
+                      <p class="text-xs text-error mt-1">Campo Obligatorio</p>
+                    }
                 </div>
   
                 <div class="form-control">
                   <label class="label label-text font-semibold mb-2">Contacto <span class="text-xs text-red-400">*</span></label>
                   <input type="text" class="input input-bordered w-full focus:input-neutral mb-2"
                     formControlName="organizingHouseContact" placeholder="Teléfono / contacto" required/>
+                    @if (registerForm.get('organizingHouseContact')?.touched && registerForm.get('organizingHouseContact')?.hasError('required')) {
+                      <p class="text-xs text-error mt-1">Campo Obligatorio</p>
+                    }
                 </div>
               </div>
   
@@ -76,12 +91,18 @@
                 <label class="label label-text font-semibold mb-2">Nombre de la casa organizadora <span class="text-xs text-red-400">*</span></label>
                 <input type="text" class="input input-bordered w-full focus:input-neutral mb-2"
                   formControlName="organizingHouseName" placeholder="Nombre de la casa organizadora" required/>
+                  @if (registerForm.get('organizingHouseName')?.touched && registerForm.get('organizingHouseName')?.hasError('required')) {
+                    <p class="text-xs text-error mt-1">Campo Obligatorio</p>
+                  }
               </div>
   
               <div class="form-control">
                 <label class="label label-text font-semibold mb-2">Dirección de la casa organizadora <span class="text-xs text-red-400">*</span></label>
                 <input type="text" class="input input-bordered w-full focus:input-neutral mb-2"
                   formControlName="organizingHouseAddress" placeholder="Dirección de la casa organizadora" required/>
+                  @if (registerForm.get('organizingHouseAddress')?.touched && registerForm.get('organizingHouseAddress')?.hasError('required')) {
+                    <p class="text-xs text-error mt-1">Campo Obligatorio</p>
+                  }
               </div>
   
               <div class="form-control">
@@ -122,12 +143,21 @@
             <label class="label label-text font-semibold mb-2">Contraseña <span class="text-xs text-red-400">*</span></label>
             <input type="password" class="input input-bordered w-full focus:input-neutral mb-2" formControlName="password"
               placeholder="Contraseña" required />
+              @if (registerForm.get('password')?.touched && registerForm.get('password')?.hasError('required')) {
+                <p class="text-xs text-error mt-1">Campo Obligatorio</p>
+              }
+              @if (registerForm.get('password')?.touched && registerForm.get('password')?.hasError('minlength')) {
+                <p class="text-xs text-error mt-1">La contraseña debe tener al menos 6 caracteres.</p>
+              }
           </div>
 
           <div class="form-control">
             <label class="label label-text font-semibold mb-2">Confirmar Contraseña <span class="text-xs text-red-400">*</span></label>
             <input type="password" class="input input-bordered w-full focus:input-neutral mb-2"
               formControlName="confirmPassword" placeholder="Confirmar Contraseña" required />
+              @if (registerForm.get('confirmPassword')?.touched && registerForm.get('confirmPassword')?.hasError('required')) {
+                <p class="text-xs text-error mt-1">Campo Obligatorio</p>
+              }
               @if (passwordMismatch) {
                 <p class="text-xs text-warning mt-1">Las contraseñas no coinciden.</p>
               }
@@ -135,15 +165,18 @@
 
           <div class="form-control">
             <label class="flex items-center gap-3">
-              <input type="checkbox" class="checkbox mt-1" />
+              <input type="checkbox" class="checkbox mt-1" formControlName="privacyPolicies" />
               <div>
                 <div class="font-medium">Acepto las Políticas de Privacidad</div>
               </div>
             </label>
+            @if (registerForm.get('privacyPolicies')?.touched && registerForm.get('privacyPolicies')?.hasError('required')) {
+              <p class="text-xs text-error mt-1">Debes aceptar las Políticas de Privacidad</p>
+            }
           </div>
 
           <div class="mt-4 w-full">
-            <button type="submit" class="btn btn-neutral w-full">Crear cuenta</button>
+            <button type="submit" class="btn btn-neutral w-full" [disabled]="registerForm.invalid">Crear cuenta</button>
             <div class="divider text-gray-600"> o </div>
             <div id="g_id_signin" class="w-full flex justify-center"></div>
           </div>

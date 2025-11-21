@@ -67,7 +67,7 @@ export class CreateEventPageComponent {
 
   addProduct() {
     this.products.push(this.fb.group({
-      name: ['', [Validators.required]],
+      name: [''],
       description: [''],
       productPrice: [0, [Validators.min(0)]],
       stock: [0, [Validators.min(0)]],
@@ -157,12 +157,13 @@ export class CreateEventPageComponent {
   }
 
   async onSubmit() {
-    // this.eventForm.markAllAsTouched();
-    // if (this.eventForm.invalid) {
-    //   this.notificationSvc.showNotification('Por favor, corrige los errores en el formulario.', 'error');
-    //   console.log(this.eventForm.invalid)
-    //   return;
-    // }
+    // Marcar controles y validar: solo los campos con Validators.required impedirán el envío
+    this.eventForm.markAllAsTouched();
+    if (this.eventForm.invalid) {
+      this.notificationSvc.showNotification('Por favor, corrige los errores en el formulario.', 'error');
+      console.log('Formulario inválido', this.eventForm.errors, this.eventForm);
+      return;
+    }
 
     const formValue = this.eventForm.getRawValue();
 
