@@ -38,12 +38,40 @@ export class CreateEventPageComponent {
     date: ['', [Validators.required]],
     time: ['', [Validators.required]],
     type: ['Gratis', [Validators.required]],
-    capacity: [null],
+    capacity: [null, [Validators.required, Validators.min(0)]],
     tickets: this.fb.array([]),
     products: this.fb.array([]),
     sellMerch: [false],
     postEventContent: [false]
   });
+
+  constructor() {
+    // mantener capacity obligatorio en ambos casos (ya definido en form control)
+    this.applyTypeRules(this.eventForm.get('type')?.value);
+
+    // suscribirse a cambios de tipo
+    this.eventForm.get('type')?.valueChanges.subscribe(val => {
+      this.applyTypeRules(val);
+    });
+  }
+
+  private applyTypeRules(typeValue: string | null | undefined) {
+    // capacity es obligatorio en ambos casos (validadores definidos en form)
+    // control de tickets: si es Gratis, limpiamos y deshabilitamos; si Pago, habilitamos y aseguramos al menos 1
+    if ((typeValue ?? '').toString() === 'Gratis') {
+      // limpiar tickets y deshabilitarlos
+      while (this.tickets.length) {
+        this.tickets.removeAt(0);
+      }
+      this.tickets.disable({ emitEvent: false });
+    } else {
+      // habilitar tickets y asegurar al menos 1 tipo
+      this.tickets.enable({ emitEvent: false });
+      if (this.tickets.length === 0) {
+        this.addTicketType();
+      }
+    }
+  }
 
   isFree(): boolean {
     return (this.eventForm.get('type')?.value ?? '').toString() === 'Gratis';
@@ -144,13 +172,34 @@ export class CreateEventPageComponent {
     reader.readAsDataURL(file);
   }
 
+  private buildTicketsForSubmission(formRaw: any) {
+    const type = (formRaw.type ?? 'Gratis').toString();
+    const capacityNum = this.capacityValue();
+    if (type === 'Gratis') {
+      // crear 1 tipo "gratis" con precio 0 y cantidad = capacidad (availableQuantity)
+      return [{
+        type: 'gratis',
+        ticketPrice: 0,
+        quantity: capacityNum
+      }];
+    }
+    // Para pago, mapear los tickets del formulario (asegurarse de convertir tipos)
+    return (formRaw.tickets || []).map((t: any) => ({
+      type: (t?.type ?? 'general').toString(),
+      ticketPrice: Number(t?.ticketPrice ?? 0),
+      quantity: Number(t?.quantity ?? 0)
+    }));
+  }
+
   async onSubmit() {
     if (this.eventForm.invalid) {
-      this.notificationSvc.showNotification('Por favor, completa correctamente el formulario.');
+      this.notificationSvc.showNotification('Por favor, completa correctamente el formulario.', 'warning');
       return;
     }
 
     const formRaw = this.eventForm.getRawValue();
+
+    const ticketsForRequest = this.buildTicketsForSubmission(formRaw);
 
     // Mapeo a CreateEventFormValue interface
     const formValue: CreateEventFormValue = {
@@ -162,11 +211,7 @@ export class CreateEventPageComponent {
       type: (formRaw.type ?? 'Gratis').toString(),
       capacity: formRaw.capacity ?? null,
       sellMerch: Boolean(formRaw.sellMerch),
-      tickets: (formRaw.tickets || []).map((t: any) => ({
-        type: (t?.type ?? 'general').toString(),
-        ticketPrice: Number(t?.ticketPrice ?? t?.price ?? 0),
-        quantity: Number(t?.quantity ?? 0)
-      })),
+      tickets: ticketsForRequest,
       products: (formRaw.products || []).map((p: any) => ({
         name: (p?.name ?? '').toString(),
         description: p?.description ?? undefined,
@@ -178,6 +223,7 @@ export class CreateEventPageComponent {
     };
 
     this.loadingService.showModal('create', 'Creando evento, por favor espera...');
+    this.eventForm.disable();
 
     try {
       await this.createEventUseCase.execute({
@@ -189,8 +235,8 @@ export class CreateEventPageComponent {
       this.imageFile.set(null);
       this.eventForm.reset();
       this.tickets.clear();
-      this.addTicketType();
-      this.router.navigate(['/admin/events']);
+      this.eventForm.get('type')?.setValue('Gratis', { emitEvent: true });
+      this.notificationSvc.showNotification('Evento creado correctamente.', 'success');
     } catch (err) {
       console.error('Error creando evento', err);
       this.notificationSvc.showNotification('Error al crear el evento.', 'error');
