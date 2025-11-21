@@ -6,7 +6,7 @@
     @for (route of routes; track $index) {
         <li class="mb-4">
             <button [routerLink]="route.path === '' ? '/admin' : ['/admin', route.path]"
-                routerLinkActive="btn bg-base-200"
+                routerLinkActive="btn bg-base-300"
                 [routerLinkActiveOptions]="route.path === '' ? { exact: true } : { exact: false }"
             >   
             <div class="flex items-center gap-3">
@@ -17,13 +17,9 @@
         </li>
     }
     <li>
-        <a
-        (click)="authService.logout()"
-            class="w-full flex items-center gap-2 px-4 py-2 hover:bg-base-300 hover:text-black transition-all duration-200"
-            role="button"
-        >
-            <mat-icon>logout</mat-icon>
-            <span>Cerrar Sesión</span>
-        </a>
+        <button (click)="authService.logout()" class="btn btn-outline text-sm  hover:underline hover:bg-white flex items-center gap-2">
+            <mat-icon class="text-red-400">logout</mat-icon>
+            Cerrar sesión
+        </button>
     </li>
 </div>
