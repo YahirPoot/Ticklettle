@@ -40,7 +40,7 @@ export class CreateEventUseCase {
         // Hacemos un ciclo 
         for (let i = 0; i < (formValue.products || []).length; i++) {
             const file = productsFiles[i];
-            let url = formValue.products[i].imageUrl || '';
+            let url = formValue.products[i].imageUrl || '' ;
             if (file) {
                 const fd = new FormData();
                 fd.append('imageFile', file, file.name);

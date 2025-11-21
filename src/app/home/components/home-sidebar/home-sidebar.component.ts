@@ -1,6 +1,6 @@
 import { Component, computed, inject } from '@angular/core';
 import homeRoutes from '../../home.routes';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { AuthService } from '../../../auth/services/auth.service';
 
@@ -21,6 +21,6 @@ export class HomeSidebarComponent {
         icon: childRoute.data?.['icon'] || 'circle',
       })) || []
     )
-    .filter((route) => route.path !== '**');
+    .filter((route) => route.path !== '**' && route.path !== 'profile-user');
 
 }

@@ -27,7 +27,7 @@
             </div>
         </div>
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-2 w-ful mt-4">
-            @for (event of events.value(); track $index) {
+            @for (event of events.value()?.items; track $index) {
                 <div class="card bg-base-100 shadow-sm flex flex-col overflow-hidden">
                     <div class="flex flex-col md:flex-row items-stretch">
                         <!-- Info -->

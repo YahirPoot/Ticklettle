@@ -113,25 +113,25 @@
                 </div>
               </div>
             </div>
+            <div class="form-control">
+              <label class="label label-text font-semibold mb-2">Contraseña <span class="text-xs text-red-400">*</span></label>
+              <input type="password" class="input input-bordered w-full focus:input-neutral mb-2" formControlName="password"
+                placeholder="Contraseña" />
+            </div>
+  
+            <div class="form-control">
+              <label class="label label-text font-semibold mb-2">Confirmar Contraseña <span class="text-xs text-red-400">*</span></label>
+              <input type="password" class="input input-bordered w-full focus:input-neutral mb-2"
+                formControlName="confirmPassword" placeholder="Confirmar Contraseña" />
+                @if (passwordMismatch) {
+                  <p class="text-xs text-warning mt-1">Las contraseñas no coinciden.</p>
+                }
+            </div>
           }
 
           <!-- Photo URL control removed from the form UI. Value is injected from social login or sent empty if none. -->
 
           <!-- Passwords -->
-          <div class="form-control">
-            <label class="label label-text font-semibold mb-2">Contraseña <span class="text-xs text-red-400">*</span></label>
-            <input type="password" class="input input-bordered w-full focus:input-neutral mb-2" formControlName="password"
-              placeholder="Contraseña" required />
-          </div>
-
-          <div class="form-control">
-            <label class="label label-text font-semibold mb-2">Confirmar Contraseña <span class="text-xs text-red-400">*</span></label>
-            <input type="password" class="input input-bordered w-full focus:input-neutral mb-2"
-              formControlName="confirmPassword" placeholder="Confirmar Contraseña" required />
-              @if (passwordMismatch) {
-                <p class="text-xs text-warning mt-1">Las contraseñas no coinciden.</p>
-              }
-          </div>
 
           <div class="form-control">
             <label class="flex items-center gap-3">

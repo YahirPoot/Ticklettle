@@ -55,7 +55,7 @@ export class CreateEventPageComponent {
 
   addProduct() {
     this.products.push(this.fb.group({
-      name: ['', [Validators.required]],
+      name: ['', [Validators.minLength(3)]],
       description: [''],
       productPrice: [0, [Validators.min(0)]],
       stock: [0, [Validators.min(0)]],
