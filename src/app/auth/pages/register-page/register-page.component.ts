@@ -48,8 +48,10 @@ export class RegisterPageComponent implements OnInit, OnDestroy {
     dateOfBirth: [null],
     gender: [''],
     photoUrl: [''],
-    confirmPassword: ['', [Validators.minLength(6)]]
-  });
+    confirmPassword: ['', [Validators.required, Validators.minLength(6)]],
+    // Aceptación de políticas (debe ser true)
+    privacyPolicies: [false, [Validators.requiredTrue]]
+  }, { validators: [this.passwordsMatchValidator.bind(this)] });
 
   private clientId = googleClientId;
   private mounted = false;
@@ -98,12 +100,24 @@ export class RegisterPageComponent implements OnInit, OnDestroy {
     this.mounted = false;
   }
 
+  private passwordsMatchValidator(control: AbstractControl) {
+    const pw = control.get('password')?.value;
+    const cp = control.get('confirmPassword')?.value;
+    if ((pw || cp) && pw !== cp) {
+      return { passwordMismatch: true };
+    }
+    return null;
+  }
+
   private updateRoleValidators() {
     const role = Number(this.registerForm.get('role')?.value) as 0 | 1;
     if (role === 1) {
-      // organizador: requerir algunos campos opcionales según tu API
+      // organizador: requerir los campos marcados con asterisco
       this.registerForm.get('company')?.setValidators([ Validators.minLength(2)]);
-      this.registerForm.get('taxId')?.setValidators([ Validators.minLength(6)]);
+      this.registerForm.get('taxId')?.setValidators([ Validators.required, Validators.minLength(6)]);
+      this.registerForm.get('organizingHouseContact')?.setValidators([ Validators.required ]);
+      this.registerForm.get('organizingHouseName')?.setValidators([ Validators.required ]);
+      this.registerForm.get('organizingHouseAddress')?.setValidators([ Validators.required ]);
       // limpiar campos de asistente si aplica
       this.registerForm.get('dateOfBirth')?.clearValidators();
       this.registerForm.get('gender')?.clearValidators();
@@ -113,8 +127,11 @@ export class RegisterPageComponent implements OnInit, OnDestroy {
       // this.registerForm.get('gender')?.setValidators([Va]);
       this.registerForm.get('company')?.clearValidators();
       this.registerForm.get('taxId')?.clearValidators();
+      this.registerForm.get('organizingHouseContact')?.clearValidators();
+      this.registerForm.get('organizingHouseName')?.clearValidators();
+      this.registerForm.get('organizingHouseAddress')?.clearValidators();
     }
-    ['company','taxId','dateOfBirth','gender','email','password','firstName','lastName'].forEach(field => {
+    ['company','taxId','organizingHouseContact','organizingHouseName','organizingHouseAddress','dateOfBirth','gender','email','password','firstName','lastName','confirmPassword','privacyPolicies'].forEach(field => {
       this.registerForm.get(field as any)?.updateValueAndValidity();
     });
   }
@@ -198,10 +215,18 @@ export class RegisterPageComponent implements OnInit, OnDestroy {
   }
 
   onSubmit() {
-      // if (this.registerForm.invalid) {
-      //   this.registerForm.markAllAsTouched();
-      //   return;
-      // } 
+    // Comprobar aceptación de políticas explícitamente para mostrar alerta
+    const privacyAccepted = !!this.registerForm.get('privacyPolicies')?.value;
+    if (!privacyAccepted) {
+      this.registerForm.get('privacyPolicies')?.markAsTouched();
+      window.alert('Debes aceptar las Políticas de Privacidad para crear una cuenta.');
+      return;
+    }
+
+    if (this.registerForm.invalid) {
+      this.registerForm.markAllAsTouched();
+      return;
+    }
 
     this.loadingService.showModal('create', 'Creando cuenta...');
     const role = Number(this.registerForm.get('role')?.value) as 0 | 1;

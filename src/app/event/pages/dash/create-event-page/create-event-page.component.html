@@ -20,8 +20,10 @@
                             placeholder="Nombre del evento" 
                             formControlName="name"
                             class="input input-bordered w-full mt-1" 
-                            required
                         >
+                        @if (eventForm.get('name')?.touched && eventForm.get('name')?.invalid) {
+                            <p class="text-sm text-error mt-1">Campo obligatorio</p>
+                        }
                     </label>
 
                     <!-- Descripción -->
@@ -46,29 +48,41 @@
                             placeholder="Lugar o dirección" 
                             formControlName="location"
                             class="input input-bordered w-full mt-1">
+                        @if (eventForm.get('location')?.touched && eventForm.get('location')?.invalid) {
+                            <p class="text-sm text-error mt-1">Campo obligatorio</p>
+                        }
                     </label>
 
                     <!-- Fecha -->
                     <label class="block">
                         <span class="text-sm font-medium text-gray-500">Fecha <span class="text-sm text-red-400">*</span></span>
                         <input type="date" formControlName="date"
-                            class="input input-bordered w-full mt-1" aria-label="Fecha del evento" required>
+                            class="input input-bordered w-full mt-1" aria-label="Fecha del evento">
+                        @if (eventForm.get('date')?.touched && eventForm.get('date')?.invalid) {
+                            <p class="text-sm text-error mt-1">Campo obligatorio</p>
+                        }
                     </label>
 
                     <!-- Hora -->
                     <label class="block">
                         <span class="text-sm font-medium text-gray-500">Hora <span class="text-sm text-red-400">*</span></span>
                         <input type="time" formControlName="time"
-                            class="input input-bordered w-full mt-1" aria-label="Hora del evento" required>
+                            class="input input-bordered w-full mt-1" aria-label="Hora del evento">
+                        @if (eventForm.get('time')?.touched && eventForm.get('time')?.invalid) {
+                            <p class="text-sm text-error mt-1">Campo obligatorio</p>
+                        }
                     </label>
 
                     <!-- Tipo -->
                     <label class="block">
                         <span class="text-sm font-medium text-gray-500">Tipo <span class="text-sm text-red-400">*</span></span>
-                        <select formControlName="type" class="select input-bordered w-full mt-1" aria-label="Tipo del evento" required>
+                        <select formControlName="type" class="select input-bordered w-full mt-1" aria-label="Tipo del evento">
                             <option value="Gratis">Gratis</option>
                             <option value="Pago">Pago</option>
                         </select>
+                        @if (eventForm.get('type')?.touched && eventForm.get('type')?.invalid) {
+                            <p class="text-sm text-error mt-1">Campo obligatorio</p>
+                        }
                     </label>
 
                     <label class="block">

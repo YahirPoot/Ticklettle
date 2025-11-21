@@ -84,7 +84,7 @@ export class CreateEventPageComponent {
 
   addProduct() {
     this.products.push(this.fb.group({
-      name: ['', [Validators.minLength(3)]],
+      name: [''],
       description: [''],
       productPrice: [0, [Validators.min(0)]],
       stock: [0, [Validators.min(0)]],
@@ -193,8 +193,11 @@ export class CreateEventPageComponent {
   }
 
   async onSubmit() {
+    // Marcar controles y validar: solo los campos con Validators.required impedirán el envío
+    this.eventForm.markAllAsTouched();
     if (this.eventForm.invalid) {
-      this.notificationSvc.showNotification('Por favor, completa correctamente el formulario.', 'warning');
+      this.notificationSvc.showNotification('Por favor, corrige los errores en el formulario.', 'error');
+      console.log('Formulario inválido', this.eventForm.errors, this.eventForm);
       return;
     }
 
