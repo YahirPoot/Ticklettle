@@ -48,10 +48,7 @@
   }
 
   @if (eventsResource.hasValue()) {
-
-    <!-- TODO TU DASHBOARD COMPLETO ORIGINAL AQUÍ -->
     <div>
-
       <!-- Header -->
       <div class="flex items-center justify-between mb-6">
         <div>
@@ -258,5 +255,39 @@
       </div>
     </div>
   }
+  <!-- Recent sales table (compact)
+  <div class="card p-4 bg-white shadow mt-6">
+    <div class="flex items-center justify-between mb-3">
+      <h3 class="font-medium">Ventas recientes</h3>
+      <div class="text-sm text-gray-400">Últimas 20</div>
+    </div>
+
+    <div class="overflow-x-auto">
+      <table class="table table-compact w-full">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Evento</th>
+            <th>Tipo</th>
+            <th>Comprador</th>
+            <th>Fecha</th>
+            <th class="text-right">Monto</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (sIndex = 0; sIndex < recentSales().length; sIndex++) {
+            <tr>
+              <td>{{ sIndex + 1 }}</td>
+              <td>{{ recentSales()[sIndex].eventName }}</td>
+              <td>{{ recentSales()[sIndex].ticketTypeName }}</td>
+              <td>{{ recentSales()[sIndex].buyerName }}</td>
+              <td>{{ recentSales()[sIndex].date | date:'short' }}</td>
+              <td class="text-right">${{ recentSales()[sIndex].amount }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div> -->
 
 </div>
