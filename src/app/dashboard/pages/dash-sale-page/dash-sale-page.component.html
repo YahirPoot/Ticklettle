@@ -34,14 +34,13 @@
                                     <th>
                                         <div class="avatar">
                                             <div class="mask mask-squircle h-20 w-20">
-                                                <img [src]="itemSale.imageUrl" [alt]="itemSale.name" class="object-cover w-full h-full"/>
+                                                <img [src]="itemSale.productId" [alt]="itemSale.name" class="object-cover w-full h-full"/>
                                             </div>
                                         </div>
                                     </th>
                                     <th>
                                         <div class="flex flex-col">
                                             <span class="text-md font-semibold truncate max-w-xs">{{ itemSale.name }}</span>
-                                            <span class="text-xs badge badge-outline text-gray-500 mt-1 truncate max-w-xs">{{itemSale.category}}</span>
                                         </div>
                                     </th>
                                     <td class="text-right">
@@ -51,7 +50,7 @@
                                         <span class="text-lg font-medium">{{ itemSale.stock }}</span>
                                     </td>
                                     <td class="text-center">
-                                        <span class="text-lg font-medium">{{ itemSale.sold }}</span>
+                                        <span class="text-lg font-medium">{{ itemSale.description}} 0</span>
                                     </td>
                                     <td class="text-center">
                                         <div class="flex items-center justify-center gap-2">

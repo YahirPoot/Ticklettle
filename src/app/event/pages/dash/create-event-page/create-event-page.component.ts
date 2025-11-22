@@ -25,6 +25,8 @@ export class CreateEventPageComponent {
   private loadingService = inject(LoadingModalService);
   private createEventUseCase = inject(CreateEventUseCase);
 
+  private nextProductId = 1;
+
   imagePreview = signal<string | null>(null);
   imageFile = signal<File | null>(null);
   // files & previews for products
@@ -35,6 +37,9 @@ export class CreateEventPageComponent {
     name: ['', [Validators.required, Validators.minLength(3)]],
     description: ['', [ Validators.minLength(10), Validators.maxLength(500)]],
     location: ['', [Validators.required]],
+    city: ['', [Validators.required]],
+    state: ['', [Validators.required]],
+    postalCode: ['', [Validators.required]],
     // ticketType: ['general', Validators.required],
     date: ['', [Validators.required]],
     time: ['', [Validators.required]],
@@ -84,6 +89,7 @@ export class CreateEventPageComponent {
 
   addProduct() {
     this.products.push(this.fb.group({
+      id: [this.nextProductId++],
       name: [''],
       description: [''],
       productPrice: [0, [Validators.min(0)]],
@@ -100,6 +106,10 @@ export class CreateEventPageComponent {
     this.products.removeAt(idx);
     this.productFiles.splice(idx, 1);
     this.productPreviews.splice(idx, 1);
+    // optional: ensure any file input at that index is cleared in the DOM
+    // (only needed if you still see stale values)
+    const fileInputs = document.querySelectorAll<HTMLInputElement>('input[type="file"]');
+    if (fileInputs[idx]) fileInputs[idx].value = '';
   }
 
   onProductFileChange(e: Event, idx: number) {
