@@ -204,7 +204,7 @@
     
                 <div formArrayName="products" class="space-y-3">
 
-                    @for (product of products.controls; track $index) {
+                    @for (product of products.controls; track product.get('id')?.value) {
                         <div [formGroupName]="$index" class="grid grid-cols-12 gap-3 items-end border rounded p-3">
                             
                             <div class="col-span-4">
@@ -240,7 +240,7 @@
                             </div>
 
                             <div class="col-span-12 text-right">
-                                <button type="button" class="btn btn-sm btn-outline" (click)="removeProduct($index)">Eliminar</button>
+                                <button type="button" class="btn btn-sm btn-outline btn-error" (click)="removeProduct($index)">Eliminar</button>
                             </div>
 
                         </div>
