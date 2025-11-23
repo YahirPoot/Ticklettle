@@ -35,7 +35,7 @@ export class RegisterPageComponent implements OnInit, OnDestroy {
     email: ['', [Validators.required, Validators.email]],
     firstName: ['', [Validators.required]],
     lastName: ['', [Validators.required]],
-    password: ['', [  Validators.minLength(6)]],
+    password: ['', [Validators.minLength(6)]],
     // campos organizador
     company: [''],
     taxId: [''],
@@ -48,7 +48,7 @@ export class RegisterPageComponent implements OnInit, OnDestroy {
     dateOfBirth: [null],
     gender: [''],
     photoUrl: [''],
-    confirmPassword: ['', [Validators.required, Validators.minLength(6)]],
+    confirmPassword: ['', [Validators.minLength(6)]],
     // Aceptación de políticas (debe ser true)
     privacyPolicies: [false, [Validators.requiredTrue]]
   }, { validators: [this.passwordsMatchValidator.bind(this)] });
