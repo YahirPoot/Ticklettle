@@ -1,79 +1,149 @@
 <div class="min-h-screen w-full p-2">
-    <div class="flex flex-col">
-        <div class="w-full items-center justify-between gap-4">
-            <h3 class="text-2xl font-semibold">Productos</h3>
-            <button
-                class="btn btn-primary btn-outline"
-                title="Agregar producto"
-                aria-label="Agregar producto"
-            >
-                <!-- plus icon -->
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-                </svg>
-                Agregar Producto
-            </button>
-        </div>
-        <div class="mt-4 w-full">
-            <div class="overflow-x-auto rounded-box border border-base-content/10 bg-base-200 shadow">
-                <table class="table w-full hidden md:table">
-                    <!--   head -->
-                        <thead>
-                            <tr class="text-sm">
-                                <th class="w-28">Imagen</th>
-                                <th>Producto</th>
-                                <th class="text-right">Precio</th>
-                                <th class="text-center">Stock</th>
-                                <th class="text-center">Vendidos</th>
-                                <th class="text-center">Opciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @for (itemSale of sales; track $index) {
-                                <tr class="hover:bg-base-content/10">
-                                    <th>
-                                        <div class="avatar">
-                                            <div class="mask mask-squircle h-20 w-20">
-                                                <img [src]="itemSale.productId" [alt]="itemSale.name" class="object-cover w-full h-full"/>
-                                            </div>
-                                        </div>
-                                    </th>
-                                    <th>
-                                        <div class="flex flex-col">
-                                            <span class="text-md font-semibold truncate max-w-xs">{{ itemSale.name }}</span>
-                                        </div>
-                                    </th>
-                                    <td class="text-right">
-                                        <span class="text-lg font-medium">${{ itemSale.price }}</span>
-                                    </td>
-                                    <td class="text-center">
-                                        <span class="text-lg font-medium">{{ itemSale.stock }}</span>
-                                    </td>
-                                    <td class="text-center">
-                                        <span class="text-lg font-medium">{{ itemSale.description}} 0</span>
-                                    </td>
-                                    <td class="text-center">
-                                        <div class="flex items-center justify-center gap-2">
-                                            <button title="Editar" aria-label="Editar" class="btn btn-ghost btn-sm btn-square">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536M4 20h4.586a1 1 0 00.707-.293l9.414-9.414a1 1 0 000-1.414l-3.586-3.586a1 1 0 00-1.414 0L4.293 15.293A1 1 0 004 16v4z"/>
-                                                </svg>
-                                            </button>
-                                            <button title="Eliminar" aria-label="Eliminar" class="btn btn-ghost btn-sm btn-square">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-error" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5-4h4m-7 4h10"/>
-                                                </svg>
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            }
-                        </tbody>
-                </table>
-            </div>
-        </div>
-        <!-- <div class="flex items-end justify-end mt-4 p-6">
-            <button class="btn btn-neutral">Ver estadísticas por producto</button>
-        </div> -->
+
+  @if (salesResource.isLoading()) {
+
+    <!-- Skeleton del header -->
+    <div class="flex flex-col gap-4">
+      <div class="flex items-center justify-between w-full">
+        <div class="skeleton h-8 w-40"></div>
+        <div class="skeleton h-10 w-40"></div>
+      </div>
+
+      <!-- Skeleton de la tabla -->
+      <div class="overflow-x-auto rounded-box border border-base-content/10 bg-base-200 shadow">
+        <table class="table w-full hidden md:table">
+          <thead>
+            <tr>
+              <th class="w-28"><div class="skeleton h-4 w-16"></div></th>
+              <th><div class="skeleton h-4 w-24"></div></th>
+              <th class="text-right"><div class="skeleton h-4 w-16"></div></th>
+              <th class="text-center"><div class="skeleton h-4 w-16"></div></th>
+              <th class="text-center"><div class="skeleton h-4 w-20"></div></th>
+              <th class="text-center"><div class="skeleton h-4 w-20"></div></th>
+            </tr>
+          </thead>
+
+          <tbody>
+            @for (_ of [1,2,3,4,5,6]; track $index) {
+              <tr>
+                <td>
+                  <div class="avatar">
+                    <div class="mask mask-squircle h-20 w-20 skeleton"></div>
+                  </div>
+                </td>
+                <td>
+                  <div class="flex flex-col">
+                    <div class="skeleton h-4 w-32 mb-1"></div>
+                    <div class="skeleton h-4 w-20"></div>
+                  </div>
+                </td>
+                <td class="text-right">
+                  <div class="skeleton h-5 w-16"></div>
+                </td>
+                <td class="text-center">
+                  <div class="skeleton h-5 w-12"></div>
+                </td>
+                <td class="text-center">
+                  <div class="skeleton h-5 w-12"></div>
+                </td>
+                <td class="text-center">
+                  <div class="flex items-center justify-center gap-4">
+                    <div class="skeleton h-8 w-8 rounded-full"></div>
+                    <div class="skeleton h-8 w-8 rounded-full"></div>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
     </div>
+
+  }
+
+  @if (salesResource.hasValue()) {
+
+    <div class="flex flex-col">
+      <div class="w-full flex items-center justify-between gap-4">
+        <h3 class="text-2xl font-semibold">Productos</h3>
+        <button
+          class="btn btn-primary btn-outline"
+          title="Agregar producto"
+          aria-label="Agregar producto"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+          </svg>
+          Agregar Producto
+        </button>
+      </div>
+
+      <div class="mt-4 w-full">
+        <div class="overflow-x-auto rounded-box border border-base-content/10 bg-base-200 shadow">
+          <table class="table w-full hidden md:table">
+
+            <thead>
+              <tr class="text-sm">
+                <th class="w-28">Imagen</th>
+                <th>Producto</th>
+                <th class="text-right">Precio</th>
+                <th class="text-center">Stock</th>
+                <th class="text-center">Vendidos</th>
+                <th class="text-center">Opciones</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              @for (itemSale of sales; track $index) {
+                <tr class="hover:bg-base-content/10">
+                  <th>
+                    <div class="avatar">
+                      <div class="mask mask-squircle h-20 w-20">
+                        <img [src]="itemSale.productId" [alt]="itemSale.name" class="object-cover w-full h-full"/>
+                      </div>
+                    </div>
+                  </th>
+
+                  <th>
+                    <div class="flex flex-col">
+                      <span class="text-md font-semibold truncate max-w-xs">{{ itemSale.name }}</span>
+                    </div>
+                  </th>
+
+                  <td class="text-right">
+                    <span class="text-lg font-medium">${{ itemSale.price }}</span>
+                  </td>
+
+                  <td class="text-center">
+                    <span class="text-lg font-medium">{{ itemSale.stock }}</span>
+                  </td>
+
+                  <td class="text-center">
+                    <span class="text-lg font-medium">{{ itemSale.description }} 0</span>
+                  </td>
+
+                  <td class="text-center">
+                    <div class="flex items-center justify-center gap-2">
+                      <button title="Editar" aria-label="Editar" class="btn btn-ghost btn-sm btn-square">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536M4 20h4.586a1 1 0 00.707-.293l9.414-9.414a1 1 0 000-1.414l-3.586-3.586a1 1 0 00-1.414 0L4.293 15.293A1 1 0 004 16v4z"/>
+                        </svg>
+                      </button>
+
+                      <button title="Eliminar" aria-label="Eliminar" class="btn btn-ghost btn-sm btn-square">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-error" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5-4h4m-7 4h10"/>
+                        </svg>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              }
+            </tbody>
+
+          </table>
+        </div>
+      </div>
+    </div>
+  }
 </div>
