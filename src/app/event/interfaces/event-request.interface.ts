@@ -5,6 +5,10 @@ export interface CreateEventRequest{
     description: string;
     dateTime: string;
     location: string;
+    city: string;
+    state: string;
+    postalCode: string;
+    tags: string[];
     type: string;
     status: string | 'Activo';
     organizingHouseId: number;

@@ -56,6 +56,10 @@ export class EventService {
     return this.http.delete<void>(`${apiBaseUrl}/Events/${eventId}`)
       .pipe(
         tap(() => console.log('Evento eliminado:', eventId)),
+        catchError(err => {
+          console.error('Error eliminando evento:', err);
+          throw err;
+        })
       );
   }
 }

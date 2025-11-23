@@ -100,7 +100,7 @@
 
                     <!-- Tipo -->
                     <label class="block">
-                        <span class="text-sm font-medium text-gray-500">Tipo <span class="text-sm text-red-400">*</span></span>
+                        <span class="text-sm font-medium text-gray-500">Tipo</span>
                         <select formControlName="type" class="select input-bordered w-full mt-1" aria-label="Tipo del evento">
                             <option value="Gratis">Gratis</option>
                             <option value="Pago">Pago</option>
@@ -111,9 +111,12 @@
                     </label>
 
                     <label class="block">
-                        <span class="text-sm font-medium text-gray-500">Capacidad total (tope)</span>
+                        <span class="text-sm font-medium text-gray-500">Capacidad total (tope) <span class="text-sm text-red-400">*</span></span>
                         <input type="number" min="0" formControlName="capacity" class="input input-bordered w-full mt-1">
                         <p class="text-xs text-neutral mt-1">La suma de tickets no puede exceder esta cifra.</p>
+                        @if (eventForm.get('capacity')?.touched && eventForm.get('capacity')?.invalid) {
+                            <p class="text-sm text-error mt-1">Campo obligatorio.</p>
+                        }
                     </label>
                 </div>
             </div>
