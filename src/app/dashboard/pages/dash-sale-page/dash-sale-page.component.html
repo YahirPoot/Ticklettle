@@ -61,6 +61,32 @@
 
   }
 
+  @if (!salesResource.isLoading() && (!salesResource.hasValue() || sales.length === 0)) {
+
+    <div class="max-w-6xl mx-auto">
+      <div class="card bg-base-200 border border-base-300 rounded-lg p-6 flex flex-col items-center justify-center gap-4 w-full">
+
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-16 h-16 text-yellow-500 animate-pulse" viewBox="0 0 24 24" fill="none">
+          <path stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13l-2 5h13" class="fill-current/5" />
+        </svg>
+
+        <h3 class="text-2xl font-semibold">Aún no tienes ventas</h3>
+
+        <p class="text-sm text-gray-500 max-w-lg text-center">
+          Agrega productos o registra una venta para que aparezcan aquí.
+        </p>
+
+        <div class="flex gap-3">
+          <a routerLink="/dashboard/products" class="btn btn-primary">
+            Agregar producto
+          </a>
+        </div>
+
+      </div>
+    </div>
+
+  }
+
   @if (salesResource.hasValue()) {
 
     <div class="flex flex-col">
