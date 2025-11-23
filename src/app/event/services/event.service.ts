@@ -51,4 +51,11 @@ export class EventService {
         })
       );
   }
+
+  deleteEvent(eventId: number) {
+    return this.http.delete<void>(`${apiBaseUrl}/Events/${eventId}`)
+      .pipe(
+        tap(() => console.log('Evento eliminado:', eventId)),
+      );
+  }
 }

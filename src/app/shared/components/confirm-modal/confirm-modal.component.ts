@@ -12,7 +12,7 @@ export class ConfirmModalComponent {
 
   @Input() show = false;
 
-  @Input() title = '¿Seguro que desea eliminar el evento?';
+  @Input() modalTitle = '¿Seguro que desea eliminar el evento?';
   @Input() icon = 'delete';
   @Input() iconColor = 'text-red-600';
 
