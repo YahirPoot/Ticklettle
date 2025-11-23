@@ -13,7 +13,36 @@
     </div>
 }
 
-@if (eventResource.hasValue()) {
+@if (!eventResource.isLoading() && (!eventResource.hasValue() || eventResource.value().items.length === 0)) {
+
+    <div class="max-w-4xl mx-auto">
+        <div class="card bg-base-200 border border-base-300 rounded-lg p-6 flex flex-col items-center justify-center gap-4 w-full">
+
+            <!-- Icono tipo ticket/entrada -->
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-16 h-16 text-green-500 animate-pulse" viewBox="0 0 24 24" fill="none">
+                <path stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" d="M21 10v4a2 2 0 01-2 2h-1a2 2 0 000 4H6a2 2 0 000-4H5a2 2 0 01-2-2v-4a2 2 0 012-2h1a2 2 0 000-4h12a2 2 0 000 4h1a2 2 0 012 2z" />
+                <circle cx="8.5" cy="12" r="1" fill="currentColor" />
+                <circle cx="15.5" cy="12" r="1" fill="currentColor" />
+            </svg>
+
+            <h3 class="text-2xl font-semibold">Aún no tienes eventos</h3>
+
+            <p class="text-sm text-gray-500 max-w-lg text-center">
+                Crea tu primer evento para empezar a vender entradas y administrar asistentes.
+            </p>
+
+            <div class="flex gap-3">
+                <a routerLink="/admin/events/create-event" class="btn btn-primary">
+                    Crear evento
+                </a>
+            </div>
+
+        </div>
+    </div>
+
+}
+
+@if (eventResource.hasValue() && eventResource.value().items.length > 0) {
     <div class="flex flex-col">
         <div class="m-3t-4 mb-2 text-2xl font-semibold">
             Mis Eventos

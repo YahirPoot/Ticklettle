@@ -2,14 +2,6 @@
     <shared-is-not-authenticated [message]="'Debes iniciar sesión para ver tus boletos.'" />
 } @else {
     <div class="w-full min-h-screen flex flex-col">
-        <div class="navbar bg-base-200 px-4 py-2 shadow-sm">
-            <div class="flex-none lg:hidden">
-                </div>
-            <div class="flex-1">
-                <h1 class="text-xl font-bold">Mis Boletos</h1>
-            </div>
-        </div>
-    
         <div class="p-4 max-w-6xl mx-auto w-full">
             @if (allTickets.length === 0) {
                 <div class="card bg-base-200 border border-base-300 rounded-lg p-6 flex flex-col items-center justify-center gap-4 w-full">
@@ -30,6 +22,15 @@
                     </div>
                 </div>
             } @else {
+                <!-- Mostrar navbar solo si hay boletos -->
+                <div class="navbar bg-base-200 px-4 py-2 shadow-sm">
+                    <div class="flex-none lg:hidden">
+                    </div>
+                    <div class="flex-1">
+                        <h1 class="text-xl font-bold">Mis Boletos</h1>
+                    </div>
+                </div>
+
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         
                     <section>
