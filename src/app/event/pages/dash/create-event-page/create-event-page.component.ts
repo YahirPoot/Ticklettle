@@ -27,6 +27,8 @@ export class CreateEventPageComponent {
 
   private nextProductId = 1;
 
+  tagList = signal<string[]>([]);
+
   imagePreview = signal<string | null>(null);
   imageFile = signal<File | null>(null);
   // files & previews for products
@@ -37,9 +39,13 @@ export class CreateEventPageComponent {
     name: ['', [Validators.required, Validators.minLength(3)]],
     description: ['', [ Validators.minLength(10), Validators.maxLength(500)]],
     location: ['', [Validators.required]],
-    // city: ['', [Validators.required]],
-    // state: ['', [Validators.required]],
-    // postalCode: ['', [Validators.required]],
+    city: ['', [Validators.required]],
+    state: ['', [Validators.required]],
+    postalCode: ['', [Validators.required]],
+    status: ['Activo', [Validators.required]],
+    organizingHouseId: [null],
+    imageUrl: [''],
+    tags: [[] as string[]],
     // ticketType: ['general', Validators.required],
     date: ['', [Validators.required]],
     time: ['', [Validators.required]],
@@ -59,6 +65,8 @@ export class CreateEventPageComponent {
     this.eventForm.get('type')?.valueChanges.subscribe(val => {
       this.applyTypeRules(val);
     });
+
+    this.tagList.set(this.eventForm.get('tags')?.value || []);
   }
 
   private applyTypeRules(typeValue: string | null | undefined) {
@@ -183,6 +191,26 @@ export class CreateEventPageComponent {
     reader.readAsDataURL(file);
   }
 
+  addTagFromInput(ev: KeyboardEvent & { target: HTMLInputElement }) {
+    const value = ev.target.value?.trim();
+    if (!value) return;
+    const current: string[] = this.eventForm.get('tags')?.value || [];
+    if (!current.includes(value)) {
+      const next = [...current, value];
+      this.eventForm.get('tags')?.setValue(next);
+      this.tagList.set(next);
+    }
+    ev.target.value = '';
+    ev.preventDefault();
+  }
+
+  removeTag(idx: number) {
+    const current: string[] = this.eventForm.get('tags')?.value || [];
+    current.splice(idx, 1);
+    this.eventForm.get('tags')?.setValue([...current]);
+    this.tagList.set([...current]);
+  }
+
   private buildTicketsForSubmission(formRaw: any) {
     const type = (formRaw.type ?? 'Gratis').toString();
     const capacityNum = this.capacityValue();
@@ -222,6 +250,10 @@ export class CreateEventPageComponent {
       date: (formRaw.date ?? '').toString(),
       time: (formRaw.time ?? '').toString(),
       location: formRaw.location ?? undefined,
+      city: formRaw.city ?? undefined,
+      state: formRaw.state ?? undefined,
+      postalCode: formRaw.postalCode ?? undefined,
+      tags: formRaw.tags || [],
       type: (formRaw.type ?? 'Gratis').toString(),
       capacity: formRaw.capacity ?? null,
       sellMerch: Boolean(formRaw.sellMerch),

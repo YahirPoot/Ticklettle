@@ -39,19 +39,44 @@
                     </label>
 
                     <!-- Ubicación -->
-                    <label class="block">
-                        <span class="text-sm font-medium text-gray-500">
-                            Ubicación <span class="text-sm text-red-400">*</span>
-                        </span>
-                        <input 
-                            type="text" 
-                            placeholder="Lugar o dirección" 
-                            formControlName="location"
-                            class="input input-bordered w-full mt-1">
-                        @if (eventForm.get('location')?.touched && eventForm.get('location')?.invalid) {
-                            <p class="text-sm text-error mt-1">Campo obligatorio</p>
-                        }
-                    </label>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <label class="block">
+                            <span class="text-sm font-medium text-gray-500">Ciudad <span class="text-sm text-red-400">*</span></span>
+                            <input type="text" formControlName="city" class="input input-bordered w-full mt-1" placeholder="Ciudad" />
+                            @if (eventForm.get('city')?.touched && eventForm.get('city')?.invalid) {
+                                <p class="text-sm text-error mt-1">Campo obligatorio</p>
+                            }
+                        </label>
+
+                        <label class="block">
+                            <span class="text-sm font-medium text-gray-500">Estado / Provincia <span class="text-sm text-red-400">*</span></span>
+                            <input type="text" formControlName="state" class="input input-bordered w-full mt-1" placeholder="Estado" />
+                            @if (eventForm.get('state')?.touched && eventForm.get('state')?.invalid) {
+                                <p class="text-sm text-error mt-1">Campo obligatorio</p>
+                            }
+                        </label>
+
+                        <label class="block">
+                            <span class="text-sm font-medium text-gray-500">
+                                Ubicación <span class="text-sm text-red-400">*</span>
+                            </span>
+                            <input 
+                                type="text" 
+                                placeholder="Lugar o dirección" 
+                                formControlName="location"
+                                class="input input-bordered w-full mt-1">
+                            @if (eventForm.get('location')?.touched && eventForm.get('location')?.invalid) {
+                                <p class="text-sm text-error mt-1">Campo obligatorio</p>
+                            }
+                        </label>
+                        <label class="block">
+                            <span class="text-sm font-medium text-gray-500">Código postal <span class="text-sm text-red-400">*</span></span>
+                            <input type="text" formControlName="postalCode" class="input input-bordered w-full mt-1" placeholder="Postal" />
+                            @if (eventForm.get('postalCode')?.touched && eventForm.get('postalCode')?.invalid) {
+                                <p class="text-sm text-error mt-1">Campo obligatorio</p>
+                            }
+                        </label>
+                    </div>
 
                     <!-- Fecha -->
                     <label class="block">
@@ -116,6 +141,25 @@
                     <input type="file" accept="image/*" (change)="onFileChange($event)" class="file-input file-input-bordered w-full">
                     <p class="text-xs text-neutral">Formatos permitidos: JPG, PNG, GIF. Tamaño máximo: 2MB</p>
                 </div>
+                <!-- <label class="block">
+                        <span class="text-sm font-medium text-gray-500">Tags</span>
+                        <input
+                            type="text"
+                            placeholder="Agregar tag y presiona Enter"
+                            class="input input-bordered w-full mt-1"
+                        />
+                        <p class="text-xs text-neutral mt-1">Usa tags para categorizar el evento (ej. música, familia, gratuito).</p>
+                        @if (tagList().length) {
+                            <div class="flex flex-wrap gap-2 mt-2">
+                                @for (list of tagList(); track $index) {
+                                    <span class="badge badge-secondary flex items-center gap-2">
+                                        {{ tagList()[$index] }}
+                                        <button type="button" class="btn btn-ghost btn-xs" (click)="removeTag($index)">✕</button>
+                                    </span>
+                                }
+                            </div>
+                        }
+                    </label> -->
             </div>
         </section>
 

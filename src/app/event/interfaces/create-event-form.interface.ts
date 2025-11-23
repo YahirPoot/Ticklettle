@@ -7,6 +7,10 @@ export interface CreateEventFormValue {
     date: string;    // yyyy-mm-dd
     time: string;    // HH:mm
     location?: string;
+    city?: string;
+    state?: string;
+    postalCode?: string;
+    tags?: string[];
     type: 'Gratis' | 'Pago' | string;
     capacity?: number | null;
     sellMerch?: boolean;
