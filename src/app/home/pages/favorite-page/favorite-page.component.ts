@@ -5,6 +5,7 @@ import { IsNotAuthenticatedComponent } from '../../../shared/components/is-not-a
 import { FavoriteEventService } from '../../../event/services/favorite-event.service';
 import { RouterLink } from '@angular/router';
 import { ConfirmModalComponent } from '../../../shared/components/confirm-modal/confirm-modal.component';
+import { EventCardComponent } from '../../../event/components/event-card/event-card.component';
 
 @Component({
   selector: 'app-favorite-page',
@@ -14,6 +15,7 @@ import { ConfirmModalComponent } from '../../../shared/components/confirm-modal/
     IsNotAuthenticatedComponent,
     RouterLink,
     ConfirmModalComponent, // ⬅️ IMPORTANTE
+    EventCardComponent,
   ],
   templateUrl: './favorite-page.component.html',
 })
