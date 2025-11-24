@@ -44,6 +44,8 @@ export interface TopProduct {
     name: string;
     unitsSold: number;
     imageUrl: string;
+    price: number;
+    eventName: string;
 }
 
 export interface RecentSale {
