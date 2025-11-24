@@ -2,19 +2,29 @@ import { Component, inject, resource } from '@angular/core';
 import { RouterLink } from "@angular/router";
 import { first, firstValueFrom } from 'rxjs';
 import { EventService } from '../../../event/services/event.service';
+import AnalyticsService from '../../../event/services/analytics.service';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-dash-home-page',
-  imports: [RouterLink],
+  imports: [RouterLink, DatePipe],
   templateUrl: './dash-home-page.component.html',
 })
 export class DashHomePageComponent { 
   private eventService = inject(EventService);
+  private analyticsService = inject(AnalyticsService);
+
+  getAnalyticsResource = resource({
+    loader: () => firstValueFrom(this.analyticsService.getMyAnalytics()),
+  })
 
   eventsResource = resource({
     loader: () => firstValueFrom(this.eventService.getEventsOrganizer()),
   })
 
+  get getAnalytics() {
+    return this.getAnalyticsResource.value();
+  }
 
   get getEvents() {
     return this.eventsResource.value()?.items || [];

@@ -47,7 +47,7 @@
 
   }
 
-  @if (eventsResource.hasValue()) {
+  @if (getAnalyticsResource.hasValue()) {
     <div>
       <!-- Header -->
       <div class="flex items-center justify-between mb-6">
@@ -70,8 +70,8 @@
             </div>
             <div class="flex-1">
               <div class="text-xs text-gray-400">Eventos</div>
-              <div class="text-2xl font-semibold">{{ eventsCount() }}</div>
-              <div class="text-xs text-gray-400 mt-1">Activos: {{ activeEvents().length }}</div>
+              <div class="text-2xl font-semibold">{{ getAnalytics?.kpis?.eventsCount }}</div>
+              <div class="text-xs text-gray-400 mt-1">Activos: {{ getAnalytics?.kpis?.activeEventsCount  }}</div>
             </div>
           </div>
         </div>
@@ -83,8 +83,8 @@
             </div>
             <div class="flex-1">
               <div class="text-xs text-gray-400">Tipos de boletos</div>
-              <div class="text-2xl font-semibold">{{ ticketTypesCount() }}</div>
-              <div class="text-xs text-gray-400 mt-1">Por evento: promedio 70</div>
+              <div class="text-2xl font-semibold">{{ getAnalytics?.kpis?.ticketTypesCount }}</div>
+              <div class="text-xs text-gray-400 mt-1">Total de vendidos: {{ getAnalytics?.kpis?.ticketsSoldTotal }}</div>
             </div>
           </div>
         </div>
@@ -96,8 +96,8 @@
             </div>
             <div class="flex-1">
               <div class="text-xs text-gray-400">Boletos vendidos</div>
-              <div class="text-2xl font-semibold">{{ ticketsSoldTotal() }}</div>
-              <div class="text-xs text-gray-400 mt-1">Último mes: {{ ticketsByMonth[ticketsByMonth.length-1]?.value || 0 }}</div>
+              <div class="text-2xl font-semibold">{{ getAnalytics?.kpis?.ticketsSoldTotal }}</div>
+              <div class="text-xs text-gray-400 mt-1">Último mes: {{ [getAnalytics?.ticketsByMonth?.length-1].values</div>
             </div>
           </div>
         </div>
@@ -109,8 +109,8 @@
             </div>
             <div class="flex-1">
               <div class="text-xs text-gray-400">Productos</div>
-              <div class="text-2xl font-semibold">{{ productsCount() }}</div>
-              <div class="text-xs text-gray-400 mt-1">Vendidos: {{ productsSoldTotal() }}</div>
+              <div class="text-2xl font-semibold">{{ getAnalytics?.kpis?.productsCount }}</div>
+              <div class="text-xs text-gray-400 mt-1">Vendidos: {{ getAnalytics?.kpis?.productsSoldTotal }}</div>
             </div>
           </div>
         </div>
@@ -126,7 +126,7 @@
           <div class="card p-4 bg-white shadow">
             <div class="flex items-center justify-between mb-3">
               <h3 class="text-lg font-medium">Boletos vendidos (últimos 6 meses)</h3>
-              <div class="text-sm text-gray-400">Total: {{ ticketsSoldTotal() }}</div>
+              <div class="text-sm text-gray-400">Total: {{ getAnalytics?.kpis?.ticketsSoldTotal }}</div>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -135,14 +135,14 @@
               <div class="h-36 bg-neutral/5 rounded p-3">
                 <div class="flex flex-col h-full">
                   <div class="flex-1 flex items-end gap-2">
-                    @for (m of ticketsByMonth; track $index) {
+                    @for (m of getAnalytics?.ticketsByMonth; track $index) {
                       <div class="flex-1 h-full flex items-end">
                         <div class="w-full bg-indigo-500 rounded-t"></div>
                       </div>
                     }
                   </div>
                   <div class="flex items-center justify-between text-xs text-gray-400 mt-2">
-                    @for (m of ticketsByMonth; track $index) {
+                    @for (m of getAnalytics?.ticketsByMonth; track $index) {
                       <div class="w-1/6 text-center">{{ m.month }}</div>
                     }
                   </div>
@@ -154,7 +154,7 @@
                 <div class="flex flex-col h-full">
                   <div class="flex-1">
                     <div class="text-sm text-gray-500">Ingresos estimados</div>
-                    <div class="text-2xl font-semibold mt-2">${{ estimatedRevenue() }}</div>
+                    <div class="text-2xl font-semibold mt-2">${{ getAnalytics?.kpis?.estimatedRevenue }}</div>
                   </div>
                   <div class="text-xs text-gray-400 mt-2">Basado en ventas actuales</div>
                 </div>
@@ -167,11 +167,11 @@
           <div class="card p-4 bg-white shadow">
             <div class="flex items-center justify-between mb-3">
               <h3 class="text-lg font-medium">Productos vendidos (últimos 6 meses)</h3>
-              <div class="text-sm text-gray-400">Total: {{ productsSoldTotal() }}</div>
+              <div class="text-sm text-gray-400">Total: {{ getAnalytics?.kpis?.productsSoldTotal }}</div>
             </div>
 
             <div class="h-40 grid grid-cols-1 md:grid-cols-6 gap-2 items-end">
-              @for (m of productsByMonth; track $index) {
+              @for (m of getAnalytics?.productsByMonth; track $index) {
                 <div class="flex flex-col items-center justify-end gap-1">
                   <div class="w-full bg-emerald-500 rounded-t"></div>
                   <div class="text-xs text-gray-500 mt-2">{{ m.month }}</div>
@@ -193,7 +193,7 @@
             </div>
 
             <div class="space-y-3">
-              @for (e of topEventsByTickets(); track $index) {
+              @for (e of getAnalytics?.topEventsByTickets?.slice(0,3); track $index) {
                 <div class="flex items-center justify-between gap-3 p-3 rounded border">
                   <div class="flex items-center gap-3">
                     <div class="w-12 h-12 rounded-lg overflow-hidden bg-neutral">
@@ -205,7 +205,6 @@
                     </div>
                     <div class="min-w-0">
                       <div class="font-medium truncate">{{ e.name }}</div>
-                      <div class="text-xs text-gray-400 truncate">{{ e.location }}</div>
                     </div>
                   </div>
 
@@ -226,7 +225,7 @@
             </div>
 
             <div class="space-y-3">
-              @for (p of topProducts(); track $index) {
+              @for (p of topProducts().slice(0,3); track $index) {
                 <div class="flex items-center justify-between gap-3 p-3 rounded border">
                   <div class="flex items-center gap-3">
                     <div class="w-12 h-12 rounded-lg overflow-hidden bg-neutral">
@@ -255,7 +254,7 @@
       </div>
     </div>
   }
-  <!-- Recent sales table (compact)
+  <!-- Recent sales table (compact) -->
   <div class="card p-4 bg-white shadow mt-6">
     <div class="flex items-center justify-between mb-3">
       <h3 class="font-medium">Ventas recientes</h3>
@@ -275,19 +274,19 @@
           </tr>
         </thead>
         <tbody>
-          @for (sIndex = 0; sIndex < recentSales().length; sIndex++) {
+          @for (item of getAnalytics?.recentSales; track $index) {
             <tr>
-              <td>{{ sIndex + 1 }}</td>
-              <td>{{ recentSales()[sIndex].eventName }}</td>
-              <td>{{ recentSales()[sIndex].ticketTypeName }}</td>
-              <td>{{ recentSales()[sIndex].buyerName }}</td>
-              <td>{{ recentSales()[sIndex].date | date:'short' }}</td>
-              <td class="text-right">${{ recentSales()[sIndex].amount }}</td>
+              <td>{{ $index + 1 }}</td>
+              <td>{{ item.eventName }}</td>
+              <td>{{ item.ticketTypeName }}</td>
+              <td>{{ item.buyerName }}</td>
+              <td>{{ item.date | date:'short' }}</td>
+              <td class="text-right">${{ item.amount }}</td>
             </tr>
           }
         </tbody>
       </table>
     </div>
-  </div> -->
+  </div>
 
 </div>
