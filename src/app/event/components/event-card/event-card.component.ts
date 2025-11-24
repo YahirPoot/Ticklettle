@@ -1,4 +1,4 @@
-import { Component, computed, inject, input } from '@angular/core';
+import { Component, computed, inject, input, Input, Output, EventEmitter } from '@angular/core';
 import { EventInterface } from '../../interfaces';
 import { MatIconModule } from '@angular/material/icon';
 import { RouterLink } from '@angular/router';
@@ -18,6 +18,17 @@ export class EventCardComponent {
   isAuthenticated = computed(() => this.authService.authStatus() === 'authenticated');
 
   event = input.required<EventInterface>();
+
+  @Input() showFavorite: boolean = true;
+  @Input() showDelete: boolean = false;
+
+  @Output() remove = new EventEmitter<number>();
+
+  onRemove(event: MouseEvent) {
+    event.stopPropagation();
+    if (!this.event()) return;
+    this.remove.emit(this.event().eventId);
+  }
 
   isFavorited(): boolean {
     if (!this.event) return false;
