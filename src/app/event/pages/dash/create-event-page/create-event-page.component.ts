@@ -66,6 +66,17 @@ export class CreateEventPageComponent {
       this.applyTypeRules(val);
     });
 
+    this.eventForm.get('sellMerch')?.valueChanges.subscribe(() => {
+      if (!this.eventForm.get('sellMerch')?.value) {
+       // limpiar formulario de productos y arrays auxiliares
+        while (this.products.length) {
+          this.products.removeAt(0);
+        }
+        this.productFiles = [];
+        this.productPreviews = [];
+      }
+    });
+
     this.tagList.set(this.eventForm.get('tags')?.value || []);
   }
 
@@ -258,13 +269,13 @@ export class CreateEventPageComponent {
       capacity: formRaw.capacity ?? null,
       sellMerch: Boolean(formRaw.sellMerch),
       tickets: ticketsForRequest,
-      products: (formRaw.products || []).map((p: any) => ({
+      products: formRaw.sellMerch ? (formRaw.products || []).map((p: any) => ({
         name: (p?.name ?? '').toString(),
         description: p?.description ?? undefined,
         productPrice: Number(p?.productPrice ?? p?.price ?? 0),
         stock: Number(p?.stock ?? 0),
         imageUrl: p?.imageUrl ?? undefined
-      })),
+      })) : [],
       postEventContent: Boolean(formRaw.postEventContent)
     };
 
@@ -283,6 +294,7 @@ export class CreateEventPageComponent {
       this.tickets.clear();
       this.eventForm.get('type')?.setValue('Gratis', { emitEvent: true });
       this.notificationSvc.showNotification('Evento creado correctamente.', 'success');
+      this.router.navigate(['/admin/events']);
     } catch (err) {
       console.error('Error creando evento', err);
       this.notificationSvc.showNotification('Error al crear el evento.', 'error');

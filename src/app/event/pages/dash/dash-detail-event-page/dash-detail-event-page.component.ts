@@ -26,16 +26,8 @@ export class DashDetailEventPageComponent {
       }
   });
 
-  ticketResource = resource({
-    loader: () =>  firstValueFrom(this.ticketService.getTicketsByAttendee()),
-  })
-
   get eventById() {
     return this.eventResource.value();
-  }
-
-  get allTickets() {
-    return this.ticketResource.value();
   }
 
   get prroductsByEvent() {
@@ -46,3 +38,4 @@ export class DashDetailEventPageComponent {
     return this.router.navigate(['/admin/events'], { relativeTo: this.activedRoute });
   }
 }
+  
