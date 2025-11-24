@@ -1,8 +1,8 @@
 import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormArray, FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormArray, FormBuilder, FormControl, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { MatIcon } from "@angular/material/icon";
+import { MatIcon } from '@angular/material/icon';
 
 import { NotificationService } from '../../../../shared/services/notification.service';
 import { LoadingComponent } from '../../../../shared/components/loading/loading.component';
@@ -11,45 +11,46 @@ import { CreateEventFormValue } from '../../../interfaces';
 import { CreateEventUseCase } from '../../../use-cases/create-event.usecase';
 import { HeaderBackComponent } from '../../../../shared/components/header-back/header-back.component';
 
-
 @Component({
   selector: 'app-create-event-page',
   imports: [CommonModule, ReactiveFormsModule, MatIcon, LoadingComponent, HeaderBackComponent],
   templateUrl: './create-event-page.component.html',
 })
-export class CreateEventPageComponent { 
+export class CreateEventPageComponent {
   private fb = inject(FormBuilder);
   private router = inject(Router);
-  
-  private notificationSvc = inject(NotificationService);
-  private loadingService = inject(LoadingModalService);
-  private createEventUseCase = inject(CreateEventUseCase);
+  private notification = inject(NotificationService);
+  private loadingModal = inject(LoadingModalService);
+  private createEvent = inject(CreateEventUseCase);
 
+  private readonly ticketTypes = [
+    { value: 'general', label: 'General' },
+    { value: 'vip', label: 'VIP' },
+    { value: 'premium', label: 'Premium' }
+  ];
   private nextProductId = 1;
 
   tagList = signal<string[]>([]);
-
   imagePreview = signal<string | null>(null);
   imageFile = signal<File | null>(null);
-  // files & previews for products
+
   productFiles: (File | null)[] = [];
   productPreviews: string[] = [];
 
   eventForm = this.fb.group({
     name: ['', [Validators.required, Validators.minLength(3)]],
-    description: ['', [ Validators.minLength(10), Validators.maxLength(500)]],
-    location: ['', [Validators.required]],
-    city: ['', [Validators.required]],
-    state: ['', [Validators.required]],
-    postalCode: ['', [Validators.required]],
-    status: ['Activo', [Validators.required]],
+    description: ['', [Validators.minLength(10), Validators.maxLength(500)]],
+    location: ['', Validators.required],
+    city: ['', Validators.required],
+    state: ['', Validators.required],
+    postalCode: ['', Validators.required],
+    status: ['Activo', Validators.required],
     organizingHouseId: [null],
     imageUrl: [''],
     tags: [[] as string[]],
-    // ticketType: ['general', Validators.required],
-    date: ['', [Validators.required]],
-    time: ['', [Validators.required]],
-    type: ['Gratis', [Validators.required]],
+    date: ['', Validators.required],
+    time: ['', Validators.required],
+    type: ['Gratis', Validators.required],
     capacity: [null, [Validators.required, Validators.min(0)]],
     tickets: this.fb.array([]),
     products: this.fb.array([]),
@@ -58,248 +59,241 @@ export class CreateEventPageComponent {
   });
 
   constructor() {
-    // mantener capacity obligatorio en ambos casos (ya definido en form control)
-    this.applyTypeRules(this.eventForm.get('type')?.value);
+    this.initializeFormSubscriptions();
+  }
 
-    // suscribirse a cambios de tipo
-    this.eventForm.get('type')?.valueChanges.subscribe(val => {
-      this.applyTypeRules(val);
-    });
+  private initializeFormSubscriptions() {
+    // reglas cuando cambia tipo Gratis / Pago
+    this.eventForm.get('type')?.valueChanges
+      .subscribe(type => this.applyTypeRules(type));
 
-    this.eventForm.get('sellMerch')?.valueChanges.subscribe(() => {
-      if (!this.eventForm.get('sellMerch')?.value) {
-       // limpiar formulario de productos y arrays auxiliares
-        while (this.products.length) {
-          this.products.removeAt(0);
-        }
-        this.productFiles = [];
-        this.productPreviews = [];
-      }
-    });
+    // limpiar productos si desactivan la venta de merch
+    this.eventForm.get('sellMerch')?.valueChanges
+      .subscribe(sell => !sell && this.resetProducts());
 
+    // inicializar tags
     this.tagList.set(this.eventForm.get('tags')?.value || []);
-  }
 
-  private applyTypeRules(typeValue: string | null | undefined) {
-    // capacity es obligatorio en ambos casos (validadores definidos en form)
-    // control de tickets: si es Gratis, limpiamos y deshabilitamos; si Pago, habilitamos y aseguramos al menos 1
-    if ((typeValue ?? '').toString() === 'Gratis') {
-      // limpiar tickets y deshabilitarlos
-      while (this.tickets.length) {
-        this.tickets.removeAt(0);
-      }
-      this.tickets.disable({ emitEvent: false });
-    } else {
-      // habilitar tickets y asegurar al menos 1 tipo
-      this.tickets.enable({ emitEvent: false });
-      if (this.tickets.length === 0) {
-        this.addTicketType();
-      }
-    }
-  }
-
-  isFree(): boolean {
-    return (this.eventForm.get('type')?.value ?? '').toString() === 'Gratis';
-  }
-
-  get products(): FormArray {
-    return this.eventForm.get('products') as FormArray;
-  }
-
-  addProduct() {
-    this.products.push(this.fb.group({
-      id: [this.nextProductId++],
-      name: [''],
-      description: [''],
-      productPrice: [0, [Validators.min(0)]],
-      stock: [0, [Validators.min(0)]],
-      imageUrl: ['']
-    }));
-    // keep parallel arrays in sync
-    this.productFiles.push(null);
-    this.productPreviews.push('');
-  }
-
-  removeProduct(idx: number) {
-    if (this.products.length <= 0) return;
-    this.products.removeAt(idx);
-    this.productFiles.splice(idx, 1);
-    this.productPreviews.splice(idx, 1);
-    // optional: ensure any file input at that index is cleared in the DOM
-    // (only needed if you still see stale values)
-    const fileInputs = document.querySelectorAll<HTMLInputElement>('input[type="file"]');
-    if (fileInputs[idx]) fileInputs[idx].value = '';
-  }
-
-  onProductFileChange(e: Event, idx: number) {
-    const input = e.target as HTMLInputElement;
-    const file = input.files?.[0] || null;
-    this.productFiles[idx] = file;
-    if (!file) {
-      this.productPreviews[idx] = '';
-      return;
-    }
-    const reader = new FileReader();
-    reader.onload = () => {
-      this.productPreviews[idx] = reader.result as string;
-    };
-    reader.readAsDataURL(file);
+    // aplicar reglas de tickets en inicio
+    this.applyTypeRules(this.eventForm.get('type')?.value || null);
   }
 
   get tickets(): FormArray {
     return this.eventForm.get('tickets') as FormArray;
   }
 
-  get capacityControl(): FormControl<number | null> {
+  get products(): FormArray {
+    return this.eventForm.get('products') as FormArray;
+  }
+
+  capacityControl(): FormControl<number | null> {
     return this.eventForm.get('capacity') as FormControl<number | null>;
   }
 
-  // devuelve número (0 = ilimitado)
-  capacityValue(): number {
-    const v = this.capacityControl?.value;
-    return v == null ? 0 : Number(v);
+  isFree(): boolean {
+    return this.eventForm.value.type === 'Gratis';
   }
 
-  // opcional: para mostrar texto "Ilimitado"
-  capacityDisplay(): string {
-    const v = this.capacityControl?.value;
-    return v == null ? 'Ilimitado' : String(v);
+  private applyTypeRules(type: string | null) {
+    if (type === 'Gratis') {
+      this.tickets.clear();
+      this.tickets.disable({ emitEvent: false });
+    } else {
+      this.tickets.enable({ emitEvent: false });
+      if (!this.tickets.length) this.addTicketType();
+    }
   }
 
   addTicketType() {
-    this.tickets.push(this.fb.group({
-      type: ['general'],
-      ticketPrice: [0, [Validators.min(0)]],
-      quantity: [0, [Validators.min(0)]]
-    }))
+    const firstAvailable = this.ticketTypes.find(
+      t => !this.selectedTicketTypes().includes(t.value)
+    )?.value ?? 'general';
+
+    this.tickets.push(
+      this.fb.group({
+        type: [firstAvailable],
+        ticketPrice: [0, Validators.min(0)],
+        quantity: [0, Validators.min(0)]
+      })
+    );
   }
 
   removeTicketType(idx: number) {
-    if (this.tickets.length <= 1) return;
-
-    this.tickets.removeAt(idx);
+    if (this.tickets.length > 1) this.tickets.removeAt(idx);
   }
 
-  totalTicketsCount():number {
-    return (this.tickets.controls as FormGroup[])
-      .map(c => Number(c.get('quantity')?.value || 0))
-      .reduce((a, b) => a + b, 0);
+  private selectedTicketTypes(): string[] {
+    return this.tickets.controls.map(
+      c => String(c.get('type')?.value)
+    );
   }
 
+  private hasDuplicateTicketTypes(): boolean {
+    const types = this.selectedTicketTypes();
+    return types.length !== new Set(types).size;
+  }
+
+  totalTicketsCount(): number {
+    return this.tickets.controls.reduce(
+      (acc, c) => acc + Number(c.get('quantity')?.value || 0),
+      0
+    );
+  }
+
+  availableTicketTypesForIndex(idx: number) {
+    const selected = this.selectedTicketTypes();
+    const current = this.tickets.at(idx)?.get('type')?.value;
+
+    return this.ticketTypes.filter(opt =>
+      opt.value === current || !selected.includes(opt.value)
+    );
+  }
+
+  addProduct() {
+    this.products.push(
+      this.fb.group({
+        id: [this.nextProductId++],
+        name: [''],
+        description: [''],
+        productPrice: [0, Validators.min(0)],
+        stock: [0, Validators.min(0)],
+        imageUrl: ['']
+      })
+    );
+
+    this.productFiles.push(null);
+    this.productPreviews.push('');
+  }
+
+  removeProduct(idx: number) {
+    this.products.removeAt(idx);
+    this.productFiles.splice(idx, 1);
+    this.productPreviews.splice(idx, 1);
+  }
+
+  resetProducts() {
+    this.products.clear();
+    this.productFiles = [];
+    this.productPreviews = [];
+  }
+
+  onProductFileChange(e: Event, idx: number) {
+    const file = (e.target as HTMLInputElement).files?.[0] ?? null;
+    this.productFiles[idx] = file;
+
+    if (!file) {
+      this.productPreviews[idx] = '';
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => this.productPreviews[idx] = reader.result as string;
+    reader.readAsDataURL(file);
+  }
 
   onFileChange(e: Event) {
-    const input = e.target as HTMLInputElement;
-    const file = input.files?.[0] || null;
-
+    const file = (e.target as HTMLInputElement).files?.[0];
     if (!file) return;
+
     this.imageFile.set(file);
 
     const reader = new FileReader();
-    reader.onload = () => {
-      this.imagePreview.set(reader.result as string);
-    };
-
+    reader.onload = () => this.imagePreview.set(reader.result as string);
     reader.readAsDataURL(file);
   }
 
   addTagFromInput(ev: KeyboardEvent & { target: HTMLInputElement }) {
-    const value = ev.target.value?.trim();
+    const value = ev.target.value.trim();
     if (!value) return;
-    const current: string[] = this.eventForm.get('tags')?.value || [];
+
+    const current = this.eventForm.value.tags ?? [];
     if (!current.includes(value)) {
       const next = [...current, value];
       this.eventForm.get('tags')?.setValue(next);
       this.tagList.set(next);
     }
+
     ev.target.value = '';
-    ev.preventDefault();
   }
 
   removeTag(idx: number) {
-    const current: string[] = this.eventForm.get('tags')?.value || [];
+    const current = this.eventForm.value.tags ?? [];
     current.splice(idx, 1);
     this.eventForm.get('tags')?.setValue([...current]);
     this.tagList.set([...current]);
   }
 
-  private buildTicketsForSubmission(formRaw: any) {
-    const type = (formRaw.type ?? 'Gratis').toString();
-    const capacityNum = this.capacityValue();
-    if (type === 'Gratis') {
-      // crear 1 tipo "gratis" con precio 0 y cantidad = capacidad (availableQuantity)
+  private buildTicketsForSubmission(form: any) {
+    if (form.type === 'Gratis') {
       return [{
         type: 'gratis',
         ticketPrice: 0,
-        quantity: capacityNum
+        quantity: Number(form.capacity)
       }];
     }
-    // Para pago, mapear los tickets del formulario (asegurarse de convertir tipos)
-    return (formRaw.tickets || []).map((t: any) => ({
-      type: (t?.type ?? 'general').toString(),
-      ticketPrice: Number(t?.ticketPrice ?? 0),
-      quantity: Number(t?.quantity ?? 0)
+
+    return (form.tickets ?? []).map((t: any) => ({
+      type: t.type,
+      ticketPrice: Number(t.ticketPrice),
+      quantity: Number(t.quantity)
     }));
   }
 
   async onSubmit() {
-    // Marcar controles y validar: solo los campos con Validators.required impedirán el envío
-    this.eventForm.markAllAsTouched();
-    if (this.eventForm.invalid) {
-      this.notificationSvc.showNotification('Por favor, corrige los errores en el formulario.', 'error');
-      console.log('Formulario inválido', this.eventForm.errors, this.eventForm);
-      return;
+    if (this.hasDuplicateTicketTypes()) {
+      return this.notification.showNotification('Hay tipos de boleto duplicados.', 'error');
     }
 
-    const formRaw = this.eventForm.getRawValue();
+    this.eventForm.markAllAsTouched();
+    if (this.eventForm.invalid) {
+      return this.notification.showNotification('Corrige los errores del formulario.', 'error');
+    }
 
-    const ticketsForRequest = this.buildTicketsForSubmission(formRaw);
+    const raw = this.eventForm.getRawValue();
 
-    // Mapeo a CreateEventFormValue interface
-    const formValue: CreateEventFormValue = {
-      name: (formRaw.name ?? '').toString(),
-      description: formRaw.description ?? undefined,
-      date: (formRaw.date ?? '').toString(),
-      time: (formRaw.time ?? '').toString(),
-      location: formRaw.location ?? undefined,
-      city: formRaw.city ?? undefined,
-      state: formRaw.state ?? undefined,
-      postalCode: formRaw.postalCode ?? undefined,
-      tags: formRaw.tags || [],
-      type: (formRaw.type ?? 'Gratis').toString(),
-      capacity: formRaw.capacity ?? null,
-      sellMerch: Boolean(formRaw.sellMerch),
-      tickets: ticketsForRequest,
-      products: formRaw.sellMerch ? (formRaw.products || []).map((p: any) => ({
-        name: (p?.name ?? '').toString(),
-        description: p?.description ?? undefined,
-        productPrice: Number(p?.productPrice ?? p?.price ?? 0),
-        stock: Number(p?.stock ?? 0),
-        imageUrl: p?.imageUrl ?? undefined
-      })) : [],
-      postEventContent: Boolean(formRaw.postEventContent)
+    const request: CreateEventFormValue = {
+      name: raw.name!,
+      description: raw.description!,
+      date: raw.date!,
+      time: raw.time!,
+      location: raw.location!,
+      city: raw.city!,
+      state: raw.state!,
+      postalCode: raw.postalCode!,
+      tags: raw.tags!,
+      type: raw.type!,
+      capacity: raw.capacity,
+      sellMerch: raw.sellMerch!,
+      tickets: this.buildTicketsForSubmission(raw),
+      products: raw.sellMerch
+        ? raw.products!.map((p: any) => ({
+            name: p.name,
+            description: p.description,
+            productPrice: Number(p.productPrice),
+            stock: Number(p.stock),
+            imageUrl: p.imageUrl
+          }))
+        : [],
+      postEventContent: raw.postEventContent!
     };
 
-    this.loadingService.showModal('create', 'Creando evento, por favor espera...');
+    this.loadingModal.showModal('create', 'Creando evento...');
     this.eventForm.disable();
 
     try {
-      await this.createEventUseCase.execute({
-        formValue,
+      await this.createEvent.execute({
+        formValue: request,
         eventImageFile: this.imageFile(),
         productsFiles: this.productFiles
       });
 
-      this.imageFile.set(null);
-      this.eventForm.reset();
-      this.tickets.clear();
-      this.eventForm.get('type')?.setValue('Gratis', { emitEvent: true });
-      this.notificationSvc.showNotification('Evento creado correctamente.', 'success');
+      this.notification.showNotification('Evento creado correctamente', 'success');
       this.router.navigate(['/admin/events']);
     } catch (err) {
-      console.error('Error creando evento', err);
-      this.notificationSvc.showNotification('Error al crear el evento.', 'error');
+      console.error(err);
+      this.notification.showNotification('Error al crear el evento', 'error');
     } finally {
-      this.loadingService.hideModalImmediately();
+      this.loadingModal.hideModalImmediately();
       this.eventForm.enable();
     }
   }
@@ -309,6 +303,6 @@ export class CreateEventPageComponent {
   }
 
   goBack() {
-    window.history.back();
+    history.back();
   }
 }

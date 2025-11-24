@@ -189,9 +189,7 @@
                             <div class="col-span-5">
                                 <label class="block text-xs text-gray-500">Tipo</label>
                                 <select class="select input-bordered w-full" formControlName="type">
-                                    <option value="general">General</option>
-                                    <option value="vip">VIP</option>
-                                    <option value="early">Oro</option>
+                                    <option *ngFor="let opt of availableTicketTypesForIndex($index)" [value]="opt.value">{{ opt.label }}</option>
                                 </select>
                             </div>
     
@@ -214,13 +212,13 @@
     
                     <div>
                         <button type="button" 
-                            [disabled]="totalTicketsCount() === capacityValue()" 
+                            [disabled]="totalTicketsCount() === capacityControl().value || availableTicketTypesForIndex(tickets.length).length === 0" 
                             class="btn btn-sm btn-outline" 
                             (click)="addTicketType()">+ Agregar tipo
                         </button>
                     </div>
     
-                    @if (capacityValue() > 0 && totalTicketsCount() > capacityValue()) {
+                    @if (capacityControl().value! > 0 && totalTicketsCount() > capacityControl().value!) {
                         <div class="text-warning text-sm mt-2">
                             La suma de cantidades de los tipos de boleto excede la capacidad total.
                         </div>
