@@ -1,0 +1,104 @@
+<div class="min-h-screen flex items-center justify-center p-4">
+  <div class="w-full max-w-4xl bg-base-100 shadow-lg rounded-lg overflow-hidden grid grid-cols-1 md:grid-cols-2">
+    <!-- LEFT: Product / resumen -->
+    <div class="p-6 border-b md:border-b-0 md:border-r bg-white">
+      <div class="flex items-center gap-4">
+        <div>
+          <h3 class="text-lg font-medium text-primary uppercase">
+            BOLETOS
+          </h3>
+          <p class="text-sm text-gray-400">
+            {{ payload?.description || 'Compra de boletos' }}
+          </p>
+          <div class="mt-2 text-sm text-secondary">
+            <span class="font-semibold text-base-content">{{ payload?.items?.length || 0 }} item(s)</span>
+            <span class="ml-3 text-base-content">Evento #{{ payload?.eventId }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-6">
+        <h4 class="text-sm font-medium text-gray-400 mb-2">Resumen de la orden</h4>
+        <ul class="space-y-3">
+          @for (item of payload?.items; track $index) {
+            <li class="flex justify-between items-center">
+              <div>
+                <div class="text-sm font-medium  uppercase">{{ item.name }}</div>
+                <div class="text-xs text-gray-400">Cantidad: {{ item.quantity }}</div>
+              </div>
+              <div class="text-sm font-semibold">${{ (item.unitPrice * item.quantity) | number:'1.2-2' }}</div>
+            </li>
+          }
+        </ul>
+
+        <div class="mt-4 border-t pt-4 flex items-center justify-between">
+          <div class="text-sm text-secondary">Total</div>
+          <div class="text-xl font-bold text-base-content">${{ total | number:'1.2-2' }}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: Billing + Card -->
+    <div class="p-6 bg-primary/5">
+      <h4 class="text-lg font-bold text-primary mb-4">Datos de pago</h4>
+
+      <form [formGroup]="paymentForm" (ngSubmit)="pay()" class="space-y-4">
+        <div>
+          <label class="block text-xs font-medium mb-1">Nombre del titular</label>
+          <input
+            formControlName="name"
+            type="text"
+            placeholder="Nombre completo"
+            class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+          />
+          @if (paymentForm.controls.name.invalid && paymentForm.controls.name.touched) {
+            <div class="text-xs text-red-500 mt-1">Nombre requerido</div>
+          }
+        </div>
+
+        <div>
+          <label class="block text-xs font-medium mb-1">Email (recibo)</label>
+          <input
+            formControlName="email"
+            type="email"
+            placeholder="correo@ejemplo.com"
+            class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+          />
+          @if (paymentForm.controls.email.invalid && paymentForm.controls.email.touched) {
+            <div class="text-xs text-red-500 mt-1">Email inválido</div>
+          }
+        </div>
+
+        <div>
+          <label class="block text-xs font-medium mb-1">Tarjeta</label>
+          <div id="card-element"></div>
+          @if (error()) {
+            <div class="text-sm text-red-600 mt-2">{{ error() }}</div>
+          }
+        </div>
+
+        <div class="pt-2">
+          <button
+            type="submit"
+            class="w-full inline-flex items-center justify-center gap-3 px-4 py-2 bg-primary hover:bg-primary-dark text-white font-medium rounded-b-md transition"
+            [disabled]="loading() || paymentForm.invalid"
+          >
+          @if (loading()) {
+            <svg class="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+            </svg>
+            <span>Procesando...</span>
+          } @else {
+            <span>Pagar ${{ total | number:'1.2-2' }}</span>
+          }
+          </button>
+        </div>
+
+        <div class="text-center mt-3 text-xs text-base-content">
+          Tus datos de tarjeta se procesan de forma segura por Stripe.
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

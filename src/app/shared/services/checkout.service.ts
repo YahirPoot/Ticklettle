@@ -1,32 +1,23 @@
-import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { environment } from '../../../environments/environment.dev';
-import { loadStripe } from '@stripe/stripe-js';
-import { map } from 'rxjs';
+import { Router } from '@angular/router';
+import { BehaviorSubject } from 'rxjs';
+import { RequestPaymentInterface } from '../interfaces';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CheckoutService {
-  private readonly http = inject(HttpClient);
-  private readonly stripeUrl = environment.serverBackend;
+  private router = inject(Router);
+  private _payload$ = new BehaviorSubject<RequestPaymentInterface | null>(null);
+  payload$ = this._payload$.asObservable();
 
-  // envia items al backend y redirige al Checkout (usa session.url)
-  onProceedToPay(items: any, orderId?: string) {
-    this.http.post<{ url: string; id: string }>(`${this.stripeUrl}/checkout`, {
-      items, orderId
-    }).subscribe({
-      next: (res) => {
-        if (res?.url) {
-          // redirige al Checkout que creó tu servidor
-          window.location.href = res.url;
-        } else {
-          console.error('Checkout response missing url', res);
-        }
-      },
-      error: (err) => {
-        console.error('Error creating checkout session:', err);
-      }
-    });
+  onProceedToPayment(requestPayment: RequestPaymentInterface) {
+    this._payload$.next(requestPayment);
+    this.router.navigate(['/tickets/checkout']);
   }
+
+  getPayloadSnapshot() {
+    return this._payload$.getValue();
+  }
+  
 }

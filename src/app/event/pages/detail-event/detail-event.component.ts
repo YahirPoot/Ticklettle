@@ -25,7 +25,7 @@ export class DetailEventComponent {
         this.eventService.getEventById(this.eventId),
       )
     }
-  });
+  }); 
 
   get event() {
     return this.eventResource.value();

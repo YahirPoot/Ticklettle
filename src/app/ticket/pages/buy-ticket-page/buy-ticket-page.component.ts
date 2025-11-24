@@ -1,5 +1,5 @@
 import { Component, computed, inject, OnDestroy, OnInit, resource, signal } from '@angular/core';
-import { ZonesInterface } from '../../../shared/interfaces';
+import { Item, RequestPaymentInterface, ZonesInterface } from '../../../shared/interfaces';
 import { EventService } from '../../../event/services/event.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NotificationService } from '../../../shared/services/notification.service';
@@ -124,37 +124,32 @@ export class BuyTicketPageComponent implements OnInit {
     //   return;
     // }
     
-    const items = this.ticketTypes
+    const items: Item[] = this.ticketTypes
       .map((tt: any, index: number) => ({
-        title: tt.name,
-        unitPrice: tt.price,
-        unit_amount: tt.price,
+        type: 'ticket',
+        itemId: tt.ticketTypeId ?? index,
         quantity: this.qtyAt(index),
+        unitPrice: Number(tt.price) || 0,
+        name: tt.name ?? `Boleto ${index + 1}`
       }))
-      .filter((it: any) => it.quantity > 0);
-      
-      if (items.length === 0) {
-        this.notificationService.showNotification('Debes seleccionar al menos un boleto para continuar.', 'warning');
-        return;
+      .filter((it: Item) => it.quantity > 0);
+
+    if (items.length === 0) {
+      this.notificationService.showNotification('Debes seleccionar al menos un boleto para continuar.', 'warning');
+      return;
     }
-    
-    const orderPayload: OrderRequest = {
+    const requestPayment: RequestPaymentInterface = {
+      items,
       eventId: this.eventId,
-      items, 
-      buyer: {
-        userId: this.authService.user()?.id,
-        email: this.authService.user()?.email,
-        nameUser: this.authService.user()?.firstName
-      },
-      total: this.totalPrice(),
-      totalTickets: this.totalTickets(),
-    }
+      description: `Compra de ${items.reduce((s, i) => s + i.quantity, 0)} boleto(s) para el evento ${this.event?.name ?? this.eventId}`,
+      currency: 'mxn', // ajusta según tu lógica / usuario
+      paymentMethodTypes: ['card'] // normalmente 'card'
+    };
     
     this.loading.set(true);
     try {
-      
-      const order = await lastValueFrom(this.ticketService.createOrder(orderPayload));
-      this.checkoutService.onProceedToPay(items, order.id);
+
+      this.checkoutService.onProceedToPayment(requestPayment);
     } catch (error) {
       console.error('error', error);
       this.notificationService.showNotification('Error al crear la orden o iniciar checkout.', 'error');
