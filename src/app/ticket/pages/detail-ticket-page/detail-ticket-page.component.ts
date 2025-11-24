@@ -2,6 +2,7 @@ import { Component, inject, resource } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { TicketService } from '../../services/ticket.service';
 import { ActivatedRoute } from '@angular/router';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-detail-ticket-page',
@@ -15,7 +16,7 @@ export class DetailTicketPageComponent {
   ticketId: number = this.activatedRoute.snapshot.params['ticketId'];
 
   ticketResource = resource({
-    loader: () => this.ticketService.byId(this.ticketId),
+    loader: () => firstValueFrom(this.ticketService.getTicketsByAttendee()).then(tickets => tickets.filter(ticket => ticket.ticketId === this.ticketId)[0]),
   });
 
   get ticketDetails() {

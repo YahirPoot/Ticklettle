@@ -5,6 +5,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { AuthService } from '../../../auth/services/auth.service';
 import { IsNotAuthenticatedComponent } from '../../../shared/components/is-not-authenticated/is-not-authenticated.component';
 import { TicketService } from '../../services/ticket.service';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-ticket-page',
@@ -13,34 +14,16 @@ import { TicketService } from '../../services/ticket.service';
 })
 export class TicketPageComponent { 
   authService = inject(AuthService);
-  private TicketService = inject(TicketService);
+  private ticketService = inject(TicketService);
 
   isAuthenticated = computed(() => this.authService.authStatus() === 'authenticated');
 
-  activeTicketsResource = resource({
-    loader: () => this.TicketService.byStatus('active'),
-  });
-
-  expiredTicketsResource = resource({
-    loader: () => this.TicketService.byStatus('expired'),
-  });
-
-  transferredTicketsResource = resource({
-    loader: () => this.TicketService.byStatus('transferred'),
-  });
-
-  get activeTickets() {
-    return this.activeTicketsResource.value() || [];
-  }
-
-  get expired_transferredTickets() {
-    const expired = this.expiredTicketsResource.value() || [];
-    const transferred = this.transferredTicketsResource.value() || [];
-    return [...expired, ...transferred];
-  }
+  ticketsResource = resource({
+    loader: () => firstValueFrom(this.ticketService.getTicketsByAttendee()),
+  })
 
   get allTickets() {
-    return this.activeTickets || this.expired_transferredTickets;
+    return this.ticketsResource.value() || [];
   }
 
 }

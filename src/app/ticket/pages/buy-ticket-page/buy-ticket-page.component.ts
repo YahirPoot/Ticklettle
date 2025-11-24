@@ -1,5 +1,5 @@
-import { Component, computed, inject, OnDestroy, OnInit, resource, signal } from '@angular/core';
-import { Item, RequestPaymentInterface, ZonesInterface } from '../../../shared/interfaces';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { Item, RequestPaymentInterface, } from '../../../shared/interfaces';
 import { EventService } from '../../../event/services/event.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NotificationService } from '../../../shared/services/notification.service';
@@ -7,9 +7,9 @@ import { AuthService } from '../../../auth/services/auth.service';
 import { FormArray, FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CheckoutService } from '../../../shared/services/checkout.service';
 import { HeaderBackComponent } from '../../../shared/components/header-back/header-back.component';
-import { firstValueFrom, lastValueFrom, Subscription } from 'rxjs';
+import { firstValueFrom,} from 'rxjs';
 import { TicketService } from '../../services/ticket.service';
-import { OrderRequest, TypeTicketInterface } from '../../interfaces';
+import { TypeTicketInterface } from '../../interfaces';
 
 @Component({
   selector: 'app-buy-ticket-page',

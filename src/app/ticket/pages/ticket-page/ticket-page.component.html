@@ -3,7 +3,7 @@
 } @else {
     <div class="w-full min-h-screen flex flex-col">
         <div class="p-4 max-w-6xl mx-auto w-full">
-            @if (allTickets.length === 0) {
+            @if (ticketsResource.value() == null) {
                 <div class="card bg-base-200 border border-base-300 rounded-lg p-6 flex flex-col items-center justify-center gap-4 w-full">
                     <svg class="w-16 h-16 text-yellow-500" viewBox="0 0 24 24" fill="none" aria-hidden="true" role="img">
                         <path d="M2 7.5A2.5 2.5 0 014.5 5h15A2.5 2.5 0 0122 7.5v9A2.5 2.5 0 0119.5 19h-15A2.5 2.5 0 012 16.5v-9zM7 9v6M12 9v6M17 9v6" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" class="fill-current/5"/>
@@ -36,20 +36,19 @@
                     <section>
                         <h2 class="text-2xl text-center font-bold mb-4">Activos</h2>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            @for (ticket of activeTickets; track $index) {
-                                <a [routerLink]="['detail-ticket', ticket.id]">
+                            @for (ticket of allTickets || []; track $index) {
+                                <a [routerLink]="['detail-ticket', ticket.ticketId]">
                                     <article class="card bg-base-100 shadow-lg border border-base-300">
                                         <div class="card-body p-4 flex flex-col items-center text-center">
-                                            <h3 class="text-lg font-semibold truncate">{{ ticket.organizer }}</h3>
-                                            <div class="w-full h-32 my-3 rounded-lg bg-gray-500 flex items-center justify-center"
-                                                style="background: linear-gradient(180deg, rgba(255,255,255,0.1) 0%, rgba(0,0,0,0.3) 100%);">
-                                                <mat-icon class="text-6xl text-gray-300">image</mat-icon>
+                                            <h3 class="text-lg font-semibold truncate">{{ ticket.price }}</h3>
+                                            <div class="w-full h-32 my-3 rounded-lg flex items-center justify-center">
+                                                    <img [src]="'https://static.thenounproject.com/png/2635330-200.png'" [alt]="ticket.ticketId" class="h-full w-full object-cover">
                                             </div>
                                             
-                                            <p class="text-md font-medium mb-3 truncate">{{ ticket.ticketType }}</p>
+                                            <p class="text-md font-medium mb-3 truncate">{{ ticket.ticketTypeId }}</p>
                                             
                                             <div class="absolute bottom-2 right-2 bg-black text-white p-2 rounded-full shadow-lg">
-                                                <mat-icon class="!text-xl">{{ ticket.icon }}</mat-icon>
+                                                <mat-icon class="!text-xl">{{ ticket.price }}</mat-icon>
                                             </div>
                                         </div>
                                     </article>
@@ -64,20 +63,18 @@
                     <section>
                         <h2 class="text-2xl text-center font-bold mb-4">Vencidos/Transferidos</h2>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            @for (ticket of expired_transferredTickets; track $index) {
-                                <a [routerLink]="['detail-ticket', ticket.id]">
+                            @for (ticket of allTickets; track $index) {
+                                <a [routerLink]="['detail-ticket', ticket.ticketId]">
                                     <article class="card bg-base-100 shadow-lg border border-base-300 opacity-60">
                                         <div class="card-body p-4 flex flex-col items-center text-center">
-                                            <h3 class="text-lg font-semibold truncate">{{ ticket.organizer }}</h3>
-                                            <div class="w-full h-32 my-3 rounded-lg bg-gray-400 flex items-center justify-center"
-                                                style="background: linear-gradient(180deg, rgba(255,255,255,0.1) 0%, rgba(0,0,0,0.3) 100%);">
-                                                <mat-icon class="text-6xl text-gray-500">image</mat-icon>
-                                            </div>
-                                            
-                                            <p class="text-md font-medium mb-3 truncate">{{ ticket.ticketType }}</p>
+                                            <h3 class="text-lg font-semibold truncate">{{ ticket.price }}</h3>
+                                            <div class="w-full h-32 my-3 rounded-lg flex items-center justify-center">
+                                                <img [src]="'https://static.thenounproject.com/png/2635330-200.png'" [alt]="ticket.ticketId" class="h-full w-full object-cover">
+                                            </div>    
+                                            <p class="text-md font-medium mb-3 truncate">{{ ticket.ticketTypeId }}</p>
                                             
                                             <div class="absolute bottom-2 right-2 bg-black text-white p-2 rounded-full shadow-lg">
-                                                <mat-icon class="!text-xl">{{ ticket.icon }}</mat-icon>
+                                                <mat-icon class="!text-xl">{{ ticket.price }}</mat-icon>
                                             </div>
                                         </div>
                                     </article>

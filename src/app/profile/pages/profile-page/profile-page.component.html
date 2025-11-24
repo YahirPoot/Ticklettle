@@ -84,13 +84,22 @@
     <!-- Sección Superior: Info y Eliminar Cuenta -->
     <div class="card bg-base-100 shadow-xl p-6 mb-8 relative">
         <div class="flex items-start gap-6">
-
             <!-- Imagen de Perfil -->
-            <img 
-                [src]="profileUser.value()?.user?.photoUrl || 'assets/profile_user.png'"
-                [alt]="'Foto de' + profileUser.value()?.user?.firstName" 
-                class="w-24 h-24 object-cover rounded-full shadow-lg shrink-0"
-            />
+            <div class="avatar avatar-online">
+                <div class="w-24 rounded-full bg-base-300">
+                    @if (profileUser.value()?.user?.photoUrl) {
+                        <img [src]="profileUser.value()?.user?.photoUrl" class="w-full h-full object-cover 0" />
+                    } @else {
+                        
+                        <!-- <div class="flex items-center justify-center h-full font-bold text-base-content uppercase text-lg">
+                            {{ profileUser.value()?.user?.firstName?.charAt(0) }}
+                        </div> -->
+                        <div class="w-full h-full object-cover flex items-center justify-center font-bold text-base-content uppercase text-lg">
+                            <h1>{{ profileUser.value()?.user?.firstName?.charAt(0) }}</h1>
+                        </div>
+                    }
+                </div>
+            </div>
 
             <!-- Nombre y Ubicación -->
             <div class="flex-1 min-w-0">

@@ -27,7 +27,7 @@ export class DashDetailEventPageComponent {
   });
 
   ticketResource = resource({
-    loader: () =>  this.ticketService.all(),
+    loader: () =>  firstValueFrom(this.ticketService.getTicketsByAttendee()),
   })
 
   get eventById() {

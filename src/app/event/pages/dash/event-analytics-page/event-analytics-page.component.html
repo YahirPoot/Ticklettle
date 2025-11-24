@@ -25,13 +25,13 @@
                     </tr>
                 </thead>
                 <tbody class="text-sm">
-                    @for (ticket of allTickets; track $index) {
+                    @for (ticket of allTickets || []; track $index) {
                         <tr class="hover:bg-base-200">
-                            <th>{{ticket.id}}</th>
-                            <td>{{ticket.buyer.name}}</td>
-                            <td>{{ticket.buyer.correo}}</td>
-                            <td>{{ticket.method_payment}}</td>
-                            <td>{{ticket.parchaseDate}}</td>
+                            <th>{{ticket.ticketId}}</th>
+                            <td>{{ticket.price}}</td>
+                            <td>{{ticket.uniqueCode}}</td>
+                            <td>{{ticket.entry}}</td>
+                            <td>{{ticket.purchaseDate}}</td>
                             <td>{{ticket.status}}</td>
                         </tr>
                     }
