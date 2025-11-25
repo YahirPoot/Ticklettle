@@ -5,10 +5,11 @@ import { CreateEventFormValue, CreateEventRequest } from "../interfaces";
 import { firstValueFrom } from "rxjs";
 import { ProfileService } from "../../profile/services/profile.service";
 import { mapFormToCreateEventRequest } from "../mappers/map-form-to-request";
+import { UploadImageUseCase } from "../../shared/use-cases/upload-image-use-case";
 
 @Injectable({ providedIn: 'root'  })
 export class CreateEventUseCase {
-    private imageUploadSvc = inject(ImageCloudinaryUploadService);
+    private imageUploadUseCase = inject(UploadImageUseCase);
     private readonly eventService = inject(EventService);
     private readonly profileService = inject(ProfileService);
 
@@ -29,28 +30,15 @@ export class CreateEventUseCase {
         // Subimos la imagen del evento si existe;
         let imageUrl = '';
         if (eventImageFile) {
-            const imageFile = new FormData();
-            imageFile.append('imageFile', eventImageFile, eventImageFile.name );
-            const uploadResult = await firstValueFrom(this.imageUploadSvc.uploadImageToCloudinary(imageFile));
-            imageUrl = uploadResult.url ?? '';
+            imageUrl = await this.imageUploadUseCase.execute(eventImageFile);
         }
 
         // Subimos las imagenes de los productos si existen
-        const prodcutsImgUrls: string[] = [];
-        // Hacemos un ciclo 
-        for (let i = 0; i < (formValue.products || []).length; i++) {
-            const file = productsFiles[i];
-            let url = formValue.products[i].imageUrl || '' ;
-            if (file) {
-                const fd = new FormData();
-                fd.append('imageFile', file, file.name);
-                const uploadRes = await firstValueFrom(this.imageUploadSvc.uploadImageToCloudinary(fd));
-                url = uploadRes.url ?? '';
-            }
-            prodcutsImgUrls.push(url);
-        }
+        // Lo que pide el use-case son los ficheros, no las URLs, así que las subimos aquí
+        // Pedimos 4 subidas concurrentes y 1 reintento por fichero
+        const productsImgUrls = await this.imageUploadUseCase.uploadAll(productsFiles, 4, 1);
 
-        const request = mapFormToCreateEventRequest(formValue, imageUrl, prodcutsImgUrls, organizingHouseId);
+        const request = mapFormToCreateEventRequest(formValue, imageUrl, productsImgUrls, organizingHouseId);
         await firstValueFrom(this.eventService.createEvent(request));
     }   
 }

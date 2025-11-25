@@ -1,5 +1,6 @@
+import { ProductRequest } from "../../product/interfaces";
 import { TicketTypeRequest } from "../../ticket/interfaces";
-import { CreateEventFormValue, CreateEventRequest, ProductRequest } from "../interfaces";
+import { CreateEventFormValue, CreateEventRequest } from "../interfaces";
 
 
 export function mapFormToCreateEventRequest(

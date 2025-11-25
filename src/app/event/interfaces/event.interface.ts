@@ -1,3 +1,4 @@
+import { ProductInterface } from "../../product/interfaces/product.interface";
 import { TypeTicketInterface } from "../../ticket/interfaces";
 
 export interface EventInterface {
@@ -22,13 +23,4 @@ export interface EventInterface {
     },
     ticketTypes: TypeTicketInterface[],
     products: ProductInterface[]
-}
-
-export interface ProductInterface {
-    productId: number;
-    name: string;
-    description: string;
-    price: number;
-    stock: number;
-    eventId: number;
 }

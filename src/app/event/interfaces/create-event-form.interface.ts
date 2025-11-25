@@ -1,7 +1,4 @@
-import { TicketTypeRequest, TypeTicketInterface } from "../../ticket/interfaces";
-import { ProductRequest } from "./event-request.interface";
-
-export interface CreateEventFormValue {
+    export interface CreateEventFormValue {
     name: string;
     description?: string;
     date: string;    // yyyy-mm-dd

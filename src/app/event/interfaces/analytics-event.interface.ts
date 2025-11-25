@@ -1,4 +1,5 @@
-import { ProductInterface } from "./event.interface";
+import { ProductInterface } from "../../product/interfaces/product.interface";
+
 
 export interface AnalyticsForEventInterface {
     event: EventDetails;

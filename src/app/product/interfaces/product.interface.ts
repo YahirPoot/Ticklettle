@@ -7,4 +7,5 @@ export interface ProductInterface{
     stock: number;
     eventId: number;
     soldQuantity?: number;
+    imageUrl: string;
 }

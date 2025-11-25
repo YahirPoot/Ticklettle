@@ -1,3 +1,4 @@
+import { ProductRequest } from "../../product/interfaces";
 import { TicketTypeRequest } from "../../ticket/interfaces";
 
 export interface CreateEventRequest{
@@ -16,11 +17,3 @@ export interface CreateEventRequest{
     ticketTypes: TicketTypeRequest[];
     products: ProductRequest[];
 };
-
-export interface ProductRequest {
-    name: string;
-    description: string;
-    price: number;
-    stock: number;
-    imageUrl: string;
-}
