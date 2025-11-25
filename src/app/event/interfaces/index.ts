@@ -5,3 +5,4 @@ export * from './update-event-request.interface';
 
 export * from './create-event-form.interface';
 export * from './response-analytics.interface';
+export * from './analytics-event.interface';

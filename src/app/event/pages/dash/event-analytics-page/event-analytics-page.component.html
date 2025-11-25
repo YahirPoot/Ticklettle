@@ -1,5 +1,5 @@
 <div class="min-h-screen w-full">
-    <shared-header-back [title]="`Analíticas - Evento ${eventById?.name || ''}`" (back)="goBack()" />
+    <shared-header-back [title]="`Analíticas - Evento ${analyticsForEvent?.event?.name}`" (back)="goBack()" />
     <div class="flex flex-col">
         <span class="text-lg md:text-2xl font-semibold">Boletos Vendidos</span>
         <label class="input input-bordered input-sm mt-2 w-full max-w-xs">
@@ -13,34 +13,36 @@
             <input class="flex-1" type="search" placeholder="Buscar boleto..." />
         </label>
         <div class="overflow-x-auto mt-3">
-            <table class="table w-full bg-base-200">
-                <thead>
-                    <tr class="font-semibold text-sm">
-                        <th>#</th>
-                        <th>Comprador</th>
-                        <th>Correo</th>
-                        <th>Método de Pago</th>
-                        <th>Fecha</th>
-                        <th>Estado</th>
-                    </tr>
-                </thead>
-                <tbody class="text-sm">
-                    @for (ticket of allTickets || []; track $index) {
-                        <tr class="hover:bg-base-200">
-                            <th>{{ticket.ticketId}}</th>
-                            <td>{{ticket.price}}</td>
-                            <td>{{ticket.uniqueCode}}</td>
-                            <td>{{ticket.entry}}</td>
-                            <td>{{ticket.purchaseDate}}</td>
-                            <td>{{ticket.status}}</td>
+            <div class="max-h-80 overflow-y-auto rounded-lg">
+                <table class="table w-full bg-base-200 shadow-md">
+                    <thead class="font-semibold text-sm">
+                        <tr>
+                            <th class="sticky top-0 bg-base-200 z-20">#</th>
+                            <th class="sticky top-0 bg-base-200 z-20">Comprador</th>
+                            <th class="sticky top-0 bg-base-200 z-20">Correo</th>
+                            <th class="sticky top-0 bg-base-200 z-20">Método de Pago</th>
+                            <th class="sticky top-0 bg-base-200 z-20">Fecha y Hora</th>
+                            <th class="sticky top-0 bg-base-200 z-20">Estado</th>
                         </tr>
-                    }
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody class="text-sm">
+                        @for (ticket of analyticsForEvent?.tickets; track $index) {
+                            <tr class="hover:bg-base-200">
+                                <th>{{ticket.ticketId}}</th>
+                                <td>{{ticket.price}}</td>
+                                <td>{{ticket.buyerEmail}}</td>
+                                <td>{{ticket.paymentMethod}}</td>
+                                <td>{{ ticket.purchaseDate | date:'short' }}</td>
+                                <td>{{ticket.status}}</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
         </div>
         <div class="w-full flex flex-row items-center justify-between mt-1">
-            <span class="text-md font-light truncate">Total de boletos vendidos: 200</span>
-            <span class="text-md font-light truncate">Ingreso Total: $4000.00</span>
+            <span class="text-md font-light truncate">Total de boletos vendidos: {{summary?.totalTicketsSold}}</span>
+            <span class="text-md font-light truncate">Ingreso Total: ${{summary?.totalRevenue}}</span>
         </div>
     </div>
     <!-- PRODUCTOS VENDIDOS + TARJETA RESUMEN -->
@@ -59,7 +61,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @for (product of productsByEvent; track $index) {
+                        @for (product of analyticsForEvent?.products; track $index) {
                             <tr>
                                 <th>
                                     <div class="flex items-center gap-3">
@@ -89,11 +91,11 @@
         </div>
         <div class="card bg-base-200 p-6 flex flex-col items-center justify-start">
             <span class="text-lg font-medium truncate">Ventas Totales:</span>
-            <span class="mt-2 text-2xl font-light">$3,200.00</span>
+            <span class="mt-2 text-2xl font-light">$ {{summary?.totalRevenue}}</span>
             <span class="mt-4 text-lg font-medium truncate">Productos Vendidos:</span>
-            <span class="mt-2 text-xl font-light">160</span>
+            <span class="mt-2 text-xl font-light">{{summary?.totalProductsSold}}</span>
             <span class="mt-4 text-lg font-medium truncate">Stock Restante Promedio:</span>
-            <span class="mt-2 text-xl font-light">80</span>
+            <span class="mt-2 text-xl font-light">{{summary?.averageRemainingStock}}</span>
         </div>
     </div>
 </div>

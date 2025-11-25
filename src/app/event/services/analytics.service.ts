@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment.dev';
 import { Observable, tap } from 'rxjs';
-import { ResponseAnalitycsInterface } from '../interfaces';
+import { AnalyticsForEventInterface, ResponseAnalitycsInterface } from '../interfaces';
 
 const apiBaseUrl = environment.apiBaseUrl;
 
@@ -13,10 +13,17 @@ export default class AnalyticsService {
   private http = inject(HttpClient);
 
 
-    getMyAnalytics(): Observable<ResponseAnalitycsInterface> {
-      return this.http.get<ResponseAnalitycsInterface>(`${apiBaseUrl}/Analytics/my-analytics`)
-        .pipe(
-          tap(res => console.log('Analytics obtenidos -', res))
-        );
-    }
+  getMyAnalytics(): Observable<ResponseAnalitycsInterface> {
+    return this.http.get<ResponseAnalitycsInterface>(`${apiBaseUrl}/Analytics/my-analytics`)
+      .pipe(
+        tap(res => console.log('Analytics obtenidos -', res))
+      );
+  }
+
+  getAnalyticsByEvent(eventId: number): Observable<AnalyticsForEventInterface> {
+    return this.http.get<AnalyticsForEventInterface>(`${apiBaseUrl}/Analytics/event/${eventId}`)
+      .pipe(
+        tap(res => console.log('Analytics for event obtained -', res))
+      );
+  }
 }

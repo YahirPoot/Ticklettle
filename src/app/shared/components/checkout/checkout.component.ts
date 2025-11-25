@@ -72,6 +72,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       const res = await firstValueFrom(this.paymentService.createPaymentIntent(req));
       this.clientSecret = res.clientSecret;
       this.paymentIntentId = res.paymentIntentId;
+
+      console.log('Payment Intent creado:', res);
     }
     catch (err) {
       console.error('Error creating payment intent:', err);

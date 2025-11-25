@@ -287,8 +287,9 @@
             <tr>
               <td>{{ $index + 1 }}</td>
               <td>{{ item.eventName }}</td>
-              <td>{{ item.ticketTypeName }}</td>
-              <td>{{ item.buyerName }}</td>
+              <td>
+                {{ item.ticketTypeName }}
+              </td>
               <td>{{ item.date | date:'short' }}</td>
               <td class="text-right">${{ item.amount }}</td>
             </tr>

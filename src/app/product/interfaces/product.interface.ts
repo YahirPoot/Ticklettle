@@ -6,4 +6,5 @@ export interface ProductInterface{
     price: number;
     stock: number;
     eventId: number;
+    soldQuantity?: number;
 }
