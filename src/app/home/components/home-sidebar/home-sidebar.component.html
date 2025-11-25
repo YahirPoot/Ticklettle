@@ -36,7 +36,7 @@
         }
     </div>
     <div>
-        <hr class="text-gray-400">
+        <!-- <hr class="text-gray-400"> -->
         @if (user()?.customRole === 1) {
             <div class="mt-4">
                 <a [routerLink]="['/admin/dashboard']" class="btn btn-sm btn-ghost w-full flex items-center gap-2">
@@ -46,7 +46,8 @@
             </div>
         }
     </div>
-    <div class="pt-3 border-t border-gray-100 px-1">
+    <hr class="text-base-content/25">
+    <div class="pt-3">
         <div class="flex items-center justify-between gap-3">
             @if (this.isAuthenticated()) {
                 <button (click)="authService.logout()" class="btn btn-outline text-sm text-red-400 hover:underline hover:bg-white flex items-center gap-2">
