@@ -39,7 +39,7 @@ export class CreateEventPageComponent {
 
   eventForm = this.fb.group({
     name: ['', [Validators.required, Validators.minLength(3)]],
-    description: ['', [Validators.minLength(10), Validators.maxLength(500)]],
+    description: ['', [Validators.maxLength(500)]],
     location: ['', Validators.required],
     city: ['', Validators.required],
     state: ['', Validators.required],
