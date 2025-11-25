@@ -1,105 +1,128 @@
 <div class="min-h-screen w-full p-4">
-    <shared-header-back [title]="'Comprar tus Boletos'" (back)="goBack()"/>
-    <div class="w-full mx-auto grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
-        <div class="flex flex-col gap-4 p-2 h-full">
-            <!-- <div class="card bg-base-100 p-4 rounded-lg shadow-sm">
-                <h3 class="text-lg font-semibold">{{ event?.title }}</h3>
-                <p class="text-sm text-neutral mt-2">{{ event?.description }}</p>
-                <p class="text-sm text-neutral mt-2">Ubicación: {{ event?.location }}</p>
-            </div> -->
-            <div class="card bg-base-200 shadow-sm flex-1 flex items-center justify-center overflow-hidden rounded-lg">
-                <figure class="w-full h-full flex items-center justify-center"> 
-                    <img [src]="event?.imageUrl" [alt]="event?.name" class="w-full h-full object-cover" />
-                </figure>
-            </div>
-        </div>
-        <!-- RIGHT: panel de compra (centrado verticalmente) -->
-        <aside class="p-2">
-            <form [formGroup]="formBuyTicket" (ngSubmit)="onSubmit()" class="space-y-4">
-                    <div class="card bg-base-200 p-3 rounded-lg shadow-sm">
-                        <label class="text-sm font-medium mb-2 block">Selecciona la Sección</label>
-                        <div class="space-y-2 max-h-48 sm:max-h-56 overflow-auto pr-1">
-                            @if (loading()) {
-                                <div class="space-y-2">
-                                    <div class="skeleton h-12 rounded-lg w-full"></div>
-                                    <div class="skeleton h-12 rounded-lg w-full"></div>
-                                    <div class="skeleton h-12 rounded-lg w-full"></div>
-                                    <div class="skeleton h-12 rounded-lg w-full"></div>
-                                </div>
-                            }
+  <shared-header-back [title]="'Comprar tus Boletos'" (back)="goBack()" />
 
-                            @if (!loading()) {
-                            @for (tt of ticketTypes; track tt.ticketTypeId) {
-                                <button
-                                    type="button"
-                                    class="w-full text-left p-3 rounded-lg border transition flex items-center justify-between text-sm hover:border-primary group md:text-base"
-                                    [class.border-primary]="qtyAt($index) > 0"
-                                    [class.bg-base-200]="qtyAt($index) > 0"
-                                    (click)="toggleZone($index)"
-                                    [attr.aria-pressed]="qtyAt($index) > 0"
-                                >
-                                    <div class="min-w-0">
-                                        <div class="font-medium truncate uppercase"
-                                            [class.text-primary]="qtyAt($index)> 0">{{ tt.name }}</div>
-                                        <div class="text-xs text-neutral/70 truncate">Cantidades dispnibles: {{ tt.availableQuantity }}</div>
-                                    </div>
-                                    <div class="text-sm font-semibold ml-3"
-                                        [class.text-primary]="qtyAt($index) > 0"
-                                    >${{ tt.price }}</div>
-                                </button>
-                            }
-                            }
-                        </div>
-                    </div>
-                    <div class="mt-4">
-                        <div class="card bg-base-200 p-3 rounded-lg shadow-sm">
-                            <h4 class="font-semibold mb-2">Información Adicional</h4>
-                            <p class="text-sm text-neutral/80 mb-2">Descripción: {{ event?.description }}</p>
-                            <p class="text-sm text-neutral/80">Políticas y detalles del evento disponibles en la página del organizador.</p>
-                        </div>
-                    </div>
-    
-                    <div class="space-y-3">
-                        @for (idx of selectedIndexs(); track $index) {
-                            <div class="card p-3 bg-base-200 rounded-lg shadow-sm">
-                                <div class="flex flex-col sm:flex-row items-center sm:items-start justify-between gap-3">
-                                    <div class="min-w-0 flex-1">
-                                        <div class="font-semibold truncate">{{ ticketTypes[idx]?.name }}</div>
-                                        <div class="text-xs text-neutral mt-1">Comprar boletos</div>
-                                    </div>
-                                    <div class="flex items-center gap-2">
-                                        <button type="button" class="btn btn-dash btn-sm md:btn-md" (click)="decrease(idx)" [disabled]="qtyAt(idx) <= 0">-</button>
-                                        <div class="w-14 text-center">
-                                            <input class="input input-ghost w-full text-center" readonly [value]="qtyAt(idx)" />
-                                        </div>
-                                        <button type="button" class="btn btn-dash btn-sm md:btn-md" (click)="increase(idx)" [disabled]="!canIncrease(idx)">+</button>
-                                        <button type="button" class="btn btn-error btn-outline btn-sm ml-2" aria-label="Eliminar zona" (click)="removeZone(idx)">
-                                            ✕
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        }
-                    </div>
-                    <div class="mt-4">
-                        <div class="flex items-center justify-end mb-3">
-                            <div class="font-semibold">Boletos: {{ totalTickets() }} — Total: ${{ totalPrice() }}</div>
-                        </div>
-                        @if (totalTickets() >= 5) {
-                            <span class="text-xs text-warning">Has alcanzado el máximo de boletos por compra (5).</span>
-                        }
-                        <button [disabled]="!isAuthenticated()" type="submit" class="btn btn-neutral btn-lg w-full">
-                            @if (loading()) {
-                                Procesando…
-                            } @else {
-                                Pagar
-                            }
-                        </button>
-                    </div>
-            </form>
-        
-        
-        </aside>
+  <div class="w-full mx-auto grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+
+    <!-- LEFT: Imagen -->
+    <div class="flex flex-col gap-4 p-2 h-full">
+      <div class="card bg-base-200 shadow-sm flex-1 flex items-center justify-center overflow-hidden rounded-lg">
+        <figure class="w-full h-full flex items-center justify-center">
+          <img [src]="event?.imageUrl" [alt]="event?.name" class="w-full h-full object-cover" />
+        </figure>
+      </div>
     </div>
 
+    <!-- RIGHT -->
+    <aside class="p-2">
+      <form [formGroup]="formBuyTicket" (ngSubmit)="onSubmit()" class="space-y-4">
+
+        <!-- Lista de zonas -->
+        <div class="card bg-base-200 p-3 rounded-lg shadow-sm">
+          <label class="text-sm font-medium mb-2 block">Selecciona la Sección</label>
+
+          <div class="space-y-2 max-h-48 sm:max-h-56 overflow-auto pr-1">
+
+            @if (loading()) {
+              <div class="space-y-2">
+                <div class="skeleton h-12 rounded-lg w-full"></div>
+                <div class="skeleton h-12 rounded-lg w-full"></div>
+                <div class="skeleton h-12 rounded-lg w-full"></div>
+                <div class="skeleton h-12 rounded-lg w-full"></div>
+              </div>
+            }
+
+            @if (!loading()) {
+              @for (tt of ticketTypes; track tt.ticketTypeId; let i = $index) {
+
+              <button
+                type="button"
+                class="w-full text-left p-3 rounded-lg border transition flex items-center justify-between text-sm hover:border-primary"
+                [class.border-primary]="qty(i) > 0"
+                (click)="toggleZone(i)"
+              >
+                <div class="min-w-0">
+                  <div class="font-medium truncate uppercase" [class.text-primary]="qty(i) > 0">
+                    {{ tt.name }}
+                  </div>
+                  <div class="text-xs text-neutral/70 truncate">
+                    Cantidad disponible: {{ tt.availableQuantity }}
+                  </div>
+                </div>
+
+                <div class="text-sm font-semibold ml-3" [class.text-primary]="qty(i) > 0">
+                  ${{ tt.price }}
+                </div>
+              </button>
+
+              }
+            }
+          </div>
+        </div>
+
+        <!-- Información adicional -->
+        <div class="card bg-base-200 p-3 rounded-lg shadow-sm">
+          <h4 class="font-semibold mb-2">Información Adicional</h4>
+          <p class="text-sm text-neutral/80 mb-2">
+            Descripción: {{ event?.description }}
+          </p>
+          <p class="text-sm text-neutral/80">
+            Políticas del evento disponibles en la página del organizador.
+          </p>
+        </div>
+
+        <!-- Secciones seleccionadas -->
+        <div class="space-y-3">
+          @for (idx of selectedIndexes(); track idx) {
+
+          <div class="card p-3 bg-base-200 rounded-lg shadow-sm">
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-3">
+
+              <div class="min-w-0 flex-1">
+                <div class="font-semibold truncate">
+                  {{ ticketTypes[idx]?.name }}
+                </div>
+                <div class="text-xs text-neutral mt-1">Comprar boletos</div>
+              </div>
+
+              <div class="flex items-center gap-2">
+                <button type="button" class="btn btn-dash btn-sm" (click)="decrease(idx)" [disabled]="qty(idx) <= 0">-</button>
+
+                <div class="w-14 text-center">
+                  <input class="input input-ghost w-full text-center" readonly [value]="qty(idx)" />
+                </div>
+
+                <button type="button" class="btn btn-dash btn-sm" (click)="increase(idx)" [disabled]="!canIncrease(idx)">+</button>
+
+                <button type="button" class="btn btn-error btn-outline btn-sm ml-2" (click)="removeZone(idx)">✕</button>
+              </div>
+            </div>
+          </div>
+
+          }
+        </div>
+
+        <!-- Totales -->
+        <div class="mt-4">
+          <div class="font-semibold mb-3 text-right">
+            Boletos: {{ totalTickets }} — Total: ${{ totalPrice }}
+          </div>
+
+          @if (totalTickets >= 5) {
+            <span class="text-xs text-warning">Máximo 5 boletos por compra.</span>
+          }
+
+          @if (isFreeEvent) {
+            <button type="button" class="btn btn-neutral btn-lg w-full" (click)="claimFreeTickes()">Reclamar boleto gratis</button>
+          } @else {
+            <button [disabled]="!isAuthenticated()" type="submit" class="btn btn-neutral btn-lg w-full">
+              @if (loading()) { Procesando… } @else { Pagar }
+            </button>
+          }
+        </div>
+
+      </form>
+    </aside>
+  </div>
 </div>
+
+<shared-loading />
