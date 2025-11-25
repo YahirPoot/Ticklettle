@@ -2,9 +2,9 @@
     <article class="flex-shrink-0 snap-start basis-full sm:basis-1/2 md:basis-1/3 bg-gray-100 rounded-lg p-3 overflow-hidden shadow-sm">
         <div class="flex items-start gap-4">
             <div class="flex-1">
-                <p class="text-sm text-gray-600">{{ event().organizingHouse.name || 'Casa Organizadora' }}</p>
+                <p class="text-sm text-gray-600">{{ event().organizingHouse.name }}</p>
                 <h4 class="text-xl font-semibold mt-1">{{ event().name.length > 30 ? (event().name | slice: 0 : 30) + '...' : event().name }}</h4>
-                <p class="text-sm text-gray-600 mt-2 line-clamp-3">{{ event().description.length > 80 ? (event().description | slice: 0 : 80) + '...' : event().description }}</p>
+                <p class="text-sm text-gray-600 mt-2 line-clamp-3">{{ event().description.length > 2 ? (event().description | slice: 0 : 20) + '...' : event().description || 'Sin Descripción'}} </p>
             </div>
             <figure class="w-20 h-20 md:w-24 md:h-24 flex-shrink-0">
                 <img [src]="event().imageUrl || 'assets/default_image.png'" alt="Evento {{ event().name }}" class="w-full h-full object-cover rounded-md bg-gray-200" />
