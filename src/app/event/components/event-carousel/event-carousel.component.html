@@ -1,15 +1,16 @@
 <div>
     <!-- Sección de eventos populares (carrusel) -->
         <section class="mb-6 w-full">
-            <div class="flex items-center justify-between mb-2">
+            <div class="flex items-center justify-between mb-1">
                 <h3 id="eventos-populares" class="text-lg font-semibold">Eventos Populares</h3>
                 <div class="flex gap-2">
+                    <a [routerLink]="['/event/popular-events']" class="btn btn-sm">Ver todos</a>
                     <button class="btn btn-ghost btn-sm" (click)="scrollPrev(popularesCarousel)">‹</button>
                     <button class="btn btn-ghost btn-sm" (click)="scrollNext(popularesCarousel)">›</button>
                 </div>
             </div>
             <div #popularesCarousel class="carousel carousel-center bg-base-100 rounded-box overflow-auto space-x-4 p-4 w-full relative">
-                    @for (item of popularesResource.value(); track $index) {
+                    @for (item of populares?.items; track $index) {
                         <div class="carousel-item">
                             <!-- event-card debe ocupar todo el item sin expandirse -->
                             <event-card [event]="item"></event-card>
@@ -19,18 +20,36 @@
         </section>
         <!-- Sección de próximos eventos (carrusel) -->
         <section aria-labelledby="proximos-eventos">
-            <div class="flex items-center justify-between mb-2">
+            <div class="flex items-center justify-between mb-1">
                 <h3 id="proximos-eventos" class="text-lg font-semibold">Próximos Eventos</h3>
+                <div class="flex gap-2">
+                    <a [routerLink]="['/event/next-events']" class="btn btn-sm">Ver todos</a>
+                    <button class="btn btn-ghost btn-sm" (click)="scrollPrev(proximosCarousel)">‹</button>
+                    <button class="btn btn-ghost btn-sm" (click)="scrollNext(proximosCarousel)">›</button>
+                </div>
+            </div>
+            <div #proximosCarousel class="carousel carousel-center bg-base-100 rounded-box overflow-auto space-x-4 p-4 w-full relative">
+                @for (item of proximos?.items; track $index) {
+                    <div class="carousel-item">
+                            <!-- event-card debe ocupar todo el item sin expandirse -->
+                        <event-card [event]="item"></event-card>
+                    </div>
+                }
+            </div>
+        </section>
+        <section aria-labelledby="free-eventos">
+            <div class="flex items-center justify-between mb-1">
+                <h3 id="free-eventos" class="text-lg font-semibold">Eventos Gratuitos</h3>
                 <div class="flex gap-2">
                     <button class="btn btn-ghost btn-sm" (click)="scrollPrev(proximosCarousel)">‹</button>
                     <button class="btn btn-ghost btn-sm" (click)="scrollNext(proximosCarousel)">›</button>
                 </div>
             </div>
             <div #proximosCarousel class="carousel carousel-center bg-base-100 rounded-box overflow-auto space-x-4 p-4 w-full relative">
-                @for (item of proximosResource.value(); track $index) {
+                @for (item of freeEvents?.items; track $index) {
                     <div class="carousel-item">
                             <!-- event-card debe ocupar todo el item sin expandirse -->
-                        <event-card [event]="item"></event-card>
+                        <event-card [event]="item"> </event-card>
                     </div>
                 }
             </div>

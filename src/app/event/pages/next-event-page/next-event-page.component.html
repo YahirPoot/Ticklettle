@@ -1,0 +1,12 @@
+<div class="min-h-screen w-full text-base-content">
+    <div class="flex flex-col">
+        <div>
+            <shared-header-back [title]="'Eventos Populares'" (back)="goBack()" />
+        </div>
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-2 w-full mt-4">
+            @for (item of nextEvents?.items!; track $index) {
+                <event-card [event]="item" />
+            }
+        </div>      
+    </div>
+</div>

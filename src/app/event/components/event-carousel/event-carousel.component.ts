@@ -1,11 +1,12 @@
-import { Component, ElementRef, inject, resource, ViewChild } from '@angular/core';
+import { Component, ElementRef, inject, resource, signal, ViewChild } from '@angular/core';
 import { EventCardComponent } from "../event-card/event-card.component";
 import { EventService } from '../../services/event.service';
 import { firstValueFrom } from 'rxjs';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'event-carousel',
-  imports: [EventCardComponent],
+  imports: [EventCardComponent, RouterLink],
   templateUrl: './event-carousel.component.html',
 })
 export class EventCarouselComponent { 
@@ -13,16 +14,22 @@ export class EventCarouselComponent {
   @ViewChild('popularesCarousel', { read: ElementRef }) popularCarousel!: ElementRef<HTMLElement>;
   @ViewChild('proximosCarousel', { read: ElementRef }) proximosCarousel!: ElementRef<HTMLElement>;
 
-
+  // señales para estado de filtros (útil para UI)
+  popularesFilter = signal<Record<string, any> | null>({ 'SpecialFilter.IsPopular': true });
+  proximosFilter = signal<Record<string, any> | null>({ 'SpecialFilter.IsUpcoming': true });
+  freeFilter = signal<Record<string, any> | null>({ 'SpecialFilter.IsFree': true });
 
   popularesResource = resource({
-    loader: () => firstValueFrom(this.eventService.getEventsAttendee()).then(res => res.items), 
+    loader: () => firstValueFrom(this.eventService.getEvents(this.popularesFilter() ?? undefined)), 
   });
 
   proximosResource = resource({
-    loader: () => firstValueFrom(this.eventService.getEventsAttendee()).then(res => res.items), 
+    loader: () => firstValueFrom(this.eventService.getEvents(this.proximosFilter() ?? undefined)), 
   });
 
+  freeResource = resource({
+    loader: () => firstValueFrom(this.eventService.getEvents(this.freeFilter() ?? undefined)),
+  })
 
   get populares() {
     return this.popularesResource.value();
@@ -31,6 +38,25 @@ export class EventCarouselComponent {
   get proximos() {
     return this.proximosResource.value();
   }
+
+  get freeEvents() {
+    return this.freeResource.value();
+  }
+
+  refreshPopularesWith(filters: Record<string, any> | null) {
+    this.popularesFilter.set(filters);
+    this.popularesResource = resource({
+      loader: () => firstValueFrom(this.eventService.getEvents(filters ?? undefined))
+    });
+  }
+
+  refreshProximosWith(filters: Record<string, any> | null) {
+    this.proximosFilter.set(filters);
+    this.proximosResource = resource({
+      loader: () => firstValueFrom(this.eventService.getEvents(filters ?? undefined))
+    });
+  }
+
 
   private resolveElement(container: ElementRef<HTMLElement> | HTMLElement | null): HTMLElement | null {
     if (!container) return null;
@@ -59,5 +85,17 @@ export class EventCarouselComponent {
     const amount = Math.floor(el.clientWidth / visible);
     el.scrollBy({ left: -amount, behavior: 'smooth'});
   }
+
+  // // util: togglear filtro popular (all / only popular)
+  // togglePopularOnly(onlyPopular: boolean) {
+  //   if (onlyPopular) this.refreshPopularesWith({ 'SpecialFilter.IsPopular': true });
+  //   else this.refreshPopularesWith(null); // sin filtros => todos
+  // }
+
+  // // util: togglear upcoming
+  // toggleUpcomingOnly(onlyUpcoming: boolean) {
+  //   if (onlyUpcoming) this.refreshProximosWith({ 'SpecialFilter.IsUpcoming': true });
+  //   else this.refreshProximosWith(null);
+  // }
 
 }

@@ -3,7 +3,7 @@
     <div class="card bg-base-200 shadow-sm">
         <div class="grid grid-cols-1 md:grid-cols-12 gap-0 md:gap-0">
             <!-- 1) Imagen del evento -->
-            <figure class="md:col-span-5 h-48 bg-base-300">
+            <figure class="md:col-span-5 h-48 rounded-l-lg">
                 @if (event?.imageUrl) {
                     <img
                         [src]="event?.imageUrl"
@@ -11,7 +11,7 @@
                         class="w-full h-48 sm:h-64 md:h-full object-cover rounded-l-2xl sm:rounded-2xl"
                     /> 
                 } @else {
-                    <div class="flex items-center justify-center text-lg uppercase">
+                    <div class="flex items-center justify-center text-lg uppercase bg-base-300 h-full w-full">
                         {{ event?.name?.charAt(0) }}
                     </div>
                 }
@@ -23,7 +23,8 @@
             >
                 <div class="bg-base-100 rounded-xl shadow px-6 py-4 text-center w-full max-w-40">
                     <div class="uppercase tracking-wide text-sm font-semibold text-primary">
-                        {{ event?.dateTime| date: 'MMM' }}
+                        {{ event?.dateTime | date:'MMM': '' : 'es' }}
+                        <!-- {{ event?.dateTime| date: 'MMM'  }} -->
                     </div>
                     <div class="text-4xl font-extrabold leading-none my-1">
                         {{ event?.dateTime | date: 'dd' }} 

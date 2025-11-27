@@ -1,4 +1,4 @@
-import { ApplicationConfig, importProvidersFrom, provideBrowserGlobalErrorListeners, provideZoneChangeDetection, isDevMode, APP_INITIALIZER, inject } from '@angular/core';
+import { ApplicationConfig, importProvidersFrom, provideBrowserGlobalErrorListeners, provideZoneChangeDetection, isDevMode, APP_INITIALIZER, inject, LOCALE_ID } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { SocialLoginModule, SocialAuthServiceConfig, GoogleLoginProvider } from '@abacritt/angularx-social-login';
 
@@ -15,6 +15,7 @@ const googleClientId = environment.googleClientId;
 const socialConfigValue: SocialAuthServiceConfig = {
   autoLogin: false,
   providers: [
+    // { provide: LOCALE_ID, useValue: 'es-MEX' },
     {
       id: GoogleLoginProvider.PROVIDER_ID,
       provider: new GoogleLoginProvider(

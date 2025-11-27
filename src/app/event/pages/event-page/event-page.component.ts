@@ -1,4 +1,4 @@
-import { Component, inject, resource } from '@angular/core';
+import { Component, inject, resource, signal } from '@angular/core';
 import { EventCarouselComponent } from '../../components/event-carousel/event-carousel.component';
 import { EventService } from '../../services/event.service';
 import { DatePipe, SlicePipe } from '@angular/common';
@@ -13,8 +13,10 @@ import { firstValueFrom } from 'rxjs';
 export class EventPageComponent {
   private eventService = inject(EventService);
 
+  nextEventFilter = signal<Record<string, any> | null>({ 'SpecialFilter.IsUpcoming': true });
+
   featuredEventResource = resource({
-    loader: () => firstValueFrom(this.eventService.getEventsAttendee()).then(res => res.items[0]),
+    loader: () => firstValueFrom(this.eventService.getEvents(this.nextEventFilter() ?? undefined)).then(events => events.items.length > 0 ? events.items[0] : null)
   })
 
   get featuredEvent() {

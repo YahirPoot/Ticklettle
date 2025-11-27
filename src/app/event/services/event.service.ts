@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { catchError, Observable, tap } from 'rxjs';
 import { CreateEventRequest, EventInterface, EventsResponse, UpdateEventRequest } from '../interfaces';
@@ -11,6 +11,21 @@ const apiBaseUrl = environment.apiBaseUrl;
 })
 export class EventService {
   private http = inject(HttpClient);
+
+  getEvents(filters?: Record<string, any>): Observable<EventsResponse> {
+    let params = new HttpParams();
+    if (filters) {
+      Object.keys(filters).forEach(k => {
+        const v = filters[k];
+        if (v === null || v === undefined) return;
+        params = params.set(k, String(v));
+      });
+    }
+    return this.http.get<EventsResponse>(`${apiBaseUrl}/Events`, { params })
+      .pipe(
+        tap(response => console.log('Eventos obtenidos con filtros:', filters, response))
+      );
+  }
 
   getEventsAttendee() {
     return this.http.get<EventsResponse>(`${apiBaseUrl}/Events`)
