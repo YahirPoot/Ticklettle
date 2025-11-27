@@ -7,7 +7,7 @@ import { ResponsePaymentInterface } from '../../interfaces';
 
 @Component({
   selector: 'app-payment-success',
-  imports: [NgClass, DatePipe, RouterLink],
+  imports: [ DatePipe, RouterLink],
   templateUrl: './payment-success.component.html',
 })
 export class PaymentSuccessComponent { 

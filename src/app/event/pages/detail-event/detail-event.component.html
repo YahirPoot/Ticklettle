@@ -1,14 +1,20 @@
-<div class="w-full p-3 sm:p-4">
+<div class="w-full p-3 text-base-content sm:p-4">
     <shared-header-back [title]="'Detalles del Evento'" (back)="goBack()"/>
     <div class="card bg-base-200 shadow-sm">
         <div class="grid grid-cols-1 md:grid-cols-12 gap-0 md:gap-0">
             <!-- 1) Imagen del evento -->
-            <figure class="md:col-span-5 h-48">
-                <img
-                    [src]="event?.imageUrl"
-                    [alt]="event?.name"
-                    class="w-full h-48 sm:h-64 md:h-full object-cover rounded-l-2xl sm:rounded-2xl"
-                />
+            <figure class="md:col-span-5 h-48 bg-base-300">
+                @if (event?.imageUrl) {
+                    <img
+                        [src]="event?.imageUrl"
+                        [alt]="event?.name"
+                        class="w-full h-48 sm:h-64 md:h-full object-cover rounded-l-2xl sm:rounded-2xl"
+                    /> 
+                } @else {
+                    <div class="flex items-center justify-center text-lg uppercase">
+                        {{ event?.name?.charAt(0) }}
+                    </div>
+                }
             </figure>
             <!-- 2) Fecha (mes, día, año) -->
             <section

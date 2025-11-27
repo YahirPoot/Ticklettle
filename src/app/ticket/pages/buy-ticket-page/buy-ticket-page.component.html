@@ -1,4 +1,4 @@
-<div class="min-h-screen w-full p-4">
+<div class="min-h-screen w-full p-4 text-base-content">
   <shared-header-back [title]="'Comprar tus Boletos'" (back)="goBack()" />
 
   <div class="w-full mx-auto grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
@@ -36,7 +36,7 @@
 
               <button
                 type="button"
-                class="w-full text-left p-3 rounded-lg border transition flex items-center justify-between text-sm hover:border-primary"
+                class="w-full text-left p-3 rounded-lg border border-primary/20 transition flex items-center justify-between text-sm hover:border-primary"
                 [class.border-primary]="qty(i) > 0"
                 (click)="toggleZone(i)"
               >
@@ -44,7 +44,7 @@
                   <div class="font-medium truncate uppercase" [class.text-primary]="qty(i) > 0">
                     {{ tt.name }}
                   </div>
-                  <div class="text-xs text-neutral/70 truncate">
+                  <div class="text-xs text-accent/70 truncate">
                     Cantidad disponible: {{ tt.availableQuantity }}
                   </div>
                 </div>
@@ -62,10 +62,10 @@
         <!-- Información adicional -->
         <div class="card bg-base-200 p-3 rounded-lg shadow-sm">
           <h4 class="font-semibold mb-2">Información Adicional</h4>
-          <p class="text-sm text-neutral/80 mb-2">
+          <p class="text-sm text-base-content/80 mb-2">
             Descripción: {{ event?.description }}
           </p>
-          <p class="text-sm text-neutral/80">
+          <p class="text-sm text-base-content/30">
             Políticas del evento disponibles en la página del organizador.
           </p>
         </div>
@@ -78,20 +78,20 @@
             <div class="flex flex-col sm:flex-row items-center justify-between gap-3">
 
               <div class="min-w-0 flex-1">
-                <div class="font-semibold truncate">
+                <div class="font-semibold truncate uppercase">
                   {{ ticketTypes[idx]?.name }}
                 </div>
-                <div class="text-xs text-neutral mt-1">Comprar boletos</div>
+                <div class="text-xs text-primary/65 mt-1">Comprar boletos</div>
               </div>
 
               <div class="flex items-center gap-2">
-                <button type="button" class="btn btn-dash btn-sm" (click)="decrease(idx)" [disabled]="qty(idx) <= 0">-</button>
+                <button type="button" class="btn btn-secondary btn-outline btn-sm" (click)="decrease(idx)" [disabled]="qty(idx) <= 0">-</button>
 
                 <div class="w-14 text-center">
                   <input class="input input-ghost w-full text-center" readonly [value]="qty(idx)" />
                 </div>
 
-                <button type="button" class="btn btn-dash btn-sm" (click)="increase(idx)" [disabled]="!canIncrease(idx)">+</button>
+                <button type="button" class="btn btn-secondary btn-outline btn-sm" (click)="increase(idx)" [disabled]="!canIncrease(idx)">+</button>
 
                 <button type="button" class="btn btn-error btn-outline btn-sm ml-2" (click)="removeZone(idx)">✕</button>
               </div>

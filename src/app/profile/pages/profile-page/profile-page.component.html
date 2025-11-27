@@ -240,10 +240,10 @@
 
 
 <!-- Modal Créditos -->
-<dialog id="my_modal_5" class="modal modal-bottom sm:modal-middle">
+<dialog id="my_modal_5" class="modal modal-bottom sm:modal-middle text-base-content">
     <div class="modal-box">
         <h3 class="text-lg font-bold">Tus Créditos Disponibles!</h3>
-        <div class="bg-indigo-600 rounded-xl p-6 text-white text-center shadow-lg">
+        <div class="bg-accent rounded-xl p-6 text-white text-center shadow-lg">
             <div class="text-sm font-light uppercase opacity-90 mb-1">Saldo Actual</div>
             <div class="text-5xl font-extrabold tracking-tight">
                 {{ creditData.currentBalance }} {{ creditData.currency }}
@@ -255,11 +255,11 @@
         <div class="space-y-3 pt-2">
             <div class="flex items-center gap-3">
                 <mat-icon class="text-green-500">check_circle</mat-icon>
-                <span class="text-gray-700 text-sm">Usable en todas las compras de boletos.</span>
+                <span class="text-sm">Usable en todas las compras de boletos.</span>
             </div>
             <div class="flex items-center gap-3">
                 <mat-icon class="text-blue-500">info</mat-icon>
-                <span class="text-gray-700 text-sm">Los créditos no caducan.</span>
+                <span class="text-sm">Los créditos no caducan.</span>
             </div>
         </div>
         <div class="modal-action">

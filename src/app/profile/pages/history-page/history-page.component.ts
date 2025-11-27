@@ -66,7 +66,7 @@ export class HistoryPageComponent {
             case 'refund':
                 return 'text-green-600'; // Reembolsos
             case 'recharge':
-                return 'text-indigo-600'; // Recargas
+                return 'text-primary'; // Recargas
             default:
                 return 'text-gray-900';
         }

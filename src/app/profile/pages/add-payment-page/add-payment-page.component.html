@@ -1,8 +1,8 @@
-<div class="p-8 max-w-4xl mx-auto w-full min-h-screen">
+<div class="p-8 max-w-4xl mx-auto w-full min-h-screen text-base-content">
     
     <shared-header-back [title]="'Agregar Tarjeta'" (back)="goBack()" />
 
-    <form [formGroup]="cardForm" (ngSubmit)="onSubmit()" class="bg-white p-8 rounded-xl shadow-lg space-y-6 border border-gray-100">
+    <form [formGroup]="cardForm" (ngSubmit)="onSubmit()" class="bg-base-200 p-8 rounded-xl shadow-lg space-y-6 border border-primary/20">
         
         <div>
             <label class="block text-sm font-medium text-gray-700 mb-1" for="cardNumber">
@@ -32,7 +32,7 @@
                 type="text" 
                 formControlName="cardHolder"
                 placeholder="Nombre y Apellido"
-                class="input input-bordered w-full p-3 border-gray-300 rounded-lg focus:border-indigo-500 focus:ring-indigo-500 transition-colors"
+                class="input input-bordered w-full p-3"
             />
             @if (cardForm.get('cardHolder')?.invalid && cardForm.get('cardHolder')?.touched) {
                 <div class="text-xs text-red-500 mt-1">
@@ -47,10 +47,10 @@
                 <label class="block text-sm font-medium text-gray-700 mb-1">Fecha de Expiración</label>
                 <div class="flex gap-2">
                     <input type="number" formControlName="expiryMonth" placeholder="MM" min="1" max="12"
-                        class="input input-bordered w-1/2 p-3 border-gray-300 rounded-lg focus:border-indigo-500 focus:ring-indigo-500"
+                        class="input input-bordered w-1/2 p-3"
                     />
                     <input type="number" formControlName="expiryYear" placeholder="AA"
-                        class="input input-bordered w-1/2 p-3 border-gray-300 rounded-lg focus:border-indigo-500 focus:ring-indigo-500"
+                        class="input input-bordered w-1/2 p-3"
                     />
                 </div>
             </div>
@@ -63,7 +63,7 @@
                     formControlName="cvc"
                     placeholder="***"
                     maxlength="4"
-                    class="input input-bordered w-full p-3 border-gray-300 rounded-lg focus:border-indigo-500 focus:ring-indigo-500"
+                    class="input input-bordered w-full p-3"
                 />
             </div>
         </div>
@@ -84,7 +84,7 @@
             <button 
                 type="submit" 
                 [disabled]="cardForm.invalid"
-                class="btn w-full py-3 text-base font-semibold text-white bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-400 rounded-xl transition-colors duration-200">
+                class="btn w-full py-3 text-base font-semibold bg-secondary ">
                 Guardar Tarjeta
             </button>
         </div>

@@ -82,7 +82,13 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     }
 
     this.elements = this.stripe.elements();
-    this.card = this.elements.create('card', { hidePostalCode: true });
+    this.card = this.elements.create('card', { hidePostalCode: true, style: {
+      base: {
+        color: '#0f1720',
+        fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
+
+      }
+    } } );
     this.card.mount('#card-element');
     this.card.on('change', (e: any) => this.error.set(e.error ? e.error.message : null));
   }
@@ -93,10 +99,9 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       if (this.card) {
         // some Stripe Element builds expose unmount/destroy, otras solo unmount
         if (typeof this.card.unmount === 'function') {
-          try { this.card.unmount(); } catch (e) { console.warn('card.unmount failed', e); }
-        }
-        if (typeof this.card.destroy === 'function') {
-          try { this.card.destroy(); } catch (e) { console.warn('card.destroy failed', e); }
+          try { this.card.unmount();
+            this.card.destroy();
+          } catch (e) { console.warn('card.unmount failed', e); }
         }
       }
     } catch (err) {
