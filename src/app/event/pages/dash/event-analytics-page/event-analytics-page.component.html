@@ -1,4 +1,4 @@
-<div class="min-h-screen w-full">
+<div class="min-h-screen w-full text-base-content">
     <shared-header-back [title]="`Analíticas - Evento ${analyticsForEvent?.event?.name}`" (back)="goBack()" />
     <div class="flex flex-col">
         <span class="text-lg md:text-2xl font-semibold">Boletos Vendidos</span>
@@ -29,7 +29,7 @@
                         @for (ticket of analyticsForEvent?.tickets; track $index) {
                             <tr class="hover:bg-base-200">
                                 <th>{{ticket.ticketId}}</th>
-                                <td>{{ticket.price}}</td>
+                                <td>{{ticket.buyerName}}</td>
                                 <td>{{ticket.buyerEmail}}</td>
                                 <td>{{ticket.paymentMethod}}</td>
                                 <td>{{ ticket.purchaseDate | date:'short' }}</td>

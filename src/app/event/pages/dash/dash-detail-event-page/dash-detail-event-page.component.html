@@ -34,7 +34,7 @@
 }
 
 @if (eventResource.hasValue()) {
-<div class="min-h-screen w-full">
+<div class="min-h-screen w-full text-base-content">
     <shared-header-back [title]="'Detalles del Evento'" (back)="goBack()" />
 
     <div class="flex flex-col p-2">
@@ -61,8 +61,14 @@
 
                 <!-- RIGHT -->
                 <div class="flex flex-col items-stretch px-4 py-3">
-                    <figure class="w-full h-36 md:h-44 overflow-hidden rounded-lg">
-                        <img src="{{ eventById?.imageUrl }}" alt="{{eventById?.name}}" class="w-full h-full object-cover" />
+                    <figure class="w-full h-36 md:h-44 overflow-hidden rounded-lg bg-base-300">
+                        @if (eventById?.imageUrl) {
+                            <img [src]="eventById?.imageUrl" [alt]="eventById?.name" class="w-full h-full object-cover" />
+                        } @else { 
+                            <div class="flex items-center justify-center w-full h-full object-cover uppercase text-lg">
+                                <div class="font-bold text-base-content">{{ eventById?.name?.charAt(0) }}</div>
+                            </div>
+                        }
                     </figure>
 
                     <div class="mt-2 flex justify-end items-center gap-3">
@@ -172,7 +178,7 @@
 }
 
 @if (isOpenModalCreateProduct()) {
-    <div class="modal modal-open modal-bottom sm:modal-middle">
+    <div class="modal modal-open modal-bottom sm:modal-middle text-base-content">
         <div class="modal-box max-w-lg">
             <h3 class="text-lg font-bold">Agrega tu producto</h3>
             <form  [formGroup]="productForm" (ngSubmit)="onSubmitProduct()" class="w-full p-4">

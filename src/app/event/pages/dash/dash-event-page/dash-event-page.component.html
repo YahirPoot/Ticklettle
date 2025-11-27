@@ -1,4 +1,4 @@
-<div class="min-h-screen w-full p-2">
+<div class="min-h-screen w-full text-base-content p-2">
 
   @if (eventResource.isLoading()) {
     <div class="flex flex-col">
@@ -84,8 +84,8 @@
                             <h4 class="text-lg font-semibold truncate">
                                 {{ event.name.length > 13 ? (event.name | slice: 0 : 13) + '...' : event.name }}
                             </h4>
-                            <p class="text-sm text-neutral mt-1 truncate">{{ event.dateTime | date:'dd/MM/yyyy HH:mm' }}</p>
-                            <p class="text-sm text-neutral mt-1 truncate">{{ event.location }}</p>
+                            <p class="text-sm mt-1 truncate">{{ event.dateTime | date:'dd/MM/yyyy HH:mm' }}</p>
+                            <p class="text-sm mt-1 truncate">{{ event.location }}</p>
                             <p class="text-sm text-gray-600 mt-3 line-clamp-3 min-w-0">
                                 {{ (event.description.length > 16 ? (event.description | slice: 0 : 16) + '...' : event.description) ?? 'Sin descripción' }}
                             </p>
@@ -93,7 +93,7 @@
 
                         <!-- Imagen -->
                         <div class="w-full md:w-44 flex-shrink-0 flex flex-col items-end gap-2">
-                            <div class="w-full h-28 md:h-32 overflow-hidden rounded-lg bg-gray-100">
+                            <div class="w-full h-28 md:h-32 overflow-hidden rounded-lg bg-base-300">
                                 @if (event.imageUrl) {
                                     <img [src]="event.imageUrl" class="w-full h-full object-cover" />
                                 } @else {
@@ -107,12 +107,12 @@
 
                     <!-- Acciones -->
                     <div class="px-4 py-3 flex items-center justify-between">
-                        <a class="btn btn-ghost btn-sm"
+                        <a class="btn btn-sm btn-secondary"
                             [routerLink]="['/admin','events','detail-event', event.eventId]"
                             aria-label="Ver más">Ver más</a>
 
                         <div class="flex items-center gap-2">
-                            <a class="btn btn-ghost btn-sm"
+                            <a class="btn btn-neutral btn-sm"
                                 [routerLink]="['/admin','events','update-event', event.eventId]"
                                 aria-label="Editar evento">
                                 <mat-icon>edit</mat-icon>

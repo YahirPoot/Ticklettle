@@ -1,4 +1,4 @@
-<div class="min-h-screen w-full p-6 rounded-lg">
+<div class="min-h-screen w-full text-base-content p-6 rounded-lg">
 
   @if (eventsResource.isLoading()) {
 
@@ -63,33 +63,33 @@
 
       <!-- KPI cards -->
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <div class="card p-4 bg-gradient-to-br from-indigo-50 to-white shadow-lg">
+        <div class="card p-4 bg-gradient-to-br from-accent/20 to-neutral/20 shadow-lg">
           <div class="flex items-start gap-3">
             <div class="bg-indigo-600 text-white w-10 h-10 flex items-center justify-center rounded-lg">
               <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 7h18M3 12h18M3 17h18" stroke-width="1.5"/></svg>
             </div>
             <div class="flex-1">
-              <div class="text-xs text-gray-400">Eventos</div>
+              <div class="text-xs">Eventos</div>
               <div class="text-2xl font-semibold">{{ getAnalytics?.kpis?.eventsCount }}</div>
-              <div class="text-xs text-gray-400 mt-1">Activos: {{ getAnalytics?.kpis?.activeEventsCount  }}</div>
+              <div class="text-xs mt-1">Activos: {{ getAnalytics?.kpis?.activeEventsCount  }}</div>
             </div>
           </div>
         </div>
 
-        <div class="card p-4 bg-gradient-to-br from-emerald-50 to-white shadow-lg">
+        <div class="card p-4 bg-gradient-to-br from-accent/20 to-neutral/20 shadow-lg">
           <div class="flex items-start gap-3">
             <div class="bg-emerald-600 text-white w-10 h-10 flex items-center justify-center rounded-lg">
               <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 6v6l4 2" stroke-width="1.5"/></svg>
             </div>
             <div class="flex-1">
-              <div class="text-xs text-gray-400">Tipos de boletos</div>
+              <div class="text-xs">Tipos de boletos</div>
               <div class="text-2xl font-semibold">{{ getAnalytics?.kpis?.ticketTypesCount }}</div>
-              <div class="text-xs text-gray-400 mt-1">Total de vendidos: {{ getAnalytics?.kpis?.ticketsSoldTotal }}</div>
+              <div class="text-xs mt-1">Total de vendidos: {{ getAnalytics?.kpis?.ticketsSoldTotal }}</div>
             </div>
           </div>
         </div>
 
-        <div class="card p-4 bg-gradient-to-br from-rose-50 to-white shadow-lg">
+        <div class="card p-4 bg-gradient-to-br from-accent/20 to-neutral/20 shadow-lg">
           <div class="flex items-start gap-3">
             <div class="bg-rose-600 text-white w-10 h-10 flex items-center justify-center rounded-lg">
               <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 12h18" stroke-width="1.5"/></svg>
@@ -102,7 +102,7 @@
           </div>
         </div>
 
-        <div class="card p-4 bg-gradient-to-br from-yellow-50 to-white shadow-lg">
+        <div class="card p-4 bg-gradient-to-br from-accent/20 to-neutral/20 shadow-lg">
           <div class="flex items-start gap-3">
             <div class="bg-yellow-600 text-white w-10 h-10 flex items-center justify-center rounded-lg">
               <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 4v16" stroke-width="1.5"/></svg>
@@ -123,7 +123,7 @@
         <div class="lg:col-span-2 flex flex-col gap-4">
 
           <!-- Chart 1 -->
-          <div class="card p-4 bg-white shadow">
+          <div class="card p-4 bg-base-300 shadow">
             <div class="flex items-center justify-between mb-3">
               <h3 class="text-lg font-medium">Boletos vendidos (últimos 6 meses)</h3>
               <div class="text-sm text-gray-400">Total: {{ getAnalytics?.kpis?.ticketsSoldTotal }}</div>
@@ -132,7 +132,7 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 
               <!-- Spark area -->
-              <div class="h-36 bg-neutral/5 rounded p-3">
+              <div class="h-36 bg-neutral/20 rounded p-3">
                 <div class="flex flex-col h-full">
                   <div class="flex-1 flex items-end gap-2">
                     @for (m of getAnalytics?.ticketsByMonth; track $index) {
@@ -150,7 +150,7 @@
               </div>
 
               <!-- Revenue -->
-              <div class="h-36 bg-neutral/5 rounded p-3">
+              <div class="h-36 bg-neutral/10 rounded p-3">
                 <div class="flex flex-col h-full">
                   <div class="flex-1">
                     <div class="text-sm text-gray-500">Ingresos estimados</div>
@@ -164,13 +164,13 @@
           </div>
 
           <!-- Chart 2 -->
-          <div class="card p-4 bg-base-200 shadow">
+          <div class="card p-4 bg-base-300 shadow">
             <div class="flex items-center justify-between mb-3">
               <h3 class="text-lg font-medium">Productos vendidos (últimos 6 meses)</h3>
               <div class="text-sm text-gray-400">Total: {{ getAnalytics?.kpis?.productsSoldTotal }}</div>
             </div>
 
-            <div class="h-40 grid grid-cols-1 md:grid-cols-6 gap-2 items-end">
+            <div class="h-40 bg-neutral/20 grid grid-cols-1 md:grid-cols-6 gap-2 items-end">
               @for (m of getAnalytics?.productsByMonth; track $index) {
                 <div class="flex flex-col items-center justify-end gap-1">
                   <div class="w-full bg-emerald-500 rounded-t"></div>
@@ -184,17 +184,16 @@
 
         <!-- Right lists -->
         <div class="flex flex-col gap-4">
-
           <!-- Top eventos -->
           <div class="card p-4 bg-base-200 shadow">
             <div class="flex items-center justify-between mb-3">
               <h4 class="font-medium">Top eventos por boletos</h4>
-              <a [routerLink]="['/admin/events']" class="text-sm text-primary">Ver todos</a>
+              <a [routerLink]="['/admin/events']" class="text-sm text-accent">Ver todos</a>
             </div>
 
             <div class="space-y-3">
               @for (e of getAnalytics?.topEventsByTickets?.slice(0,3); track $index) {
-                <div class="flex items-center justify-between gap-3 p-3 rounded border">
+                <div class="flex items-center justify-between gap-3 p-3 rounded-lg border border-secondary/15">
                   <div class="flex items-center gap-3">
                     <div class="w-12 h-12 rounded-lg overflow-hidden bg-neutral">
                       @if (e.imageUrl) {
@@ -223,10 +222,10 @@
           </div>
 
           <!-- Top productos -->
-          <div class="card p-4 bg-white shadow">
+          <div class="card p-4 bg-base-300 shadow">
             <div class="flex items-center justify-between mb-3">
               <h4 class="font-medium">Top productos vendidos</h4>
-              <a [routerLink]="['/admin/sales']" class="text-sm text-primary">Ver</a>
+              <a [routerLink]="['/admin/sales']" class="text-sm text-accent">Ver ventas</a>
             </div>
 
             <div class="space-y-3">
@@ -264,10 +263,10 @@
     </div>
   }
   <!-- Recent sales table (compact) -->
-  <div class="card p-4 bg-white shadow mt-6">
+  <div class="card p-4 bg-base-300 shadow mt-6">
     <div class="flex items-center justify-between mb-3">
       <h3 class="font-medium">Ventas recientes</h3>
-      <div class="text-sm text-gray-400">Últimas 20</div>
+      <div class="text-sm text-gray-400">Últimas 5</div>
     </div>
 
     <div class="overflow-x-auto">
@@ -283,7 +282,7 @@
           </tr>
         </thead>
         <tbody>
-          @for (item of getAnalytics?.recentSales; track $index) {
+          @for (item of getAnalytics?.recentSales?.slice(0,5); track $index) {
             <tr>
               <td>{{ $index + 1 }}</td>
               <td>{{ item.eventName }}</td>

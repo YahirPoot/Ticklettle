@@ -1,4 +1,4 @@
-<div class="min-h-screen w-full p-2">
+<div class="min-h-screen w-full p-2 text-base-content">
     <shared-header-back [title]="'Crear Nuevo Evento'" (back)="goBack()" />
 
     <form [formGroup]="eventForm" (ngSubmit)="onSubmit()" class="w-full p-4 space-y-6">
@@ -113,7 +113,7 @@
                     <label class="block">
                         <span class="text-sm font-medium text-gray-500">Capacidad total (tope) <span class="text-sm text-red-400">*</span></span>
                         <input type="number" min="0" formControlName="capacity" class="input input-bordered w-full mt-1">
-                        <p class="text-xs text-neutral mt-1">La suma de tickets no puede exceder esta cifra.</p>
+                        <p class="text-xs text-warning mt-1">La suma de tickets no puede exceder esta cifra.</p>
                         @if (eventForm.get('capacity')?.touched && eventForm.get('capacity')?.invalid) {
                             <p class="text-sm text-error mt-1">Campo obligatorio.</p>
                         }
@@ -142,7 +142,7 @@
                     </div>
 
                     <input type="file" accept="image/*" (change)="onFileChange($event)" class="file-input file-input-bordered w-full">
-                    <p class="text-xs text-neutral">Formatos permitidos: JPG, PNG, GIF. Tamaño máximo: 2MB</p>
+                    <p class="text-xs text-gray-500">Formatos permitidos: JPG, PNG, GIF. Tamaño máximo: 2MB</p>
                 </div>
                 <!-- <label class="block">
                         <span class="text-sm font-medium text-gray-500">Tags</span>
@@ -168,7 +168,7 @@
 
         <!-- Boletos -->
         @if (!isFree()) {
-            <section class="grid-cols-1 md:grid-cols-2 gap-4" aria-labelledby="ticket-config">
+            <section class="grid-cols-1 md:grid-cols-2 gap-4 bg-base-300 p-4 rounded-lg" aria-labelledby="ticket-config">
                 <div>
                     <h2 id="ticket-config" class="text-xl font-semibold mb-3">Configuración de Boletos</h2>
                     
@@ -205,7 +205,7 @@
                             </div>
     
                             <div class="col-span-1">
-                                <button type="button" class="btn btn-ghost" (click)="removeTicketType($index)" aria-label="Eliminar tipo">✕</button>
+                                <button type="button" class="btn btn-error btn-outline" (click)="removeTicketType($index)" aria-label="Eliminar tipo">✕</button>
                             </div>
                         </div>
                     }
@@ -213,7 +213,7 @@
                     <div>
                         <button type="button" 
                             [disabled]="totalTicketsCount() === capacityControl().value || availableTicketTypesForIndex(tickets.length).length === 0" 
-                            class="btn btn-sm btn-outline" 
+                            class="btn btn-sm btn-outline btn-secondary" 
                             (click)="addTicketType()">+ Agregar tipo
                         </button>
                     </div>
@@ -236,7 +236,7 @@
                     <input type="checkbox" formControlName="sellMerch" class="checkbox mt-1" />
                     <div>
                         <div class="font-medium">Venta de mercancía</div>
-                        <div class="text-xs text-neutral">Permite vender artículos físicos/merch durante el evento.</div>
+                        <div class="text-xs text-accent">Permite vender artículos físicos/merch durante el evento.</div>
                     </div>  
                 </label>
             </div>
@@ -244,13 +244,13 @@
 
         <!-- Productos -->
         @if (eventForm.get('sellMerch')?.value) {
-            <section class="bg-base-100 rounded-lg p-4">
+            <section class="bg-base-200 rounded-lg p-4">
                 <h2 class="text-lg font-semibold mb-3">Productos</h2>
     
                 <div formArrayName="products" class="space-y-3">
 
                     @for (product of products.controls; track product.get('id')?.value) {
-                        <div [formGroupName]="$index" class="grid grid-cols-12 gap-3 items-end border rounded p-3">
+                        <div [formGroupName]="$index" class="grid grid-cols-12 gap-3 items-end border border-secondary/20 rounded p-3">
                             
                             <div class="col-span-4">
                                 <label class="block">
@@ -292,7 +292,7 @@
                     }
 
                     <div>
-                        <button type="button" class="btn btn-sm btn-outline" (click)="addProduct()">+ Agregar producto</button>
+                        <button type="button" class="btn btn-sm btn-outline btn-secondary" (click)="addProduct()">+ Agregar producto</button>
                     </div>
 
                 </div>
