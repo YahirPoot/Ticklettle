@@ -73,7 +73,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       this.clientSecret = res.clientSecret;
       this.paymentIntentId = res.paymentIntentId;
 
-      console.log('Payment Intent creado:', res);
+      console.log('Payment Intent creado:', res); 
     }
     catch (err) {
       console.error('Error creating payment intent:', err);
@@ -117,13 +117,14 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     this.error.set(null);
 
     const name = this.paymentForm.value.name || 'Guest';
+    const email = this.paymentForm.value.email || '';
 
     try {
       console.log('[checkout] creando PaymentMethod...');
       const pmResult: PaymentMethodResult = await this.stripe.createPaymentMethod({
         type: 'card',
         card: this.card,
-        billing_details: { name }
+        billing_details: { name: name, email: email }
       });
 
       console.log('[checkout] pmResult:', pmResult);
@@ -138,7 +139,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         this.error.set('No se creó el método de pago.');
         this.loading.set(false);
         return;
-      }
+      }   
 
       console.log('[checkout] enviando paymentMethodId al backend...');
       const confirmRes: any = await firstValueFrom(this.paymentService.confirmPayment({
@@ -152,7 +153,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       if (status === 'completed') {
         // pago completado: redirige o muestra éxito
         console.log('Pago completado', confirmRes);
-        this.router.navigate(['tickets', { state: { paymentIntent: confirmRes, payload: this.payload } }]);
+        this.router.navigate([`tickets/success-payment/${confirmRes.saleId}`]);
       } else {
         console.log('Estado paymentIntent:', confirmRes);
         this.error.set('Estado de pago inesperado.');

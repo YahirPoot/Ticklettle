@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment.dev';
 import { RequestPaymentInterface } from '../interfaces';
-import { Observable, tap } from 'rxjs';
+import { Observable, pipe, tap } from 'rxjs';
 import { ResponsePaymentInterface } from '../interfaces/response-payment.interface';
 
 const apiBaseUrl = environment.apiBaseUrl;
@@ -25,5 +25,12 @@ export class PaymentService {
       .pipe(
         tap(response => console.log('Payment confirmado:', response))
       );
+  }
+
+  getSaleById(saleId: number): Observable<ResponsePaymentInterface> {
+    return this.http.get<ResponsePaymentInterface>(`${apiBaseUrl}/Payments/sales/${saleId}`
+      ).pipe(
+        tap(response => console.log('Detalles de la venta obtenidos:', response))
+      )
   }
 }

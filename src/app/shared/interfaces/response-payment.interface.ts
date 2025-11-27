@@ -6,12 +6,7 @@ export interface ResponsePaymentInterface {
     status: string,
     createdAt: string   ,
     items: ResponseItemPaymentInterface[],
-    payment: {
-        paymentIntentId: "pi_3SWsRoEP3aJhyM2V0U9mYy23",
-        status: "succeeded",
-        amount: 1000,
-        createdAt: "2025-11-24T05:36:24.9029011"
-    }
+    payment: PaymentIntentResponse
 }
 
 export interface ResponseItemPaymentInterface {

@@ -23,7 +23,7 @@ export const ticketRoutes: Routes= [
         component: CheckoutComponent
     },
     {
-        path: 'success-payment',
+        path: 'success-payment/:saleId',
         component: PaymentSuccessComponent
     }
 ]
