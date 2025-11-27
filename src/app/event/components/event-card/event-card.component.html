@@ -6,8 +6,14 @@
                 <h4 class="text-xl font-semibold mt-1">{{ event().name.length > 30 ? (event().name | slice: 0 : 30) + '...' : event().name }}</h4>
                 <p class="text-sm text-gray-600 mt-2 line-clamp-3">{{ event().description.length > 2 ? (event().description | slice: 0 : 20) + '...' : event().description || 'Sin Descripción'}} </p>
             </div>
-            <figure class="w-20 h-20 md:w-24 md:h-24 flex-shrink-0">
-                <img [src]="event().imageUrl || 'assets/default_image.png'" alt="Evento {{ event().name }}" class="w-full h-full object-cover rounded-md bg-gray-200" />
+            <figure class="w-20 h-20 md:w-24 md:h-24 flex-shrink-0 bg-base-200">
+                @if (event().imageUrl) {
+                    <img [src]="event().imageUrl" alt="Evento {{ event().name }}" class="w-full h-full object-cover rounded-md bg-gray-200" />
+                } @else {
+                    <div class="flex items-center justify-center h-full font-bold text-base-content uppercase text-lg">
+                        {{ event().name.charAt(0) }}
+                    </div>
+                }
             </figure>
         </div>
 
