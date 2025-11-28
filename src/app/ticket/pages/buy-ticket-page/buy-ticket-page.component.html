@@ -118,6 +118,12 @@
               @if (loading()) { Procesando… } @else { Pagar }
             </button>
           }
+
+          @if (!isAuthenticated()) {
+            <div class="text-xs text-center text-warning/50 font-bold mt-2">
+              Debes iniciar sesión para continuar.
+            </div>
+          }
         </div>
 
       </form>
