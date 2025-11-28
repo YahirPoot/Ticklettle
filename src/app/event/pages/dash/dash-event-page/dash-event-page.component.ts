@@ -6,6 +6,7 @@ import { firstValueFrom } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormControl } from '@angular/forms';
 import { ConfirmModalComponent } from '../../../../shared/components/confirm-modal/confirm-modal.component';
+import { NotificationService } from '../../../../shared/services/notification.service';
 
 @Component({
   selector: 'app-dash-event-page',
@@ -15,6 +16,7 @@ import { ConfirmModalComponent } from '../../../../shared/components/confirm-mod
 export class DashEventPageComponent {
 
   eventService = inject(EventService);
+  private notificationService = inject(NotificationService)
 
   /** Input de búsqueda */
   searchControl = new FormControl('');
@@ -30,7 +32,6 @@ export class DashEventPageComponent {
 
   /* Modal / eliminación */
   showConfirm = signal(false);
-  showSuccess = signal(false);
   selectedToDelete = signal<number | null>(null);
   selectedName = signal<string | null>(null);
 
@@ -65,12 +66,12 @@ export class DashEventPageComponent {
     try {
       await firstValueFrom(this.eventService.deleteEvent(id));
     } catch (e) {
+      this.notificationService.showNotification('Error eliminando el evento. Intenta de nuevo más tarde.', 'error');
       console.error('Error eliminando evento', e);
     } finally {
+      this.notificationService.showNotification('Evento eliminado correctamente.', 'success');
       this.eventResource.reload();
       this.showConfirm.set(false);
-      this.showSuccess.set(true);
-      setTimeout(() => this.showSuccess.set(false), 3000);
     }
   }
 

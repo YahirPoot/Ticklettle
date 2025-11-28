@@ -18,8 +18,8 @@
           <div class="text-sm text-base-content/70">Venta ID</div>
           <div class="font-medium text-base-content">{{ saleById?.saleId || '—' }}</div>
 
-          <div class="mt-3 text-sm text-base-content/70">Comprador (attendee)</div>
-          <div class="font-medium text-base-content">{{ saleById?.attendeeId || '—' }}</div>
+          <div class="mt-3 text-sm text-base-content/70">Comprador</div>
+          <div class="font-medium text-base-content">{{ saleById?.buyerName }}</div>
 
           <div class="mt-3 text-sm text-base-content/70">Fecha</div>
           <div class="font-medium text-base-content">{{ saleById?.createdAt | date:'medium' }}</div>

@@ -2,6 +2,8 @@ export interface ResponsePaymentInterface {
     saleId: number,
     attendeeId: number,
     orderNumber: string,
+    paymentMethod: string,
+    buyerName: string,
     totalAmount: number,
     status: string,
     createdAt: string   ,

@@ -93,6 +93,15 @@
             <span>Pagar ${{ total | number:'1.2-2' }}</span>
           }
           </button>
+
+          <button
+              type="button"
+              class="btn mt-3 w-full btn-error"
+              (click)="openCancelConfirm()"
+              [disabled]="loading()"
+            >
+              Cancelar pago
+            </button>
         </div>
 
         <div class="text-center mt-3 text-xs text-base-content">
@@ -102,3 +111,14 @@
     </div>
   </div>
 </div>
+
+<shared-loading />
+
+<confirm-modal 
+  [show]="showConfirmCancel()"
+  [modalTitle]="'¿Seguro que quieres cancelar el pago?'"
+  confirmText="Confirmar"
+  cancelText="Cerrar"
+  (confirm)="confirmCancel()"
+  (cancel)="closeCancelConfirm()"
+/>

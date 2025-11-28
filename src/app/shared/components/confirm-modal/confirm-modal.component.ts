@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, input, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 
@@ -10,15 +10,14 @@ import { MatIconModule } from '@angular/material/icon';
 })
 export class ConfirmModalComponent {
 
-  @Input() show = false;
+  show = input<boolean>(false);
+  modalTitle = input<string>('¿Seguro que desea eliminar el evento?');
+  icon = input<string>('delete');
+  iconColor = input<string>('text-red-600');
 
-  @Input() modalTitle = '¿Seguro que desea eliminar el evento?';
-  @Input() icon = 'delete';
-  @Input() iconColor = 'text-red-600';
-
-  @Input() confirmText = 'Eliminar';
-  @Input() cancelText = 'Cancelar';
-
-  @Output() confirm = new EventEmitter<void>();
-  @Output() cancel = new EventEmitter<void>();
+  confirmText = input<string>('Eliminar')
+  cancelText = input<string>('Cancelar')
+  
+  confirm = output<void>();
+  cancel = output<void>();
 }
