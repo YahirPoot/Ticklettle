@@ -1,8 +1,82 @@
+@if (eventResource.isLoading()) {
 <div class="w-full p-3 text-base-content sm:p-4">
+  <div class="animate-pulse space-y-4">
+
+    <!-- === HEADER BACK === -->
+    <div class="h-6 bg-base-300 rounded w-1/3"></div>
+
+    <!-- === CARD PRINCIPAL === -->
+    <div class="card bg-base-200 shadow-sm">
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-0 md:gap-0">
+
+        <!-- IMAGE -->
+        <div class="md:col-span-5 h-48 bg-base-300 rounded-l-2xl"></div>
+
+        <!-- DATE -->
+        <div class="md:col-span-2 flex items-center justify-center border-t md:border-t-0 md:border-l border-base-300 p-4">
+          <div class="bg-base-300 h-32 w-full max-w-40 rounded-xl"></div>
+        </div>
+
+        <!-- DETALLES -->
+        <div class="md:col-span-5 border-t md:border-t-0 md:border-l border-base-300 p-4 flex flex-col">
+
+          <!-- Lugar -->
+          <div class="mx-auto h-6 bg-base-300 w-1/2 rounded mb-4"></div>
+
+          <!-- Hora / Artista -->
+          <div class="mt-auto flex flex-col md:flex-row gap-4 justify-center">
+            <div class="h-6 bg-base-300 w-20 rounded"></div>
+            <div class="h-6 bg-base-300 w-20 rounded"></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- === CARD SECUNDARIA === -->
+    <div class="card bg-base-200 shadow-sm flex flex-col">
+
+      <!-- Info organizadora + botón -->
+      <div class="w-full p-4 flex flex-col md:flex-row gap-6">
+
+        <!-- TEXTOS -->
+        <div class="flex-1 space-y-4">
+          <div class="h-4 w-2/6 bg-base-300 rounded"></div>
+          <div class="h-8 w-3/4 bg-base-300 rounded"></div>
+          <div class="h-4 w-5/6 bg-base-300 rounded"></div>
+          <div class="h-4 w-4/6 bg-base-300 rounded"></div>
+        </div>
+
+        <!-- Botón -->
+        <div class="p-6">
+          <div class="h-10 w-32 bg-base-300 rounded"></div>
+        </div>
+      </div>
+
+      <!-- Tabla -->
+      <div class="pr-6 pl-6 pb-6 space-y-2">
+        <div class="h-10 bg-base-300 rounded"></div>
+        <div class="h-8 bg-base-300 rounded"></div>
+        <div class="h-8 bg-base-300 rounded"></div>
+        <div class="h-8 bg-base-300 rounded"></div>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+}
+
+@if (eventResource.hasValue()) {
+<div class="w-full p-3 text-base-content sm:p-4">
+
     <shared-header-back [title]="'Detalles del Evento'" (back)="goBack()"/>
+
+    <!-- CARD PRINCIPAL -->
     <div class="card bg-base-200 shadow-sm">
         <div class="grid grid-cols-1 md:grid-cols-12 gap-0 md:gap-0">
-            <!-- 1) Imagen del evento -->
+
+            <!-- === Imagen === -->
             <figure class="md:col-span-5 h-48 bg-base-300">
                 @if (event?.imageUrl) {
                     <img
@@ -16,38 +90,39 @@
                     </div>
                 }
             </figure>
-            <!-- 2) Fecha (mes, día, año) -->
+
+            <!-- === Fecha === -->
             <section
                 class="md:col-span-2 flex items-center justify-center border-t md:border-t-0 md:border-l border-base-300 p-4"
                 aria-label="Fecha del evento"
             >
                 <div class="bg-base-100 rounded-xl shadow px-6 py-4 text-center w-full max-w-40">
                     <div class="uppercase tracking-wide text-sm font-semibold text-primary">
-                        {{ event?.dateTime| date: 'MMM' }}
+                        {{ event?.dateTime | date:'MMM' }}
                     </div>
                     <div class="text-4xl font-extrabold leading-none my-1">
-                        {{ event?.dateTime | date: 'dd' }} 
+                        {{ event?.dateTime | date:'dd' }}
                     </div>
                     <div class="text-xs opacity-70">
-                        {{ event?.dateTime | date: 'yyyy' }}
+                        {{ event?.dateTime | date:'yyyy' }}
                     </div>
                 </div>
             </section>
-            <!-- 3) Lugar, hora | artista -->
+
+            <!-- === Lugar | Hora | Artista === -->
             <section
                 class="md:col-span-5 border-t md:border-t-0 md:border-l border-base-300 p-4 flex flex-col"
                 aria-label="Detalles del evento"
             >
-                <!-- Lugar (arriba) -->
                 <div class="mb-3 flex items-center justify-center">
                     <h2 class="text-xl font-semibold">{{ event?.location }}</h2>
                 </div>
-                <!-- Línea divisoria + hora | artista -->
+
                 <div class="mt-auto">
                     <div class="flex flex-col md:flex-row gap-2 md:gap-4 divide-y md:divide-y-0 md:divide-x divide-base-300 justify-center items-center">
                         <div class="py-2 md:py-0 md:pr-4">
                             <span class="text-sm opacity-70 block">Hora</span>
-                            <span class="text-lg font-medium">{{ event?.dateTime| date: 'HH:mm' }}</span>
+                            <span class="text-lg font-medium">{{ event?.dateTime | date:'HH:mm' }}</span>
                         </div>
                         <div class="py-2 md:py-0 md:pl-4">
                             <span class="text-sm opacity-70 block">Artista</span>
@@ -56,21 +131,29 @@
                     </div>
                 </div>
             </section>
+
         </div>
     </div>
+
+    <!-- CARD SECUNDARIA -->
     <div class="card bg-base-200 mt-4 shadow-sm flex flex-col">
+
         <div class="w-full p-4 flex flex-col md:flex-row gap-6 items-start">
             <div class="flex-1 min-w-0">
                 <span class="text-sm text-gray-400">Casa organizadora</span>
-                <h3 class="text-2xl md:text-3xl font-bold mb-6">{{event?.organizingHouse?.name}}</h3>
-                <p class="text-sm md:text-base ">{{event?.description}}</p>
+                <h3 class="text-2xl md:text-3xl font-bold mb-6">
+                    {{ event?.organizingHouse?.name }}
+                </h3>
+                <p class="text-sm md:text-base ">{{ event?.description }}</p>
             </div>
             <div class="p-6">
-                <a [routerLink]="['/tickets', 'buy-ticket', event?.eventId]" class="btn  btn-xl btn-primary">
+                <a [routerLink]="['/tickets', 'buy-ticket', event?.eventId]" class="btn btn-xl btn-primary">
                     Comprar Boleto
                 </a>
             </div>
         </div>
+
+        <!-- Tabla -->
         <div class="pr-6 pl-6 pb-6">
             <div class="overflow-x-auto">
                 <table class="table-sm md:table w-full bg-base-100">
@@ -81,24 +164,36 @@
                             <th class="text-right">Precio</th>
                         </tr>
                     </thead>
+
                     <tbody>
                         @for (typeTicket of event?.ticketTypes; track $index) {
                             <tr>
-                                <td class="text-sm font-semibold sm:text-lg uppercase">{{ typeTicket.name }}</td>
-                                <td class="text-sm md:text-base">{{ typeTicket.availableQuantity }}</td>
-                                <td class="text-right text-sm font-sans md:text-lg">${{ typeTicket.price }}</td>
+                                <td class="text-sm font-semibold sm:text-lg uppercase">
+                                    {{ typeTicket.name }}
+                                </td>
+                                <td class="text-sm md:text-base">
+                                    {{ typeTicket.availableQuantity }}
+                                </td>
+                                <td class="text-right text-sm font-sans md:text-lg">
+                                    ${{ typeTicket.price }}
+                                </td>
                             </tr>
                         } 
-                        <!-- empty -->
+
                         @empty {
-                            <div class="text-center py-4 italic text-gray-500">
-                                No hay tipos de boletos disponibles.
-                            </div>
+                            <tr>
+                                <td colspan="3" class="text-center py-4 italic text-gray-500">
+                                    No hay tipos de boletos disponibles.
+                                </td>
+                            </tr>
                         }
                     </tbody>
                 </table>
             </div>
         </div>
-        
+
     </div>
 </div>
+}
+
+<shared-loading />

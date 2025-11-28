@@ -3,12 +3,13 @@ import { EventService } from '../../services/event.service';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { DatePipe } from '@angular/common';
 import { HeaderBackComponent } from '../../../shared/components/header-back/header-back.component';
+import { LoadingComponent } from '../../../shared/components/loading/loading.component';
 import { firstValueFrom } from 'rxjs';
 
 
 @Component({
   selector: 'app-detail-event',
-  imports: [DatePipe, RouterLink, HeaderBackComponent],
+  imports: [DatePipe, RouterLink, HeaderBackComponent, LoadingComponent],
   templateUrl: './detail-event.component.html',
 })
 export class DetailEventComponent {
