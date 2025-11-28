@@ -244,9 +244,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     } catch (err: any) {
       console.error(err);
       this.loadingService.hideModalImmediately();
-      this.notificationService.showNotification('Error al procesar el pago. Revisa los datos e intenta nuevamente.', 'error');
-      console.error('Error en proceso de pago:', err);
-      this.error.set(err?.message || 'Error en el proceso de pago.');
+      this.router.navigateByUrl('/tickets/error-payment');
     } finally {
       this.loading.set(false);
     }
