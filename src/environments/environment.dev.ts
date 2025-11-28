@@ -1,0 +1,9 @@
+
+export const environment = {
+    googleClientId: '735301633233-3au723tg028j4498gr6s7sjb4uoto95l.apps.googleusercontent.com',
+    stripeApiKey: 'pk_test_51SNDS7EP3aJhyM2VNPmUbz0FxK3m3l3wMgC1mi3eSLJIb3ywAezRIeAfO8PpA8qAcLHWjdjx9gc7Pl7qyT6rzor8001DrrljZe',
+    serverBackend: 'http://localhost:4242',
+    apiBaseUrl: 'https://ticklette.somee.com/api',
+    depomexApiUrl: 'https://api.tau.com.mx/dipomex',
+    apikeyDepomex: '0dbb7bf91bda1c50c34eb1375b4f4af3072690e0'
+};
