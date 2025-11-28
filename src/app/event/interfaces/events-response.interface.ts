@@ -2,8 +2,8 @@ import { EventInterface } from "./event.interface";
 
 export interface EventsResponse{
   items: EventInterface[],
-  totalCount: 6,
-  page: 1,
-  pageSize: 10,
-  totalPages: 1
+  totalCount: number,
+  page: number,
+  pageSize: number,
+  totalPages: number
 }
