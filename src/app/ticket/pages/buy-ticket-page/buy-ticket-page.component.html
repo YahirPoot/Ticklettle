@@ -112,7 +112,7 @@
           }
 
           @if (isFreeEvent) {
-            <button type="button" class="btn btn-neutral btn-lg w-full" (click)="claimFreeTickes()">Reclamar boleto gratis</button>
+            <button [disabled]="!isAuthenticated()" type="button" class="btn btn-neutral btn-lg w-full" (click)="claimFreeTickes()">Reclamar boleto gratis</button>
           } @else {
             <button [disabled]="!isAuthenticated()" type="submit" class="btn btn-neutral btn-lg w-full">
               @if (loading()) { Procesando… } @else { Pagar }
