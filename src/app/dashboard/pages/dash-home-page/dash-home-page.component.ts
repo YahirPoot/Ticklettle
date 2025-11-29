@@ -1,13 +1,13 @@
 import { Component, inject, resource } from '@angular/core';
 import { RouterLink } from "@angular/router";
-import { first, firstValueFrom } from 'rxjs';
+import { firstValueFrom } from 'rxjs';
 import { EventService } from '../../../event/services/event.service';
 import AnalyticsService from '../../../event/services/analytics.service';
-import { DatePipe, SlicePipe } from '@angular/common';
+import { SlicePipe } from '@angular/common';
 
 @Component({
   selector: 'app-dash-home-page',
-  imports: [RouterLink, DatePipe, SlicePipe],
+  imports: [RouterLink, SlicePipe],
   templateUrl: './dash-home-page.component.html',
 })
 export class DashHomePageComponent { 

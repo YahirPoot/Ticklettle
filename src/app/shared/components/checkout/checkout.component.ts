@@ -191,9 +191,10 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     this.loading.set(true);
     try {
       // si quieres intentar cancelar el PaymentIntent en backend, descomenta y usa paymentService.cancelPaymentIntent
-      // if (this.paymentIntentId && typeof this.paymentService.cancelPaymentIntent === 'function') {
-      //   await firstValueFrom(this.paymentService.cancelPaymentIntent({ paymentIntentId: this.paymentIntentId }));
-      // }
+      if (this.paymentIntentId && typeof this.paymentService.cancelPaymentIntent === 'function') {
+        await firstValueFrom(this.paymentService.cancelPaymentIntent(this.paymentIntentId));
+        console.log('Payment Intent cancelado:', this.paymentIntentId);
+      }
 
      const navigated = await this.router.navigate(['/']); // o la ruta que prefieras
       if (navigated) {
@@ -266,6 +267,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       }
 
       const confirmRes: ResponsePaymentInterface = await firstValueFrom(this.paymentService.confirmPayment(confirmPayload));
+      console.log('Payment confirmation result:', confirmRes);
 
       const status = confirmRes?.status || confirmRes?.status;
       if (status === 'succeeded' || status === 'completed') {

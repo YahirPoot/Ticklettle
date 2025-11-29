@@ -31,6 +31,31 @@ export class PaymentService {
       );
   }
 
+  cancelPaymentIntent(paymentIntentId: string): Observable<void> {
+    return this.http.delete<void>(`${apiBaseUrl}/Payments/cancel-payment-intent`, 
+      {
+        body: { paymentIntentId }
+      }
+    ).pipe(
+      tap(() => console.log('Payment Intent cancelado:', paymentIntentId)),
+      catchError(err => {
+        console.error('Error al cancelar el Payment Intent:', err);
+        throw err;
+      })
+    )
+  }
+
+  deletePaymentId(payementId: number): Observable<void> {
+    return this.http.delete<void>(`${apiBaseUrl}/Payments/${payementId}`)
+      .pipe(
+        tap(() => console.log('Pago eliminado:', payementId)),
+        catchError(err => {
+          console.error('Error al eliminar el pago:', err);
+          throw err;
+        })
+      )    
+  }
+
   getSaleById(saleId: number): Observable<ResponsePaymentInterface> {
     return this.http.get<ResponsePaymentInterface>(`${apiBaseUrl}/Payments/sales/${saleId}`
       ).pipe(
