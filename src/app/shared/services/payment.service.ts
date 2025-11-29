@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment.dev';
 import { RequestPaymentInterface } from '../interfaces';
-import { Observable, pipe, tap } from 'rxjs';
+import { catchError, Observable, pipe, tap } from 'rxjs';
 import { ResponsePaymentInterface } from '../interfaces/response-payment.interface';
 
 const apiBaseUrl = environment.apiBaseUrl;
@@ -23,7 +23,11 @@ export class PaymentService {
   confirmPayment(payload: { paymentIntentId: string; paymentMethodId: string }): Observable<ResponsePaymentInterface> {
     return this.http.post<ResponsePaymentInterface>(`${apiBaseUrl}/Payments/confirm-payment`, payload)
       .pipe(
-        tap(response => console.log('Payment confirmado:', response))
+        tap(response => console.log('Payment confirmado:', response)),
+        catchError(err => {
+          console.error('Error al confirmar el pago:', err);
+          throw err;
+        })
       );
   }
 

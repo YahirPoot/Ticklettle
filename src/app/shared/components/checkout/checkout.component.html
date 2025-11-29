@@ -72,16 +72,16 @@
         <div>
           <label class="block text-xs font-medium mb-1">Tarjeta</label>
           <div id="card-element"></div>
-          @if (error()) {
-            <div class="text-sm text-red-600 mt-2">{{ error() }}</div>
-          }
+            @if (error()) {
+              <div class="text-sm text-red-600 mt-2">{{ error() }}</div>
+            }
         </div>
 
         <div class="pt-2">
           <button
             type="submit"
             class="w-full inline-flex items-center justify-center gap-3 px-4 py-2 bg-primary hover:bg-primary-dark text-white font-medium rounded-b-md transition"
-            [disabled]="loading() || paymentForm.invalid"
+              [disabled]="loading() || paymentForm.invalid || !cardComplete()"
           >
           @if (loading()) {
             <svg class="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">

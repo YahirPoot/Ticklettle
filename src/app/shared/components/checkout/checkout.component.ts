@@ -11,6 +11,7 @@ import { NotificationService } from '../../services/notification.service';
 import { LoadingModalService } from '../../services/loading-modal.service';
 import { LoadingComponent } from '../loading/loading.component';
 import { ConfirmModalComponent } from '../confirm-modal/confirm-modal.component';
+import { ResponsePaymentInterface } from '../../interfaces';
 
 @Component({
   selector: 'app-checkout',
@@ -31,6 +32,9 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   stripe: Stripe | null = null;
   elements: StripeElements | null = null;
   card: any = null;
+
+  // Signal to know if Stripe Element has a complete card input
+  cardComplete = signal(false);
 
   clientSecret: string | null = null;
   paymentIntentId: string | null = null;
@@ -115,17 +119,38 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       }
     } } );
     this.card.mount('#card-element');
-    this.card.on('change', (e: any) => this.error.set(e.error ? e.error.message : null));
+    // listen for changes to collect errors and know when the card is complete
+    this.card.on('change', (e: any) => {
+      this.error.set(e.error ? e.error.message : null);
+      try {
+        // e.complete is true when number+expiry+cvc are filled
+        this.cardComplete.set(Boolean(e.complete));
+      } catch {
+        this.cardComplete.set(false);
+      }
+    });
 
     this.navSub = this.router.events.pipe(
       filter(event => event instanceof NavigationStart)
     ).subscribe((e: any) => {
       const targetUrl: string = e.url;
-
-      if (targetUrl.startsWith('/tickets/checkout')) {
+      // if navigating away from checkout, clear the payload to avoid stale state
+      if (!targetUrl.startsWith('/tickets/checkout')) {
         this.checkoutService.clearPayload();
       }
     })
+  }
+
+  // mark all controls as touched so errors are shown to the user
+  private markAllTouched() {
+    try {
+      Object.keys(this.paymentForm.controls).forEach(k => {
+        const c = this.paymentForm.get(k);
+        if (c) c.markAsTouched({ onlySelf: true });
+      });
+    } catch (err) {
+      // ignore
+    }
   }
 
   ngOnDestroy(): void { 
@@ -188,64 +213,86 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   }
 
   async pay() {
-    if (!this.stripe || !this.card || !this.paymentIntentId || !this.clientSecret) return;
+    // Preconditions
+    if (!this.stripe || !this.card || !this.paymentIntentId || !this.clientSecret) {
+      this.error.set('No se pudo iniciar el proceso de pago. Intenta recargar la página.');
+      return;
+    }
+
+    // validate form and card completeness
+    if (this.paymentForm.invalid || !this.cardComplete()) {
+      this.markAllTouched();
+      this.error.set('Completa todos los campos de pago correctamente.');
+      return;
+    }
+
+    // prevent double submit
+    if (this.loading()) return;
+
     this.loading.set(true);
     this.error.set(null);
-
     this.loadingService.showModal('create', 'Procesando pago...');
 
     const name = this.paymentForm.value.name || 'Guest';
     const email = this.paymentForm.value.email || '';
 
     try {
-      console.log('[checkout] creando PaymentMethod...');
       const pmResult: PaymentMethodResult = await this.stripe.createPaymentMethod({
         type: 'card',
         card: this.card,
         billing_details: { name: name, email: email }
       });
 
-      console.log('[checkout] pmResult:', pmResult);
       if (pmResult.error) {
-        this.error.set(pmResult.error.message || 'Error creando método de pago.');
-        this.notificationService.showNotification('Error al procesar el método de pago. Revisa los datos.', 'error');
-        this.loading.set(false);
+        const msg = pmResult.error.message || 'Error creando método de pago.';
+        this.error.set(msg);
+        this.notificationService.showNotification(msg, 'error');
         return;
       }
 
       const paymentMethodId = pmResult.paymentMethod?.id;
       if (!paymentMethodId) {
         this.error.set('No se creó el método de pago.');
-        this.loading.set(false);
         return;
-      }   
-
-      console.log('[checkout] enviando paymentMethodId al backend...');
-      const confirmRes: any = await firstValueFrom(this.paymentService.confirmPayment({
-        paymentIntentId: this.paymentIntentId,
-        paymentMethodId
-      }));
-
-      console.log('confirmRes', confirmRes);
-
-      const status = confirmRes?.status || confirmRes?.paymentIntent?.status;
-      if (status === 'completed') {
-        // pago completado: redirige o muestra éxito
-        this.checkoutService.clearPayload();
-        this.loadingService.hideModalImmediately();
-        console.log('Pago completado', confirmRes);
-        this.router.navigate([`tickets/success-payment/${confirmRes.saleId}`]);
-      } else {
-        this.notificationService.showNotification('Hubo un error inesperado en el pago. Espera un momento e intenta nuevamente.', 'error');
-        console.log('Estado paymentIntent:', confirmRes);
-        this.router.navigateByUrl('/tickets/error-payment');
-        this.error.set('Estado de pago inesperado.');
       }
-    } catch (err: any) {
-      console.error(err);
-      this.loadingService.hideModalImmediately();
+
+      const confirmPayload = { paymentIntentId: this.paymentIntentId, paymentMethodId };
+      console.log('Confirming payment with payload:', confirmPayload);
+
+      if (!this.paymentIntentId || !paymentMethodId) {
+        this.error.set('Faltan datos para procesar el pago.');
+        this.notificationService.showNotification('Faltan datos para procesar el pago.', 'error');
+        return;
+      }
+
+      const confirmRes: ResponsePaymentInterface = await firstValueFrom(this.paymentService.confirmPayment(confirmPayload));
+
+      const status = confirmRes?.status || confirmRes?.status;
+      if (status === 'succeeded' || status === 'completed') {
+        // éxito
+        this.checkoutService.clearPayload();
+        this.notificationService.showNotification('Pago realizado correctamente.', 'success');
+        this.router.navigate([`tickets/success-payment/${confirmRes.saleId ?? ''}`]);
+        return;
+      }
+
+      // estado inesperado
+      const unexpected = 'El pago no se completó. Intenta nuevamente.';
+      this.error.set(unexpected);
+      this.notificationService.showNotification(unexpected, 'error');
+      console.warn('Estado paymentIntent inesperado:', confirmRes);
       this.router.navigateByUrl('/tickets/error-payment');
+
+    } catch (err: any) {
+      console.error('[checkout] pay error', err);
+      // Try to present a useful message to user
+      const backendMsg = err?.error?.message ?? err?.message ?? null;
+      const userMsg = backendMsg ? String(backendMsg) : 'Error al procesar el pago. Intenta de nuevo o contacta soporte.';
+      this.error.set(userMsg);
+      this.notificationService.showNotification(userMsg, 'error');
     } finally {
+      // ensure modal and loading are hidden
+      try { this.loadingService.hideModalImmediately(); } catch {}
       this.loading.set(false);
     }
   }
