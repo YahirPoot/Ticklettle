@@ -6,6 +6,8 @@ import { FavoriteEventService } from '../../../event/services/favorite-event.ser
 import { RouterLink } from '@angular/router';
 import { ConfirmModalComponent } from '../../../shared/components/confirm-modal/confirm-modal.component';
 import { EventCardComponent } from '../../../event/components/event-card/event-card.component';
+import { firstValueFrom } from 'rxjs';
+import { NotificationService } from '../../../shared/services/notification.service';
 
 @Component({
   selector: 'app-favorite-page',
@@ -23,9 +25,9 @@ export class FavoritePageComponent {
 
   authService = inject(AuthService);
   private favoriteEventSvc = inject(FavoriteEventService);
+  private notificationService = inject(NotificationService);
 
   showConfirm = signal(false);
-  showSuccess = signal(false);
   selectedToDelete = signal<number | null>(null);
   selectedName = signal<string | null>(null);
 
@@ -34,7 +36,7 @@ export class FavoritePageComponent {
   );
 
   favoritesResource = resource({
-    loader: () => this.favoriteEventSvc.list(),
+    loader: () => firstValueFrom(this.favoriteEventSvc.getFavoriteEventsByAttendee()),
   });
 
   get favorites() {
@@ -57,14 +59,16 @@ export class FavoritePageComponent {
     const id = this.selectedToDelete();
     if (id == null) return;
 
-    try {
-      this.favoriteEventSvc.delete(id);
-    } finally {
-      this.favoritesResource.reload();
-      this.showConfirm.set(false);
-      this.showSuccess.set(true);
-
-      setTimeout(() => this.showSuccess.set(false), 3000);
-    }
+    this.favoriteEventSvc.removeFavoriteEvent(id).subscribe({
+      next: () => {
+        this.favoritesResource.reload();
+        this.showConfirm.set(false);
+        this.notificationService.showNotification('El evento fue eliminado de favoritos correctamente.', 'success');
+      },
+      error: () => {
+        this.showConfirm.set(false);
+        this.notificationService.showNotification('Failed to remove event from favorites.', 'error');
+      }
+    });
   }
 }

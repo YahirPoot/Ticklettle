@@ -20,7 +20,7 @@
         <div class="mt-3 px-1 pb-1 flex items-center justify-between">
             <a class="btn btn-secondary btn-sm" [routerLink]="['', 'detail-event', event().eventId]">Ver detalles</a>
 
-            @if (showFavorite) {
+            @if (showFavorite()) {
                 <button
                     [disabled]="!isAuthenticated()"
                     class="p-1 rounded-full border border-base-100 shadow-sm"
@@ -37,11 +37,11 @@
                         </svg>
                     }
                 </button>
-            } @else if (showDelete) {
+            } @else if (showDelete()) {
                 <button
                     class="btn btn-error btn-sm"
                     aria-label="Eliminar evento"
-                    (click)="onRemove($event)">
+                    (click)="remove.emit(event().eventId)">
                     <mat-icon>delete</mat-icon>
                 </button>
             }

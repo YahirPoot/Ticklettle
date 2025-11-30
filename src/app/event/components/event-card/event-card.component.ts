@@ -1,4 +1,4 @@
-import { Component, computed, inject, input, Input, Output, EventEmitter } from '@angular/core';
+import { Component, computed, effect, inject, input, output, signal } from '@angular/core';
 import { EventInterface } from '../../interfaces';
 import { MatIconModule } from '@angular/material/icon';
 import { RouterLink } from '@angular/router';
@@ -15,30 +15,65 @@ export class EventCardComponent {
   private favoriteEventSvc = inject(FavoriteEventService);
   private authService = inject(AuthService);
 
+  private _isFavorited = signal(false)
+  isFavorited = computed(() => this._isFavorited());
+
   isAuthenticated = computed(() => this.authService.authStatus() === 'authenticated');
 
   event = input.required<EventInterface>();
 
-  @Input() showFavorite: boolean = true;
-  @Input() showDelete: boolean = false;
+  showFavorite = input<boolean>(true);
+  showDelete = input<boolean>(false);
 
-  @Output() remove = new EventEmitter<number>();
+  remove = output<number>();
 
-  onRemove(event: MouseEvent) {
+  private checkIfFavorite = effect(() => {
+    const ev = this.event();
+    if (!ev) return;
+    this.loadIsFavorite(ev.eventId);
+  }) 
+
+  private loadIsFavorite(eventId: number) {
+    this.favoriteEventSvc.getFavoriteEventsByAttendee()
+      .subscribe({
+        next: (favorites) => {
+          const exists = favorites.some(f => f.eventId === eventId);
+          this._isFavorited.set(exists);
+        },
+        error: () => {
+          this._isFavorited.set(false);
+        }
+      });
+  }
+
+  toggleFavorite(event: MouseEvent) {
     event.stopPropagation();
-    if (!this.event()) return;
-    this.remove.emit(this.event().eventId);
+    if (!this.isAuthenticated()) return;
+
+    const eventId = this.event().eventId;
+
+    if (this._isFavorited()) {
+      this.removeFavorite(eventId);
+    } else {
+      this.addFavorite(eventId);
+    }
   }
 
-  isFavorited(): boolean {
-    if (!this.event) return false;
-    return this.favoriteEventSvc.isFavorite(this.event().eventId);
+  private addFavorite(eventId: number) {
+    this.favoriteEventSvc.addFavoriteEvent(eventId)
+      .subscribe({
+        next: () => this._isFavorited.set(true),
+        error: () => console.error("Error al agregar favorito")
+      });
   }
 
-  async toggleFavorite(event: MouseEvent) {
-    event.stopPropagation();
-    if (!this.event()) return;
-    await this.favoriteEventSvc.toggle(this.event().eventId); 
+  private removeFavorite(eventId: number) {
+    this.favoriteEventSvc.removeFavoriteEvent(eventId)
+      .subscribe({
+        next: () => this._isFavorited.set(false),
+        error: () => console.error("Error al eliminar favorito")
+      });
   }
+
 
 }

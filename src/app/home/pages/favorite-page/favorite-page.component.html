@@ -70,13 +70,13 @@
 
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
 
-          @for (eventFav of favorites; track eventFav.eventId) {
+          @for (fav of favorites; track fav.eventId) {
 
             <event-card
-              [event]="eventFav"
+              [event]="fav.event"
               [showFavorite]="false"
               [showDelete]="true"
-              (remove)="openConfirm($event, eventFav.name)">
+              (remove)="openConfirm($event, fav.event.name)">
             </event-card>
 
           }
@@ -85,18 +85,6 @@
 
       </div>
 
-    }
-
-    <!-- ALERTA ÉXITO -->
-    @if (showSuccess()) {
-      <div class="fixed top-4 right-4 z-50">
-        <div class="alert alert-success shadow-lg">
-          <div class="flex items-center gap-3">
-            <mat-icon>check_circle</mat-icon>
-            <span>Eliminado correctamente</span>
-          </div>
-        </div>
-      </div>
     }
 
     <!-- MODAL REUTILIZABLE -->
