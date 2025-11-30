@@ -100,31 +100,35 @@ export class LoginPageComponent implements OnInit, OnDestroy {
   }
 
   onSubmit() {
-    if (this.loginForm.invalid) {
-      this.showError.set(true);
-      setTimeout(() => {
-        this.showError.set(false);
-      }, 4000);
-      return;
-    }
-
-    const { email = '', password = '' } = this.loginForm.value;
-    console.log('Login con', { email, password });
-
-    this.loadingService.showModal('create', 'Iniciando sesión...');
-
-    this.authService.login(email!, password!).subscribe((isAuthenticated) => {
-      this.loadingService.hideModalImmediately();
-      if (isAuthenticated) {
-        this.router.navigateByUrl('/auth/callback');
-        return;
-      }
-      this.loadingService.hideModalImmediately();
-    this.showError.set(true);
-      setTimeout(() => {
-        this.showError.set(false);
-        
-      }, 4000);
-    });
+  if (this.loginForm.invalid) {
+    this.loginForm.markAllAsTouched();
+    return;
   }
+
+  const { email = '', password = '' } = this.loginForm.value;
+
+  this.loadingService.showModal('create', 'Iniciando sesión...');
+
+  this.authService.login(email!, password!)
+    .subscribe({
+      next: (isAuthenticated) => {
+        this.loadingService.hideModalImmediately();
+
+        if (isAuthenticated) {
+          this.router.navigateByUrl('/auth/callback');
+          return;
+        }
+
+        // 🔥 Falló login → mostrar error
+        this.showError.set(true);
+        setTimeout(() => this.showError.set(false), 3500);
+      },
+      error: () => {
+        this.loadingService.hideModalImmediately();
+        this.showError.set(true);
+        setTimeout(() => this.showError.set(false), 3500);
+      }
+    });
+}
+
 }
