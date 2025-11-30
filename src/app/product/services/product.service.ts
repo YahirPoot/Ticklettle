@@ -2,7 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment.dev';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
-import { ProductRequest } from '../interfaces';
+import { ProductFilterRequest, ProductRequest } from '../interfaces';
 import { ProductInterface } from '../interfaces/product.interface';
 
 const apiBaseUrl = environment.apiBaseUrl;
@@ -13,11 +13,11 @@ const apiBaseUrl = environment.apiBaseUrl;
 export class ProductService {
   private http = inject(HttpClient);
 
-  getProductsByOrganizer() {
-    return this.http.get<ProductInterface[]>(`${apiBaseUrl}/Products/organizer`
-    ).pipe(
-      tap(res => console.log('Products by organizer:', res)),
-    );
+  getProductsByOrganizer(organizerId: number, page: number, pageSize: number,) {
+    return this.http.post(`${apiBaseUrl}/Products/organizer/${organizerId}`, {
+      page: page,
+      pageSize: pageSize
+    });
   }
 
   createProductByEvent(eventId: number, requestProduct: ProductRequest): Observable<ProductRequest> {

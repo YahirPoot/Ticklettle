@@ -46,20 +46,20 @@ export class DashEventPageComponent {
   selectedName = signal<string | null>(null);
 
   constructor() {
-    effect(() => {
-      this.paginationService.page()
-      this.loadEvents(this.paginationService.page());
-    })
     // 🔥 Actualiza la signal cada vez que el usuario escribe
     this.searchControl.valueChanges.subscribe(v => {
       this.searchTerm.set(v?.toLowerCase() ?? '');
     });
-
     // Actualiza la signal cuando el usuario cambia la opción de búsqueda
     this.searchByControl.valueChanges.subscribe(v => {
       this.searchBy.set(v ?? 'name');
     });
   }
+
+  private reloadEventsEffect = effect(() => {
+    this.paginationService.page()
+    this.loadEvents(this.paginationService.page());
+  })
 
   openConfirm(eventId: number, name?: string) {
     this.selectedToDelete.set(eventId);

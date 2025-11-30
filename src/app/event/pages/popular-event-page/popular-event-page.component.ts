@@ -21,12 +21,10 @@ export class PopularEventPageComponent {
   
   error = signal<string | null>(null);
 
-  constructor() {
-    effect(() => {
-      this.paginationService.page();
-      this.loadPopularEvents(this.paginationService.page());
-    });
-  }
+  private reloadPopularEventsEffect = effect(() => {
+    this.paginationService.page();
+    this.loadPopularEvents(this.paginationService.page());
+  });
 
   loadPopularEvents(page: number) {
     this.loading.set(true);

@@ -21,12 +21,11 @@ export class NextEventPageComponent {
 
   error = signal<string | null>(null);
 
-  constructor() {
-    effect(() => {
-      this.paginationService.page()
-      this.loadNextEvents(this.paginationService.page());
-    })
-  }
+  private reloadNextEventsEffect = effect(() => {
+    this.paginationService.page()
+    this.loadNextEvents(this.paginationService.page());
+  });
+
 
   loadNextEvents(page: number) {
     this.loading.set(true);
