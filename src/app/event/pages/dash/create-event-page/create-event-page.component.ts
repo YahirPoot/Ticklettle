@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormArray, FormBuilder, FormControl, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -16,7 +16,7 @@ import { HeaderBackComponent } from '../../../../shared/components/header-back/h
   imports: [CommonModule, ReactiveFormsModule, MatIcon, LoadingComponent, HeaderBackComponent],
   templateUrl: './create-event-page.component.html',
 })
-export class CreateEventPageComponent {
+export class CreateEventPageComponent implements OnInit {
   private fb = inject(FormBuilder);
   private router = inject(Router);
   private notification = inject(NotificationService);
@@ -44,6 +44,7 @@ export class CreateEventPageComponent {
     city: ['', Validators.required],
     state: ['', Validators.required],
     postalCode: ['', Validators.required],
+    ubication: [''],
     status: ['Activo', Validators.required],
     organizingHouseId: [null],
     imageUrl: [''],
@@ -58,7 +59,9 @@ export class CreateEventPageComponent {
     postEventContent: [false]
   });
 
-  constructor() {
+  constructor() {}
+
+  ngOnInit(): void {
     this.initializeFormSubscriptions();
   }
 
@@ -260,6 +263,7 @@ export class CreateEventPageComponent {
       city: raw.city!,
       state: raw.state!,
       postalCode: raw.postalCode!,
+      ubication: raw.ubication!,
       tags: raw.tags!,
       type: raw.type!,
       capacity: raw.capacity,

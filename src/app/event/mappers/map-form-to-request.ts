@@ -36,6 +36,7 @@ export function mapFormToCreateEventRequest(
         city: formValue.city,
         state: formValue.state,
         postalCode: formValue.postalCode,
+        ubication: formValue.ubication,
         tags: formValue.tags || [],
         type: formValue.type,
         status: 'Activo',

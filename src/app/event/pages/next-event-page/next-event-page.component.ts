@@ -1,25 +1,56 @@
-import { Component, inject, resource, signal } from '@angular/core';
+import { Component, effect, inject, resource, signal } from '@angular/core';
 import { HeaderBackComponent } from '../../../shared/components/header-back/header-back.component';
 import { EventService } from '../../services/event.service';
 import { firstValueFrom } from 'rxjs';
 import { EventCardComponent } from '../../components/event-card/event-card.component';
+import { PaginationComponent } from '../../../shared/components/pagination/pagination.component';
+import { PaginationService } from '../../../shared/services/pagination.service';
+import { EventInterface } from '../../interfaces';
 
 @Component({
   selector: 'app-next-event-page',
-  imports: [HeaderBackComponent, EventCardComponent],
+  imports: [HeaderBackComponent, EventCardComponent, PaginationComponent],
   templateUrl: './next-event-page.component.html',
 })
 export class NextEventPageComponent { 
   private eventService = inject(EventService);
+  paginationService = inject(PaginationService);
 
-  nextFilter = signal<Record<string, any> | null>({ 'SpecialFilter.IsUpcoming': true });
+  nextEvents= signal<EventInterface[]>([]);
+  loading = signal(false);
 
-  nextEventsResource = resource({
-    loader: () => firstValueFrom(this.eventService.getEvents(this.nextFilter() ?? undefined))
-  })
+  error = signal<string | null>(null);
 
-  get nextEvents() {
-    return this.nextEventsResource.value();
+  constructor() {
+    effect(() => {
+      this.paginationService.page()
+      this.loadNextEvents(this.paginationService.page());
+    })
+  }
+
+  loadNextEvents(page: number) {
+    this.loading.set(true);
+    this.error.set(null);
+
+    this.eventService.getEvents({
+      "SpecialFilter.IsUpcoming": true,
+      Page: page,
+      PageSize: this.paginationService.pageSize()
+    }).subscribe({
+      next: (response) => {
+        this.nextEvents.set(response.items);
+        this.paginationService.totalPages.set(response.totalPages);
+        this.loading.set(false);
+      },
+      error: (err) => {
+        this.error.set('Error al cargar los eventos próximos.');
+        this.loading.set(false);
+      }
+    })
+  }
+
+  onPageChange(newPage: number) {
+    this.paginationService.setPage(newPage);
   }
 
   goBack() {

@@ -20,15 +20,23 @@ export class EventCarouselComponent {
   freeFilter = signal<Record<string, any> | null>({ 'SpecialFilter.IsFree': true });
 
   popularesResource = resource({
-    loader: () => firstValueFrom(this.eventService.getEvents(this.popularesFilter() ?? undefined)), 
+    loader: () => firstValueFrom(this.eventService.getEvents(
+      {
+        "SpecialFilter.IsPopular": true
+      }
+    )), 
   });
 
   proximosResource = resource({
-    loader: () => firstValueFrom(this.eventService.getEvents(this.proximosFilter() ?? undefined)), 
+    loader: () => firstValueFrom(this.eventService.getEvents({
+      "SpecialFilter.IsUpcoming": true
+    })), 
   });
 
   freeResource = resource({
-    loader: () => firstValueFrom(this.eventService.getEvents(this.freeFilter() ?? undefined)),
+    loader: () => firstValueFrom(this.eventService.getEvents({
+      "SpecialFilter.IsFree": true
+    })),
   })
 
   get populares() {
@@ -41,20 +49,6 @@ export class EventCarouselComponent {
 
   get freeEvents() {
     return this.freeResource.value();
-  }
-
-  refreshPopularesWith(filters: Record<string, any> | null) {
-    this.popularesFilter.set(filters);
-    this.popularesResource = resource({
-      loader: () => firstValueFrom(this.eventService.getEvents(filters ?? undefined))
-    });
-  }
-
-  refreshProximosWith(filters: Record<string, any> | null) {
-    this.proximosFilter.set(filters);
-    this.proximosResource = resource({
-      loader: () => firstValueFrom(this.eventService.getEvents(filters ?? undefined))
-    });
   }
 
 

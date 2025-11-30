@@ -7,6 +7,7 @@
     city?: string;
     state?: string;
     postalCode?: string;
+    ubication?: string;
     tags?: string[];
     type: 'Gratis' | 'Pago' | string;
     capacity?: number | null;

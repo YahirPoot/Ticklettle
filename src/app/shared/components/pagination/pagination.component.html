@@ -1,0 +1,61 @@
+@if (totalPages() > 1) {
+    <div class="join">
+    
+        <!-- « Previous -->
+        <button 
+            class="join-item btn"
+            [disabled]="page() === 1"
+            (click)="goToPage(page() - 1)">
+            «
+        </button>
+    
+        <!-- First page -->
+        @if (page() > 2) {
+            <button class="join-item btn" (click)="goToPage(1)">1</button>
+        }
+    
+        <!-- ... before current -->
+        @if (page() > 3) {
+            <button class="join-item btn btn-disabled">...</button>
+        }
+    
+        <!-- Previous page -->
+        @if (page() > 1) {
+            <button class="join-item btn" (click)="goToPage(page() - 1)">
+                {{ page() - 1 }}
+            </button>
+        }
+    
+        <!-- Current page -->
+        <button class="join-item btn btn-primary">
+            {{ page() }}
+        </button>
+    
+        <!-- Next page -->
+        @if (page() < totalPages()) {
+            <button class="join-item btn" (click)="goToPage(page() + 1)">
+            {{ page() + 1 }}
+            </button>
+        }
+    
+        <!-- ... after current -->
+        @if (page() < totalPages() - 2) {
+            <button class="join-item btn btn-disabled">...</button>
+        }
+    
+        <!-- Last page -->
+        @if (page() < totalPages() - 1) {
+            <button class="join-item btn" (click)="goToPage(totalPages())">
+                {{ totalPages() }}
+            </button>
+        }
+    
+        <!-- » Next -->
+        <button 
+            class="join-item btn"
+            [disabled]="page() === totalPages()"
+            (click)="goToPage(page() + 1)">
+            »
+        </button>
+    </div>
+}

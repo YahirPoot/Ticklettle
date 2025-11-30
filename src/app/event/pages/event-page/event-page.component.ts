@@ -16,7 +16,9 @@ export class EventPageComponent {
   nextEventFilter = signal<Record<string, any> | null>({ 'SpecialFilter.IsUpcoming': true });
 
   featuredEventResource = resource({
-    loader: () => firstValueFrom(this.eventService.getEvents(this.nextEventFilter() ?? undefined)).then(events => events.items.length > 0 ? events.items[0] : null)
+    loader: () => firstValueFrom(this.eventService.getEvents({
+      "SpecialFilter.IsUpcoming": true
+    })).then(events => events.items.length > 0 ? events.items[0] : null)
   })
 
   get featuredEvent() {

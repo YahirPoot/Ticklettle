@@ -1,4 +1,4 @@
-import { Component, inject, resource, signal, computed } from '@angular/core';
+import { Component, inject, resource, signal, computed, effect } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { RouterLink } from "@angular/router";
 import { EventService } from '../../../services/event.service';
@@ -7,17 +7,27 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormControl } from '@angular/forms';
 import { ConfirmModalComponent } from '../../../../shared/components/confirm-modal/confirm-modal.component';
 import { NotificationService } from '../../../../shared/services/notification.service';
+import { PaginationService } from '../../../../shared/services/pagination.service';
+import { PaginationComponent } from '../../../../shared/components/pagination/pagination.component';
+import { EventInterface } from '../../../interfaces';
 
 @Component({
   selector: 'app-dash-event-page',
-  imports: [RouterLink, MatIconModule, CommonModule, ReactiveFormsModule, ConfirmModalComponent],
+  imports: [RouterLink, MatIconModule, CommonModule, ReactiveFormsModule, ConfirmModalComponent, PaginationComponent],
   templateUrl: './dash-event-page.component.html',
 })
 export class DashEventPageComponent {
 
-  eventService = inject(EventService);
-  private notificationService = inject(NotificationService)
+  private eventService = inject(EventService);
+  notificationService = inject(NotificationService);
+  paginationService = inject(PaginationService);
 
+
+  events = signal<EventInterface[]>([]);
+  initialLoading = signal(false);
+  pageLoading = signal(false);
+
+  error = signal<string | null>(null);
   /** Input de búsqueda */
   searchControl = new FormControl('');
 
@@ -36,6 +46,10 @@ export class DashEventPageComponent {
   selectedName = signal<string | null>(null);
 
   constructor() {
+    effect(() => {
+      this.paginationService.page()
+      this.loadEvents(this.paginationService.page());
+    })
     // 🔥 Actualiza la signal cada vez que el usuario escribe
     this.searchControl.valueChanges.subscribe(v => {
       this.searchTerm.set(v?.toLowerCase() ?? '');
@@ -59,6 +73,31 @@ export class DashEventPageComponent {
     this.showConfirm.set(false);
   }
 
+  loadEvents(page: number) {
+    const isInitial = (this.events() ?? []).length == 0;
+    this.initialLoading.set(isInitial);
+    this.pageLoading.set(!isInitial);
+    this.error.set(null);
+
+    this.eventService.getEventsOrganizer(page, this.paginationService.pageSize()).subscribe({
+      next: (res) => {
+        this.events.set(res.items);
+        this.paginationService.totalPages.set(res.totalPages);
+        this.initialLoading.set(false);
+        this.pageLoading.set(false);
+      },
+      error: (err) => {
+        this.error.set('Error cargando los eventos. Intenta de nuevo más tarde.',);
+        this.initialLoading.set(false);
+        this.pageLoading.set(false);
+      }
+    })
+  }
+
+  onPageChange(newPage: number) {
+    this.paginationService.setPage(newPage);
+  }
+
   async confirmDelete() {
     const id = this.selectedToDelete();
     if (id == null) return;
@@ -70,19 +109,9 @@ export class DashEventPageComponent {
       console.error('Error eliminando evento', e);
     } finally {
       this.notificationService.showNotification('Evento eliminado correctamente.', 'success');
-      this.eventResource.reload();
+      // this.eventResource.reload();
       this.showConfirm.set(false);
     }
-  }
-
-  /** Resource */
-  eventResource = resource({
-    loader: () => firstValueFrom(this.eventService.getEventsOrganizer()),
-  });
-
-  /** Acceso a events */
-  get events() {
-    return this.eventResource;
   }
 
   /** 🔥 Filtrado real time */
@@ -90,7 +119,7 @@ export class DashEventPageComponent {
     const rawTerm = this.searchTerm();
     const term = rawTerm.trim().toLowerCase();
 
-    const list = this.events.value()?.items ?? [];
+    const list = this.events() ?? [];
     if (!term) return list;
 
     return list.filter(event => {
@@ -105,8 +134,5 @@ export class DashEventPageComponent {
       return name.startsWith(term);
     });
   });
-
-
-
 
 }

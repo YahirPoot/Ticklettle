@@ -18,10 +18,6 @@ export class DashHomePageComponent {
     loader: () => firstValueFrom(this.analyticsService.getMyAnalytics()),
   })
 
-  eventsResource = resource({
-    loader: () => firstValueFrom(this.eventService.getEventsOrganizer()),
-  })
-
   get getAnalytics() {
     return this.getAnalyticsResource.value();
   }

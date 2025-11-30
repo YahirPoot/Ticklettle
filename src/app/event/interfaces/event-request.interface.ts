@@ -9,6 +9,7 @@ export interface CreateEventRequest{
     city: string;
     state: string;
     postalCode: string;
+    ubication: string;
     tags: string[];
     type: string;
     status: string | 'Activo';

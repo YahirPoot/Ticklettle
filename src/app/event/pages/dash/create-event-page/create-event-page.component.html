@@ -76,6 +76,13 @@
                                 <p class="text-sm text-error mt-1">Campo obligatorio</p>
                             }
                         </label>
+                        <label class="block">
+                            <span class="text-sm font-medium text-gray-500">Ubicación (lugar) <span class="text-sm text-red-400">*</span></span>
+                            <input type="text" formControlName="ubication" class="input input-bordered w-full mt-1" placeholder="Ubicación" />
+                            @if (eventForm.get('ubication')?.touched && eventForm.get('ubication')?.invalid) {
+                                <p class="text-sm text-error mt-1">Campo obligatorio</p>
+                            }
+                        </label>
                     </div>
 
                     <!-- Fecha -->

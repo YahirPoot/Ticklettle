@@ -1,6 +1,6 @@
 <div class="min-h-screen w-full text-base-content p-2">
 
-  @if (eventResource.isLoading()) {
+  @if (this.initialLoading() == true) {
     <div class="flex flex-col">
         <div class="w-1/3 skeleton h-10 mb-4 mt-4"></div>
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-2 w-full">
@@ -14,12 +14,12 @@
     </div>
   }
 
-  @else if (!eventResource.hasValue() || eventResource.value().items.length === 0) {
+  @else if (events().length === 0) {
 
     <div class="max-w-4xl mx-auto">
         <div class="card bg-base-200 border border-base-300 rounded-lg p-6 flex flex-col items-center justify-center gap-4 w-full">
 
-            <!-- Icono tipo ticket/entrada -->
+            Icono tipo ticket/entrada
             <svg xmlns="http://www.w3.org/2000/svg" class="w-16 h-16 text-green-500 animate-pulse" viewBox="0 0 24 24" fill="none">
                 <path stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" d="M21 10v4a2 2 0 01-2 2h-1a2 2 0 000 4H6a2 2 0 000-4H5a2 2 0 01-2-2v-4a2 2 0 012-2h1a2 2 0 000-4h12a2 2 0 000 4h1a2 2 0 012 2z" />
                 <circle cx="8.5" cy="12" r="1" fill="currentColor" />
@@ -43,91 +43,104 @@
 
   }
 
-  @else {  <!-- hay datos -->
+    @else {
 
-    <div class="flex flex-col">
-        <div class="m-3t-4 mb-2 text-2xl font-semibold">
-            Mis Eventos
-        </div>
+        @if (!pageLoading()) {
+            <div class="w-full flex justify-center py-2">
+                <span class="text-sm text-gray-500">Cargando eventos...</span>
+            </div>
+        }
 
-        <!-- 🔍 BARRA DE BÚSQUEDA -->
-        <div class="flex items-center justify-start w-full">
-            <div class="flex items-center gap-2 w-full md:w-96">
-                <!-- Selector integrado: Nombre (por defecto) o Ciudad -->
-                <div class="flex-shrink-0">
-                    <select [formControl]="searchByControl" class="select select-bordered">
-                        <option value="name">Nombre</option>
-                        <option value="city">Ciudad</option>
-                    </select>
-                </div>
+        <div class="flex flex-col">
+            <div class="m-3t-4 mb-2 text-2xl font-semibold">
+                Mis Eventos
+            </div>
 
-                <div class="relative flex-1">
-                    <input
-                        type="text"
-                        class="input input-bordered w-full pl-10"
-                        [placeholder]="searchBy() === 'city' ? 'Buscar por ciudad...' : 'Buscar por nombre...'"
-                        [formControl]="searchControl"
-                    />
-                    <mat-icon class="absolute left-2 top-2.5 text-gray-500">
-                        search
-                    </mat-icon>
+            <!-- 🔍 BARRA DE BÚSQUEDA -->
+            <div class="flex items-center justify-start w-full">
+                <div class="flex items-center gap-2 w-full md:w-96">
+                    <!-- Selector integrado: Nombre (por defecto) o Ciudad -->
+                    <div class="flex-shrink-0">
+                        <select [formControl]="searchByControl" class="select select-bordered">
+                            <option value="name">Nombre</option>
+                            <option value="city">Ciudad</option>
+                        </select>
+                    </div>
+
+                    <div class="relative flex-1">
+                        <input
+                            type="text"
+                            class="input input-bordered w-full pl-10"
+                            [placeholder]="searchBy() === 'city' ? 'Buscar por ciudad...' : 'Buscar por nombre...'"
+                            [formControl]="searchControl"
+                        />
+                        <mat-icon class="absolute left-2 top-2.5 text-gray-500">
+                            search
+                        </mat-icon>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-2 w-ful mt-4">
-            @for (event of filteredEvents(); track $index) {
-                <div class="card bg-base-200 shadow-sm flex flex-col overflow-hidden">
-                    <div class="flex flex-col md:flex-row items-stretch">
-                        <!-- Info -->
-                        <div class="p-4 flex-1 min-w-0 items-end justify-end">
-                            <h4 class="text-lg font-semibold truncate">
-                                {{ event.name.length > 13 ? (event.name | slice: 0 : 13) + '...' : event.name }}
-                            </h4>
-                            <p class="text-sm mt-1 truncate">{{ event.dateTime | date:'dd/MM/yyyy HH:mm' }}</p>
-                            <p class="text-sm mt-1 truncate">{{ event.location }}</p>
-                            <p class="text-sm text-gray-600 mt-3 line-clamp-3 min-w-0">
-                                {{ (event.description.length > 16 ? (event.description | slice: 0 : 16) + '...' : event.description) ?? 'Sin descripción' }}
-                            </p>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-2 w-ful mt-4">
+                @for (event of filteredEvents(); track $index) {
+                    <div class="card bg-base-200 shadow-sm flex flex-col overflow-hidden">
+                        <div class="flex flex-col md:flex-row items-stretch">
+                            <!-- Info -->
+                            <div class="p-4 flex-1 min-w-0 items-end justify-end">
+                                <h4 class="text-lg font-semibold truncate">
+                                    {{ event.name.length > 13 ? (event.name | slice: 0 : 13) + '...' : event.name }}
+                                </h4>
+                                <p class="text-sm mt-1 truncate">{{ event.dateTime | date:'dd/MM/yyyy HH:mm' }}</p>
+                                <p class="text-sm mt-1 truncate">{{ event.location }}</p>
+                                <p class="text-sm text-gray-600 mt-3 line-clamp-3 min-w-0">
+                                    {{ (event.description.length > 16 ? (event.description | slice: 0 : 16) + '...' : event.description) ?? 'Sin descripción' }}
+                                </p>
+                            </div>
+
+                            <!-- Imagen -->
+                            <div class="w-full md:w-44 flex-shrink-0 flex flex-col items-end gap-2">
+                                <div class="w-full h-28 md:h-32 overflow-hidden rounded-lg bg-base-300">
+                                    @if (event.imageUrl) {
+                                        <img [src]="event.imageUrl" class="w-full h-full object-cover" />
+                                    } @else {
+                                        <div class="flex items-center justify-center h-full font-bold text-base-content uppercase text-lg">
+                                            {{ event.name.charAt(0) }}
+                                        </div>
+                                    }
+                                </div>
+                            </div>
                         </div>
 
-                        <!-- Imagen -->
-                        <div class="w-full md:w-44 flex-shrink-0 flex flex-col items-end gap-2">
-                            <div class="w-full h-28 md:h-32 overflow-hidden rounded-lg bg-base-300">
-                                @if (event.imageUrl) {
-                                    <img [src]="event.imageUrl" class="w-full h-full object-cover" />
-                                } @else {
-                                    <div class="flex items-center justify-center h-full font-bold text-base-content uppercase text-lg">
-                                        {{ event.name.charAt(0) }}
-                                    </div>
-                                }
+                        <!-- Acciones -->
+                        <div class="px-4 py-3 flex items-center justify-between">
+                            <a class="btn btn-sm btn-secondary"
+                                [routerLink]="['/admin','events','detail-event', event.eventId]"
+                                aria-label="Ver más">Ver más</a>
+
+                            <div class="flex items-center gap-2">
+                                <a class="btn btn-neutral btn-sm"
+                                    [routerLink]="['/admin','events','update-event', event.eventId]"
+                                    aria-label="Editar evento">
+                                    <mat-icon>edit</mat-icon>
+                                </a>
+                                <button class="btn btn-error btn-sm" aria-label="Eliminar evento" (click)="openConfirm(event.eventId, event.name)">
+                                    <mat-icon>delete</mat-icon>
+                                </button>
                             </div>
                         </div>
                     </div>
-
-                    <!-- Acciones -->
-                    <div class="px-4 py-3 flex items-center justify-between">
-                        <a class="btn btn-sm btn-secondary"
-                            [routerLink]="['/admin','events','detail-event', event.eventId]"
-                            aria-label="Ver más">Ver más</a>
-
-                        <div class="flex items-center gap-2">
-                            <a class="btn btn-neutral btn-sm"
-                                [routerLink]="['/admin','events','update-event', event.eventId]"
-                                aria-label="Editar evento">
-                                <mat-icon>edit</mat-icon>
-                            </a>
-                            <button class="btn btn-error btn-sm" aria-label="Eliminar evento" (click)="openConfirm(event.eventId, event.name)">
-                                <mat-icon>delete</mat-icon>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            }
+                }
+            </div>
+            <div class="flex items-center justify-center mt-4">
+                <shared-pagination
+                    [page]="paginationService.page()"
+                    [totalPages]="paginationService.totalPages()"
+                    (pageChange)="onPageChange($event)"
+                />
+            </div>
         </div>
-    </div>
+    }
 
-  } <!-- end else datos -->
   
   <!-- MODAL REUTILIZABLE -->
   <confirm-modal

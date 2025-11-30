@@ -4,9 +4,16 @@
             <shared-header-back [title]="'Eventos Populares'" (back)="goBack()" />
         </div>
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-2 w-full mt-4">
-            @for (item of popularEvents?.items!; track $index) {
+            @for (item of popularEvents(); track $index) {
                 <event-card [event]="item" />
             }
+        </div>
+        <div class="flex items-center justify-center mt-4">
+            <shared-pagination 
+                [page]="paginationService.page()"
+                [totalPages]="paginationService.totalPages()"
+                (pageChange)="onPageChange($event)"
+            />
         </div>      
     </div>
 </div>

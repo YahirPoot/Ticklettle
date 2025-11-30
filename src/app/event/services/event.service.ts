@@ -1,7 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { catchError, Observable, tap } from 'rxjs';
-import { CreateEventRequest, EventInterface, EventsResponse, UpdateEventRequest } from '../interfaces';
+import { CreateEventRequest, EventFilter, EventInterface, EventsResponse, UpdateEventRequest } from '../interfaces';
 import { environment } from '../../../environments/environment.dev';
 
 const apiBaseUrl = environment.apiBaseUrl;
@@ -12,30 +12,28 @@ const apiBaseUrl = environment.apiBaseUrl;
 export class EventService {
   private http = inject(HttpClient);
 
-  getEvents(filters?: Record<string, any>): Observable<EventsResponse> {
+  getEvents(filters: EventFilter): Observable<EventsResponse> {
     let params = new HttpParams();
-    if (filters) {
-      Object.keys(filters).forEach(k => {
-        const v = filters[k];
-        if (v === null || v === undefined) return;
-        params = params.set(k, String(v));
-      });
-    }
+    Object.entries(filters).forEach(([k, v]) => {
+      if (v !== null && v !== undefined) {
+        params = params.set(k, v);
+      }
+    });
     return this.http.get<EventsResponse>(`${apiBaseUrl}/Events`, { params })
       .pipe(
         tap(response => console.log('Eventos obtenidos con filtros:', filters, response))
       );
   }
 
-  getEventsAttendee() {
-    return this.http.get<EventsResponse>(`${apiBaseUrl}/Events`)
-    .pipe(
-      tap(response => console.log('Eventos obtenidos:', response))
+  getEventsOrganizer(page: number, pageSize: number) {
+    return this.http.get<EventsResponse>(`${apiBaseUrl}/Events`,
+      {
+        params: {
+          page,
+          pageSize
+        }
+      }
     )
-  }
-
-  getEventsOrganizer() {
-    return this.http.get<EventsResponse>(`${apiBaseUrl}/Events`)
     .pipe(
       tap(res => console.log('Eventos obtenidos organizador:', res))
     )
