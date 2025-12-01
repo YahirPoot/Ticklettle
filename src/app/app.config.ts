@@ -1,7 +1,18 @@
 import { ApplicationConfig, importProvidersFrom, provideBrowserGlobalErrorListeners, provideZoneChangeDetection, isDevMode, APP_INITIALIZER, inject, LOCALE_ID } from '@angular/core';
 import { provideRouter, withHashLocation } from '@angular/router';
 import { SocialLoginModule, SocialAuthServiceConfig, GoogleLoginProvider } from '@abacritt/angularx-social-login';
-
+import { provideEchartsCore } from 'ngx-echarts';
+import * as echarts from 'echarts/core';
+import {
+  BarChart,
+  LineChart
+} from 'echarts/charts';
+import {
+  TooltipComponent,
+  GridComponent,
+  LegendComponent
+} from 'echarts/components';
+import { CanvasRenderer } from 'echarts/renderers';
 
 import { routes } from './app.routes';
 import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
@@ -27,11 +38,21 @@ const socialConfigValue: SocialAuthServiceConfig = {
   onError: (err: any) => console.error(err)
 };
 
+echarts.use([
+  BarChart,
+  LineChart,
+  TooltipComponent,
+  GridComponent,
+  LegendComponent,
+  CanvasRenderer
+])
+
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes, withHashLocation()),
+    provideEchartsCore({ echarts }),
     provideHttpClient(
       withFetch(),
       withInterceptors([
