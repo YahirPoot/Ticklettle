@@ -39,7 +39,7 @@ export class HistoryPageComponent {
         { 
             id: 102, 
             date: new Date('2025-10-24T15:45:00'), 
-            description: 'Recarga de saldo (Visa)', 
+            description: 'Recarga de Saldo (Visa)', 
             amount: 50.00, 
             currency: 'USD', 
             type: 'recharge', 

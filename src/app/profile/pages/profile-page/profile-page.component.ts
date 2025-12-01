@@ -1,9 +1,10 @@
 import { Component, computed, inject, resource } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
-import { RouterLink } from '@angular/router';
+import { RouterLink, Router } from '@angular/router';
 import { AuthService } from '../../../auth/services/auth.service';
-import { DatePipe } from '@angular/common';
+import { DatePipe, CommonModule } from '@angular/common';
 import { ProfileService } from '../../services/profile.service';
+import { ConfirmModalComponent } from '../../../shared/components/confirm-modal/confirm-modal.component'; // 👈
 import { firstValueFrom } from 'rxjs';
 import { ProfileUserResponse } from '../../interfaces/profile-user.interface';
 
@@ -14,12 +15,14 @@ interface CreditData {
 
 @Component({
   selector: 'app-profile-page',
-  imports: [MatIconModule, RouterLink, DatePipe],
+  imports: [MatIconModule, RouterLink, DatePipe, CommonModule,ConfirmModalComponent],
   templateUrl: './profile-page.component.html',
 })
 export class ProfilePageComponent { 
   private authService = inject(AuthService);  
   private profileService = inject(ProfileService);
+  private router = inject(Router);
+
 
   profileUserResource = resource({
     loader: async () => {
@@ -52,4 +55,24 @@ export class ProfilePageComponent {
     if (roles == 0) return 'Asistente';
     return 'Asistente';
   }
+  showDeleteAccountModal = false;
+
+  openDeleteAccountModal() {
+    this.showDeleteAccountModal = true;
+  }
+
+  closeDeleteAccountModal() {
+    this.showDeleteAccountModal = false;
+  }
+
+  async confirmDeleteAccount() {
+    try {
+      await firstValueFrom(this.profileService.deleteAccount());
+      this.authService.logout();
+      this.router.navigate(['/login']);
+    } catch (error) {
+      console.error('Error eliminando cuenta:', error);
+    }
+  }
 }
+

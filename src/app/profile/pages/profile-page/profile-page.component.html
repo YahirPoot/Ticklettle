@@ -115,10 +115,12 @@
             </div>
 
             <!-- Botón Eliminar Cuenta -->
-            <button class="btn btn-ghost btn-sm text-red-500 hover:bg-red-500/10 shrink-0">
+            <button class="btn btn-ghost btn-sm text-red-500 hover:bg-red-500/10 shrink-0"
+                (click)="openDeleteAccountModal()">
                 <mat-icon class="text-lg">delete</mat-icon>
                 Eliminar Cuenta
             </button>
+
 
         </div>
     </div>
@@ -142,7 +144,7 @@
 
             <!-- Apellido -->
             <div class="space-y-1">
-                <label class="text-sm font-medium">Apellido</label>
+                <label class="text-sm font-medium">Apellidos</label>
                 <input 
                     type="text" 
                     [value]="profileUser.value()?.user?.lastName" 
@@ -153,7 +155,7 @@
 
             <!-- Correo -->
             <div class="space-y-1">
-                <label class="text-sm font-medium">Correo</label>
+                <label class="text-sm font-medium">Correo Electrónico</label>
                 <input 
                     type="email" 
                     [value]="profileUser.value()?.user?.email" 
@@ -235,6 +237,17 @@
     }
 
 } <!-- FIN DEL ELSE -->
+<confirm-modal
+    [show]="showDeleteAccountModal"
+    [modalTitle]="'¿Deseas eliminar permanentemente tu cuenta?'"
+    [icon]="'delete'"
+    [iconColor]="'text-red-600'"
+    [confirmText]="'Eliminar cuenta'"
+    [cancelText]="'Cancelar'"
+    (confirm)="confirmDeleteAccount()"
+    (cancel)="closeDeleteAccountModal()">
+</confirm-modal>
+
 
 </div>
 

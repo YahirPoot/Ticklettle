@@ -9,6 +9,12 @@ import { provideServiceWorker } from '@angular/service-worker';
 import { environment } from '../environments/environment.dev';
 import { authInterceptor } from './auth/interceptors/auth.interceptor';
 // import { UserRepositoryService } from './auth/services/user-repository.service';
+import { registerLocaleData } from '@angular/common';
+import localeEs from '@angular/common/locales/es';
+
+registerLocaleData(localeEs);
+
+
 
 const googleClientId = environment.googleClientId;
 
@@ -43,6 +49,7 @@ export const appConfig: ApplicationConfig = {
             enabled: !isDevMode(),
             registrationStrategy: 'registerWhenStable:30000'
           }), 
+    { provide: LOCALE_ID, useValue: 'es-MX' },
       // {
       //   provide: APP_INITIALIZER,
       //   multi: true,
