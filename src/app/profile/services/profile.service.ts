@@ -14,4 +14,8 @@ export class ProfileService {
   getProfileUser() {
     return this.http.get<ProfileUserResponse>(`${apiBaseUrl}/Auth/profile`)
   }
+  deleteAccount() {
+    return this.http.delete('/api/users/me');
+  }
+
 }

@@ -28,7 +28,15 @@
               <input type="text" class="input input-bordered w-full focus:input-neutral mb-2"
                 formControlName="firstName" placeholder="Nombre(s)" required />
                 @if (registerForm.get('firstName')?.touched && registerForm.get('firstName')?.hasError('required')) {
-                  <p class="text-xs text-error mt-1" >Campo Obligatorio</p>
+                  <p class="text-xs text-error mt-1" >Campo obligatorio</p>
+                }
+                @if (registerForm.get('firstName')?.touched && registerForm.get('firstName')?.hasError('minlength')) {
+                  <p class="text-xs text-error mt-1">Debe tener mínimo 2 caracteres</p>
+                }
+
+                <!-- SOLO LETRAS -->
+                @if (registerForm.get('firstName')?.touched && registerForm.get('firstName')?.hasError('pattern')) {
+                  <p class="text-xs text-error mt-1">Solo se permiten letras y espacios</p>
                 }
             </div>
 
@@ -37,7 +45,15 @@
               <input type="text" class="input input-bordered w-full focus:input-neutral mb-2"
                 formControlName="lastName" placeholder="Apellido(s)" required />
                 @if (registerForm.get('lastName')?.touched && registerForm.get('lastName')?.hasError('required')) {
-                  <p class="text-xs text-error mt-1">Campo Obligatorio</p>
+                  <p class="text-xs text-error mt-1">Campo obligatorio</p>
+                }
+                @if (registerForm.get('lastName')?.touched && registerForm.get('lastName')?.hasError('minlength')) {
+                  <p class="text-xs text-error mt-1">Debe tener mínimo 2 caracteres</p>
+                }
+
+                <!-- SOLO LETRAS -->
+                @if (registerForm.get('lastName')?.touched && registerForm.get('lastName')?.hasError('pattern')) {
+                  <p class="text-xs text-error mt-1">Solo se permiten letras y espacios</p>
                 }
             </div>
           </div>
@@ -48,7 +64,7 @@
             <input type="email" class="input input-bordered w-full focus:input-neutral mb-2" formControlName="email"
               placeholder="Correo Electrónico" required />
               @if (registerForm.get('email')?.touched && registerForm.get('email')?.hasError('required') || registerForm.get('email')?.touched && registerForm.get('email')?.hasError('email')) {
-                <p class="text-xs text-error mt-1">Campo Obligatorio o Email inválido</p>
+                <p class="text-xs text-error mt-1">Campo obligatorio o email inválido</p>
               }
           </div>
 
@@ -59,6 +75,12 @@
                 <label class="label label-text font-semibold mb-2">Empresa / Razón social</label>
                 <input type="text" class="input input-bordered w-full focus:input-neutral mb-2" formControlName="company"
                   placeholder="Empresa / Razón social" />
+                  @if (registerForm.get('company')?.touched && registerForm.get('company')?.hasError('minlength')) {
+                    <p class="text-xs text-error mt-1">Debe tener mínimo 3 caracteres</p>
+                  }
+                  @if (registerForm.get('company')?.touched && registerForm.get('company')?.hasError('pattern')) {
+                    <p class="text-xs text-error mt-1">Solo letras, números y espacios</p>
+                  }
               </div>
   
               <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
@@ -67,7 +89,10 @@
                   <input type="text" class="input input-bordered w-full focus:input-neutral mb-2" formControlName="taxId"
                     placeholder="RFC / Tax ID" required />
                     @if (registerForm.get('taxId')?.touched && registerForm.get('taxId')?.hasError('required')) {
-                      <p class="text-xs text-error mt-1">Campo Obligatorio</p>
+                      <p class="text-xs text-error mt-1">Campo obligatorio</p>
+                    }
+                    @if (registerForm.get('taxId')?.touched && registerForm.get('taxId')?.hasError('pattern')) {
+                      <p class="text-xs text-error mt-1">RFC inválido</p>
                     }
                 </div>
   
@@ -76,7 +101,10 @@
                   <input type="text" class="input input-bordered w-full focus:input-neutral mb-2"
                     formControlName="organizingHouseContact" placeholder="Teléfono / contacto" required/>
                     @if (registerForm.get('organizingHouseContact')?.touched && registerForm.get('organizingHouseContact')?.hasError('required')) {
-                      <p class="text-xs text-error mt-1">Campo Obligatorio</p>
+                      <p class="text-xs text-error mt-1">Campo obligatorio</p>
+                    }
+                    @if (registerForm.get('organizingHouseContact')?.touched && registerForm.get('organizingHouseContact')?.hasError('pattern')) {
+                      <p class="text-xs text-error mt-1">Formato de teléfono inválido</p>
                     }
                 </div>
               </div>
@@ -85,6 +113,9 @@
                 <label class="label label-text font-semibold mb-2">Dirección fiscal</label>
                 <input type="text" class="input input-bordered w-full focus:input-neutral mb-2"
                   formControlName="fiscalAddress" placeholder="Dirección fiscal" />
+                  @if (registerForm.get('fiscalAddress')?.touched && registerForm.get('fiscalAddress')?.hasError('minlength')) {
+                    <p class="text-xs text-error mt-1">Debe tener mínimo 6 caracteres</p>
+                  }
               </div>
   
               <div class="form-control">
@@ -92,7 +123,13 @@
                 <input type="text" class="input input-bordered w-full focus:input-neutral mb-2"
                   formControlName="organizingHouseName" placeholder="Nombre de la casa organizadora" required/>
                   @if (registerForm.get('organizingHouseName')?.touched && registerForm.get('organizingHouseName')?.hasError('required')) {
-                    <p class="text-xs text-error mt-1">Campo Obligatorio</p>
+                    <p class="text-xs text-error mt-1">Campo obligatorio</p>
+                  }
+                  @if (registerForm.get('organizingHouseName')?.touched && registerForm.get('organizingHouseName')?.hasError('minlength')) {
+                    <p class="text-xs text-error mt-1">Mínimo 3 caracteres</p>
+                  }
+                  @if (registerForm.get('organizingHouseName')?.touched && registerForm.get('organizingHouseName')?.hasError('pattern')) {
+                    <p class="text-xs text-error mt-1">Solo letras, números y espacios</p>
                   }
               </div>
   
@@ -101,7 +138,10 @@
                 <input type="text" class="input input-bordered w-full focus:input-neutral mb-2"
                   formControlName="organizingHouseAddress" placeholder="Dirección de la casa organizadora" required/>
                   @if (registerForm.get('organizingHouseAddress')?.touched && registerForm.get('organizingHouseAddress')?.hasError('required')) {
-                    <p class="text-xs text-error mt-1">Campo Obligatorio</p>
+                    <p class="text-xs text-error mt-1">Campo obligatorio</p>
+                  }
+                  @if (registerForm.get('organizingHouseAddress')?.touched && registerForm.get('organizingHouseAddress')?.hasError('minlength')) {
+                    <p class="text-xs text-error mt-1">Debe tener mínimo 6 caracteres</p>
                   }
               </div>
   
@@ -117,10 +157,15 @@
                 <input type="password" class="input input-bordered w-full focus:input-neutral mb-2" formControlName="password"
                   placeholder="Contraseña" required />
                   @if (registerForm.get('password')?.touched && registerForm.get('password')?.hasError('required')) {
-                    <p class="text-xs text-error mt-1">Campo Obligatorio</p>
+                    <p class="text-xs text-error mt-1">Campo obligatorio</p>
                   }
                   @if (registerForm.get('password')?.touched && registerForm.get('password')?.hasError('minlength')) {
-                    <p class="text-xs text-error mt-1">La contraseña debe tener al menos 6 caracteres.</p>
+                    <p class="text-xs text-error mt-1">Debe tener al menos 8 caracteres.</p>
+                  }
+                  @if(registerForm.get('password')?.touched && registerForm.get('password')?.hasError('pattern')) {
+                    <p class="text-xs text-error">
+                      Debe tener 1 mayúscula, 1 minúscula, 1 número y 1 carácter especial (! @ # $ % * ?)
+                    </p>
                   }
               </div>
 
@@ -129,7 +174,7 @@
                 <input type="password" class="input input-bordered w-full focus:input-neutral mb-2"
                   formControlName="confirmPassword" placeholder="Confirmar Contraseña" required />
                   @if (registerForm.get('confirmPassword')?.touched && registerForm.get('confirmPassword')?.hasError('required')) {
-                    <p class="text-xs text-error mt-1">Campo Obligatorio</p>
+                    <p class="text-xs text-error mt-1">Campo obligatorio</p>
                   }
                   @if (passwordMismatch) {
                     <p class="text-xs text-warning mt-1">Las contraseñas no coinciden.</p>
@@ -160,11 +205,15 @@
                 <div class="form-control">
                   <label class="label label-text font-semibold mb-2">Género</label>
                   <select class="select select-bordered w-full" formControlName="gender">
-                    <option value="">Seleccionar</option>
+                    <option value="" disabled selected>Seleccionar</option>
                     <option value="male">Masculino</option>
                     <option value="female">Femenino</option>
                     <option value="other">Otro</option>
                   </select>
+                   @if (registerForm.get('gender')?.touched &&
+                    registerForm.get('gender')?.hasError('required')) {
+                    <p class="text-xs text-error mt-1">Selecciona una opción.</p>
+                  }
                 </div>
               </div>
             </div>
@@ -172,21 +221,26 @@
               <div class="form-control">
                 <label class="label label-text font-semibold mb-2">Contraseña <span class="text-xs text-red-400">*</span></label>
                 <input type="password" class="input input-bordered w-full focus:input-neutral mb-2" formControlName="password"
-                  placeholder="Contraseña" />
+                  placeholder="Contraseña" required/>
                   @if (registerForm.get('password')?.touched && registerForm.get('password')?.hasError('required')) {
-                    <p class="text-xs text-error mt-1">Campo Obligatorio</p>
+                    <p class="text-xs text-error mt-1">Campo obligatorio</p>
                   }
                   @if (registerForm.get('password')?.touched && registerForm.get('password')?.hasError('minlength')) {
-                    <p class="text-xs text-error mt-1">La contraseña debe tener al menos 6 caracteres.</p>
+                    <p class="text-xs text-error mt-1">Debe tener al menos 8 caracteres.</p>
+                  }
+                  @if(registerForm.get('password')?.touched && registerForm.get('password')?.hasError('pattern')) {
+                    <p class="text-xs text-error">
+                      Debe tener 1 mayúscula, 1 minúscula, 1 número y 1 carácter especial (! @ # $ % * ?)
+                    </p>
                   }
               </div>
 
               <div class="form-control">
                 <label class="label label-text font-semibold mb-2">Confirmar Contraseña <span class="text-xs text-red-400">*</span></label>
                 <input type="password" class="input input-bordered w-full focus:input-neutral mb-2"
-                  formControlName="confirmPassword" placeholder="Confirmar Contraseña" />
+                  formControlName="confirmPassword" placeholder="Confirmar Contraseña" required/>
                   @if (registerForm.get('confirmPassword')?.touched && registerForm.get('confirmPassword')?.hasError('required')) {
-                    <p class="text-xs text-error mt-1">Campo Obligatorio</p>
+                    <p class="text-xs text-error mt-1">Campo obligatorio</p>
                   }
                   @if (passwordMismatch) {
                     <p class="text-xs text-warning mt-1">Las contraseñas no coinciden.</p>

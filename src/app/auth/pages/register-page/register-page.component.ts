@@ -14,6 +14,15 @@ declare global {
   interface Window { google?: any; }
 }
 
+const NAME_REGEX = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/; 
+const alnumSpacesRegex = /^[a-zA-ZÁÉÍÓÚÜÑáéíóúüñ0-9\s]+$/;
+
+// RFC (física/moral)
+const rfcRegex = /^([A-ZÑ&]{3,4})(\d{6})([A-Z\d]{3})$/;
+
+// Tel. MX 10 dígitos
+const phoneRegex = /^\d{10}$/;
+
 @Component({
   selector: 'app-register-page',
   imports: [RouterLink, ReactiveFormsModule, LoadingComponent],
@@ -33,9 +42,27 @@ export class RegisterPageComponent implements OnInit, OnDestroy {
   registerForm = this.fb.group({
     role: [0],
     email: ['', [Validators.required, Validators.email]],
-    firstName: ['', [Validators.required]],
-    lastName: ['', [Validators.required]],
-    password: ['', [Validators.minLength(6)]],
+    firstName: ['', 
+      [ Validators.required,
+        Validators.minLength(2),
+        Validators.pattern(NAME_REGEX)
+      ]
+  ],
+    lastName: ['', 
+      [ Validators.required,
+        Validators.minLength(2),
+        Validators.pattern(NAME_REGEX)
+      ]
+  ],
+    password: ['', [
+      Validators.required,
+      Validators.minLength(8),
+      Validators.pattern(/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#$%*?]).{8,}$/)]],
+    confirmPassword: ['', [
+      Validators.required,
+      Validators.minLength(8),
+      Validators.pattern(/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#$%*?]).{8,}$/)]],
+    
     // campos organizador
     company: [''],
     taxId: [''],
@@ -46,11 +73,11 @@ export class RegisterPageComponent implements OnInit, OnDestroy {
     organizingHouseTaxData: [''],
     // campos asistente
     dateOfBirth: [null],
-    gender: [''],
+    gender: ['',[ Validators.required,Validators.pattern(/^(male|female|other)$/)]],
     photoUrl: [''],
-    confirmPassword: ['', [Validators.minLength(6)]],
+    
     // Aceptación de políticas (debe ser true)
-    privacyPolicies: [false, [Validators.requiredTrue]]
+    privacyPolicies: [false, Validators.requiredTrue]
   }, { validators: [this.passwordsMatchValidator.bind(this)] });
 
   // Indica si el registro viene de un social login (Google)
@@ -147,11 +174,18 @@ export class RegisterPageComponent implements OnInit, OnDestroy {
     const role = Number(this.registerForm.get('role')?.value) as 0 | 1;
     if (role === 1) {
       // organizador: requerir los campos marcados con asterisco
-      this.registerForm.get('company')?.setValidators([ Validators.minLength(2)]);
-      this.registerForm.get('taxId')?.setValidators([ Validators.required, Validators.minLength(6)]);
-      this.registerForm.get('organizingHouseContact')?.setValidators([ Validators.required ]);
-      this.registerForm.get('organizingHouseName')?.setValidators([ Validators.required ]);
-      this.registerForm.get('organizingHouseAddress')?.setValidators([ Validators.required ]);
+      this.registerForm.get('company')?.setValidators([ Validators.minLength(3),
+      Validators.pattern(alnumSpacesRegex)]);
+      this.registerForm.get('taxId')?.setValidators([ Validators.required,
+      Validators.pattern(rfcRegex)]);
+       this.registerForm.get('fiscalAddress')?.setValidators([
+        Validators.minLength(6)
+      ]);
+      this.registerForm.get('organizingHouseContact')?.setValidators([Validators.required,
+      Validators.pattern(phoneRegex)]);
+      this.registerForm.get('organizingHouseName')?.setValidators([ Validators.required,  Validators.minLength(3),
+      Validators.pattern(alnumSpacesRegex) ]);
+      this.registerForm.get('organizingHouseAddress')?.setValidators([ Validators.required, Validators.minLength(6) ]);
       // limpiar campos de asistente si aplica
       this.registerForm.get('dateOfBirth')?.clearValidators();
       this.registerForm.get('gender')?.clearValidators();
@@ -182,9 +216,17 @@ export class RegisterPageComponent implements OnInit, OnDestroy {
 
   // Getter simple para usar en template
   public get passwordMismatch() {
-    return !!this.registerForm.errors?.['passwordMismatch']
-      || (this.registerForm.get('confirmPassword')?.touched && this.registerForm.get('password')?.value !== this.registerForm.get('confirmPassword')?.value);
-  }
+  const pw = this.registerForm.get('password')?.value;
+  const cp = this.registerForm.get('confirmPassword')?.value;
+  const confirmCtrl = this.registerForm.get('confirmPassword');
+
+  // Si el usuario aún no tocó confirmar → NO mostrar mensaje
+  if (!confirmCtrl?.touched) return false;
+
+  // Mostrar sólo si touched y no coincide
+  return pw !== cp;
+}
+
   setRole(r: UserRole) {
     // this.registerForm.get('role')?.setValue(r);
     this.role = r;
