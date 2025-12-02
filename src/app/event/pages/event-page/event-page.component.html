@@ -58,50 +58,60 @@
     </div>
 }
 @if (featuredEventResource.hasValue()) {
-    <div class="flex flex-col text-base-content">
-        <div class="card bg-base-200 shadow-sm mb-6">
-            <div class="card-body p-4 h-full">
-                <!-- Grid: 1 columna en móvil, 3 columnas en md+; items-stretch para que las columnas ocupen la misma altura -->
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-stretch">
-                    <!-- Col 1: datos del evento -->
-                    <div class="flex flex-col justify-center min-w-0">
-                        <h3 class="card-title text-xl font-bold uppercase truncate">
-                            {{ featuredEvent?.name?.length! > 25 ? (featuredEvent?.name | slice:0:25) + '...' : featuredEvent?.name }}
-                        </h3>
-                        <p class="text-sm text-muted mt-2 line-clamp-3 break-words">{{ featuredEvent?.description }}</p>
-                        <div class="mt-3 text-sm text-muted flex flex-col sm:flex-row sm:items-center sm:gap-4">
-                            <ul>
-                                <li><span class="font-medium">Fecha y Hora:</span> <span class="truncate"> {{ featuredEvent?.dateTime| date: 'short' }}</span></li>
-                                <li><span class="font-medium">Lugar:</span> <span class="truncate"> {{ featuredEvent?.location }}</span></li>
-                            </ul>
-                        </div>
-                    </div>
-                    <!-- Col 2: imagen centrada -->
-                    <div class="flex items-center justify-center">
-                        <figure class="bg-base-100 rounded overflow-hidden shadow-sm w-full max-w-xs md:max-w-none">
-                            <img
-                                [src]="featuredEvent?.imageUrl"
-                                [alt]="featuredEvent?.name"
-                                class="w-full h-40 sm:h-48 md:h-48 object-cover rounded"
-                            />
-                        </figure>
-                    </div>
-                    <!-- Col 3: organizador + botón pegado abajo a la derecha -->
-                    <div class="flex flex-col justify-between items-center md:items-end h-full text-center md:text-right">
-                        <div class="pt-2">
-                            <h4 class="text-lg font-semibold">{{ featuredEvent?.organizingHouse?.name }}</h4>
-                            <p class="text-sm text-muted mt-2">Organizador</p>
-                        </div>
-                        <!-- botón siempre en la parte inferior, alineado a la derecha -->
-                        <div class="w-full flex justify-end">
-                            <button class="btn btn-secondary" [routerLink]="['', 'detail-event', featuredEvent?.eventId]">Ver detalles</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
+  <div class="flex flex-col text-base-content">
+
+    <div class="card bg-base-200 shadow-sm mb-6">
+      <div class="card-body p-0">
+
+        <!-- Layout responsive -->
+        <div class="grid grid-cols-1 md:grid-cols-2">
+
+          <!-- 📌 Imagen (responsiva) -->
+          <figure class="w-full h-30 md:h-64 lg:h-56 overflow-hidden rounded-l-2xl">
+            <img
+              [src]="featuredEvent?.imageUrl"
+              [alt]="featuredEvent?.name"
+              class="w-full h-full object-cover"
+            />
+          </figure>
+
+          <!-- 📌 Datos centrados -->
+          <div class="flex flex-col justify-center items-center p-6 text-center gap-4">
+
+            <h3 class="text-2xl font-bold uppercase">
+              {{ featuredEvent?.name }}
+            </h3>
+
+            <p class="text-sm text-muted line-clamp-4 px-2">
+              {{ featuredEvent?.description }}
+            </p>
+
+            <ul class="text-sm space-y-1">
+              <li>
+                <span class="font-medium">Fecha y Hora:</span>
+                {{ featuredEvent?.dateTime | date:'short' }}
+              </li>
+              <li>
+                <span class="font-medium">Lugar:</span>
+                {{ featuredEvent?.location }}
+              </li>
+            </ul>
+
+            <button
+              class="btn btn-secondary mt-2"
+              [routerLink]="['', 'detail-event', featuredEvent?.eventId]"
+            >
+              Ver detalles
+            </button>
+
+          </div>
+
         </div>
-        <div class="grid grid-cols-1 lg:grid-cols-1 gap-6 w-ful">
-            <event-carousel /> 
-        </div>
+      </div>
     </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-1 gap-6 w-full">
+      <event-carousel />
+    </div>
+  </div>
 }

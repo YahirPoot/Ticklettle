@@ -7,6 +7,8 @@ export interface EventInterface {
     description: string;
     dateTime: string;
     location: string;
+    city: string;
+    state: string;
     type: string;
     status: string;
     imageUrl: string;

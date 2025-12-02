@@ -5,10 +5,11 @@ import { RouterLink } from '@angular/router';
 import { SlicePipe } from '@angular/common';
 import { FavoriteEventService } from '../../services/favorite-event.service';
 import { AuthService } from '../../../auth/services/auth.service';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'event-card',
-  imports: [MatIconModule, RouterLink, SlicePipe],
+  imports: [MatIconModule, RouterLink, SlicePipe, DatePipe],
   templateUrl: './event-card.component.html',
 })
 export class EventCardComponent {

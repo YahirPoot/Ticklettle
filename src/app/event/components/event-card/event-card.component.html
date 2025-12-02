@@ -1,50 +1,60 @@
-<div class="text-base-content">
-    <article class="flex-shrink-0 snap-start basis-full sm:basis-1/2 md:basis-1/3 bg-base-200 rounded-lg p-3 overflow-hidden shadow-sm">
-        <div class="flex items-start gap-4">
-            <div class="flex-1">
-                <p class="text-sm text-gray-600">{{ event().organizingHouse.name }}</p>
-                <h4 class="text-xl font-semibold mt-1">{{ event().name.length > 30 ? (event().name | slice: 0 : 30) + '...' : event().name }}</h4>
-                <p class="text-sm text-gray-600 mt-2 line-clamp-3">{{ event().description.length > 2 ? (event().description | slice: 0 : 20) + '...' : event().description || 'Sin Descripción'}} </p>
-            </div>
-            <figure class="w-20 h-20 md:w-24 md:h-24 flex-shrink-0 bg-base-200">
-                @if (event().imageUrl) {
-                    <img [src]="event().imageUrl" alt="Evento {{ event().name }}" class="w-full h-full object-cover rounded-md bg-gray-200" />
-                } @else {
-                    <div class="flex items-center justify-center h-full font-bold text-base-content uppercase text-lg">
-                        {{ event().name.charAt(0) }}
-                    </div>
-                }
-            </figure>
-        </div>
+<!-- ...existing code... -->
+<div class="card bg-base-100 w-96 shadow-sm overflow-hidden">
+  @if (event().imageUrl) {
+    <figure class="h-48 w-full bg-gray-100">
+      <img
+        [src]="event().imageUrl"
+        [alt]="'Imagen de ' + event().name"
+        class="w-full h-full object-cover"
+        decoding="async"
+        loading="lazy"
+      />
+    </figure>
+  } @else {
+    <figure class="h-48 w-full bg-gray-200 flex items-center justify-center text-3xl font-bold">
+      <span aria-hidden="true">{{ event().name.charAt(0) }}</span>
+    </figure>
+  }
 
-        <div class="mt-3 px-1 pb-1 flex items-center justify-between">
-            <a class="btn btn-secondary btn-sm" [routerLink]="['', 'detail-event', event().eventId]">Ver detalles</a>
+  <div class="card-body p-4">
+    <h2 class="card-title text-lg font-semibold leading-tight">
+      {{ event().name.length > 60 ? (event().name | slice:0:60) + '...' : event().name }}
+    </h2>
 
-            @if (showFavorite()) {
-                <button
-                    [disabled]="!isAuthenticated()"
-                    class="p-1 rounded-full border border-base-100 shadow-sm"
-                    aria-label="Favorito"
-                    (click)="toggleFavorite($event)">
-                    @if (isFavorited()) {
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-600" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-                        </svg>
-                    }
-                    @if (!isFavorited()) {
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-800" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                            <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 1 0-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8z"/>
-                        </svg>
-                    }
-                </button>
-            } @else if (showDelete()) {
-                <button
-                    class="btn btn-error btn-sm"
-                    aria-label="Eliminar evento"
-                    (click)="remove.emit(event().eventId)">
-                    <mat-icon>delete</mat-icon>
-                </button>
-            }
+    <div class="text-sm text-gray-600 mt-1 space-y-1">
+      @if (event().location) {
+        <div class="truncate">{{ event().location }}</div>
+      } @else if (event().city) {
+        <div class="truncate">{{ event().city }}{{ event().state ? ', ' + event().state : '' }}</div>
+      } @else {
+        <div class="truncate">Ubicación no disponible</div>
+      }
+
+      @if (event().dateTime) {
+        <div class="text-xs text-gray-500">
+          {{ event().dateTime | date:'mediumDate' }} {{ event().dateTime ? (' ' + (event().dateTime | date:'shortTime')) : '' }}
         </div>
-    </article>
+      }
+    </div>
+
+    <div class="card-actions justify-between items-center mt-4">
+      <a class="btn btn-secondary btn-sm" [routerLink]="['', 'detail-event', event().eventId]" role="button" aria-label="Ver detalles de {{ event().name }}">
+        Ver detalles
+      </a>
+
+      <button
+        class="btn btn-ghost btn-sm p-2 rounded-full"
+        aria-label="Favorito"
+        (click)="toggleFavorite($event)"
+        [attr.aria-pressed]="isFavorited()"
+        type="button"
+      >
+      <mat-icon aria-hidden="true" [style.color]="isFavorited() ? '#ef4444' : '#6b7280'">
+        {{ isFavorited() ? 'favorite' : 'favorite_border' }}
+      </mat-icon>
+
+      </button>
+    </div>
+  </div>
 </div>
+<!-- ...existing code... -->
