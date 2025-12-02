@@ -1,4 +1,4 @@
-import { Component, inject, resource } from '@angular/core';
+import { Component, inject, resource, signal } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { TicketService } from '../../services/ticket.service';
 import { ActivatedRoute } from '@angular/router';
@@ -13,6 +13,9 @@ export class DetailTicketPageComponent {
   private ticketService = inject(TicketService);
   private activatedRoute = inject(ActivatedRoute);
 
+  // Signal para manejar el estado de carga al agregar a Google Wallet
+  isAddingToWallet = signal(false);
+
   ticketId: number = this.activatedRoute.snapshot.params['ticketId'];
 
   ticketResource = resource({
@@ -22,11 +25,9 @@ export class DetailTicketPageComponent {
   get ticketDetails() {
     return this.ticketResource.value();
   }
-  // ticketDetails = {
-  //   organizer: 'Casa Organizadora',
-  //   type: 'Acceso Zona Platinum',
-  //   dateAndTime: 'Fecha y Hora', // Esto podría ser '2025-10-13 23:00'
-  //   location: 'Ubicación', // Esto podría ser 'Auditorio Central'
-  //   qrPlaceholder: 'https://placehold.co/256x256/ffffff/000000?text=QR', // Placeholder para el QR
-  // };
+
+  // Método para manejar la acción de agregar a Google Wallet
+  addToGoogleWallet() {
+    this.isAddingToWallet.set(true);
+  }
 }

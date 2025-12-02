@@ -14,7 +14,7 @@ export class PaymentService {
   private http = inject(HttpClient);
 
   createPaymentIntent(requestPayment: RequestPaymentInterface) {
-    return this.http.post<{ paymentIntentId: string, clientSecret: string }>(`${apiBaseUrl}/Payments/create-payment-intent`, requestPayment)
+    return this.http.post<{ paymentIntentId: string, clientSecret: string, paymentId: number }>(`${apiBaseUrl}/Payments/create-payment-intent`, requestPayment)
       .pipe(
         tap(response => console.log('Payment Intent creado:', response))
       );

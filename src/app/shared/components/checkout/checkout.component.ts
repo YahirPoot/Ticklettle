@@ -38,6 +38,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
 
   clientSecret: string | null = null;
   paymentIntentId: string | null = null;
+  paymentId: number | null = null;
 
   loading = signal(false);
   error = signal<string | null>(null);
@@ -79,6 +80,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     if (savedIntent) {
       this.clientSecret = savedIntent.clientSecret;
       this.paymentIntentId = savedIntent.paymentIntentId;
+      this.paymentId = savedIntent.paymentId;
       console.log('Restored saved payment intent from storage:', savedIntent);
     }
 
@@ -100,8 +102,9 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         const res = await firstValueFrom(this.paymentService.createPaymentIntent(req));
         this.clientSecret = res.clientSecret;
         this.paymentIntentId = res.paymentIntentId;
+        this.paymentId = res.paymentId;
         console.log('Payment Intent creado:', res); 
-        this.checkoutService.savePaymentIntent(this.clientSecret, this.paymentIntentId);
+        this.checkoutService.savePaymentIntent(this.clientSecret, this.paymentIntentId, this.paymentId);
       }
     }
     catch (err) {
@@ -191,8 +194,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     this.loading.set(true);
     try {
       // si quieres intentar cancelar el PaymentIntent en backend, descomenta y usa paymentService.cancelPaymentIntent
-      if (this.paymentIntentId && typeof this.paymentService.cancelPaymentIntent === 'function') {
-        await firstValueFrom(this.paymentService.cancelPaymentIntent(this.paymentIntentId));
+      if (this.paymentId && typeof this.paymentService.deletePaymentId === 'function') {
+        await firstValueFrom(this.paymentService.deletePaymentId(this.paymentId));
         console.log('Payment Intent cancelado:', this.paymentIntentId);
       }
 

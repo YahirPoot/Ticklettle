@@ -20,6 +20,7 @@ export interface ResponseItemPaymentInterface {
 }
 
 export interface PaymentIntentResponse {
+    paymentId: number;
     paymentIntentId: string;
     status: string,
     amount: number,

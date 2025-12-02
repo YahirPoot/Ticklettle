@@ -47,19 +47,19 @@ export class CheckoutService {
     sessionStorage.clear();
   }
 
-  savePaymentIntent(clientSecret: string, paymentIntentId: string) {
+  savePaymentIntent(clientSecret: string, paymentIntentId: string, paymentId: number) {
     try {
-      sessionStorage.setItem(STORAGE_KEY_INTENT, JSON.stringify({ clientSecret, paymentIntentId }));
+      sessionStorage.setItem(STORAGE_KEY_INTENT, JSON.stringify({ clientSecret, paymentIntentId, paymentId }));
     } catch { 
       console.log('Could not store payment intent in sessionStorage');
     }
   }
 
-  getSavedPaymentIntent(): { clientSecret: string; paymentIntentId: string } | null {
+  getSavedPaymentIntent(): { clientSecret: string; paymentIntentId: string; paymentId: number } | null {
     try {
       const raw = sessionStorage.getItem(STORAGE_KEY_INTENT);
       if (!raw) return null;
-      return JSON.parse(raw) as { clientSecret: string; paymentIntentId: string };
+      return JSON.parse(raw) as { clientSecret: string; paymentIntentId: string; paymentId: number };
     } catch {
       console.log('Could not parse payment intent from sessionStorage');
       return null;

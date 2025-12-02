@@ -76,12 +76,12 @@
     <div class="card bg-base-200 shadow-sm">
         <div class="grid grid-cols-1 md:grid-cols-12 gap-0 md:gap-0">
             <!-- 1) Imagen del evento -->
-            <figure class="md:col-span-5 h-48 bg-base-300 rounded-l-lg">
+            <figure class="md:col-span-5 h-48 bg-base-300 rounded-l-2xl">
                 @if (event?.imageUrl) {
                     <img
                         [src]="event?.imageUrl"
                         [alt]="event?.name"
-                        class="w-full h-48 sm:h-64 md:h-full object-cover rounded-l-2xl sm:rounded-2xl"
+                        class="w-full h-48 sm:h-64 md:h-full object-cover rounded-l-2xl"
                     /> 
                 } @else {
                     <div class="flex items-center justify-center text-lg uppercase bg-base-300 h-full w-full">
@@ -100,7 +100,7 @@
                         {{ event?.dateTime| date: 'MMM': '' : 'es' }}
                     </div>
                     <div class="text-4xl font-extrabold leading-none my-1">
-                        {{ event?.dateTime | date:'dd' }}
+                        {{ event?.dateTime | date:'dd': 'es' }}
                     </div>
                     <div class="text-xs opacity-70">
                         {{ event?.dateTime | date:'yyyy' }}
@@ -121,7 +121,7 @@
                     <div class="flex flex-col md:flex-row gap-2 md:gap-4 divide-y md:divide-y-0 md:divide-x divide-base-300 justify-center items-center">
                         <div class="py-2 md:py-0 md:pr-4">
                             <span class="text-sm opacity-70 block">Hora</span>
-                            <span class="text-lg font-medium">{{ event?.dateTime | date:'HH:mm' }}</span>
+                            <span class="text-lg font-medium">{{ event?.dateTime | date:'HH:mm': 'es' }}</span>
                         </div>
                         <div class="py-2 md:py-0 md:pl-4">
                             <span class="text-sm opacity-70 block">Artista</span>

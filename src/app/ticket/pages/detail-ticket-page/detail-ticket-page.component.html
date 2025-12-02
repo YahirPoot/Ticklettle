@@ -43,11 +43,19 @@
             </div>
 
             <div class="flex justify-center">
-                <button class="btn btn-accent rounded-full text-base font-semibold px-6 py-2">
-                    <div class="flex items-center gap-2">
-                        <span>Agregar a Google Wallet</span>
-                        <mat-icon>wallet</mat-icon>
-                    </div>
+                <button
+                    class="btn btn-ghost p-0 rounded-full"
+                    aria-label="Agregar a Google Wallet"
+                    (click)="addToGoogleWallet()"
+                    [disabled]="isAddingToWallet()"
+                >
+                    <img
+                        src="assets/google-wallet/es419_add_to_google_wallet_wallet-button.png"
+                        alt="Agregar a Google Wallet"
+                        class="w-full h-auto max-w-[220px] block"
+                        decoding="async"
+                        loading="lazy"
+                    />
                 </button>
             </div>
         </div>
