@@ -20,9 +20,19 @@
                             placeholder="Nombre del evento" 
                             formControlName="name"
                             class="input input-bordered w-full mt-1" 
+                            maxlength="100" 
                         >
-                        @if (eventForm.get('name')?.touched && eventForm.get('name')?.invalid) {
+                        
+                        @if (eventForm.get('name')?.touched && eventForm.get('name')?.hasError('required')) {
                             <p class="text-sm text-error mt-1">Campo obligatorio</p>
+                        }
+                        
+                        @if (eventForm.get('name')?.touched && eventForm.get('name')?.hasError('minlength')) {
+                            <p class="text-sm text-error mt-1">Debe tener al menos 3 caracteres.</p>
+                        }
+                        
+                        @if (eventForm.get('name')?.value?.length === 100) {
+                            <p class="text-sm text-error mt-1">Máximo 100 caracteres alcanzado.</p>
                         }
                     </label>
 
@@ -34,8 +44,13 @@
                             rows="4" 
                             placeholder="Descripción breve"
                             class="textarea textarea-bordered w-full mt-1" 
-                            aria-label="Descripción del evento">
-                        </textarea>
+                            aria-label="Descripción del evento"
+                            maxlength="300"
+                        ></textarea>
+                        
+                        @if (eventForm.get('description')?.value?.length === 300) {
+                            <p class="text-sm text-error mt-1">Máximo 300 caracteres alcanzado.</p>
+                        }
                     </label>
 
                     <!-- Ubicación -->
@@ -43,16 +58,24 @@
                         <label class="block">
                             <span class="text-sm font-medium text-gray-500">Ciudad <span class="text-sm text-red-400">*</span></span>
                             <input type="text" formControlName="city" class="input input-bordered w-full mt-1" placeholder="Ciudad" />
-                            @if (eventForm.get('city')?.touched && eventForm.get('city')?.invalid) {
+                            
+                            @if (eventForm.get('city')?.touched && eventForm.get('city')?.hasError('required')) {
                                 <p class="text-sm text-error mt-1">Campo obligatorio</p>
+                            }
+                            
+                            @if (eventForm.get('city')?.touched && !eventForm.get('city')?.hasError('required') && eventForm.get('city')?.hasError('minlength')) {
+                                <p class="text-sm text-error mt-1">Debe tener al menos 4 caracteres.</p>
                             }
                         </label>
 
                         <label class="block">
                             <span class="text-sm font-medium text-gray-500">Estado / Provincia <span class="text-sm text-red-400">*</span></span>
                             <input type="text" formControlName="state" class="input input-bordered w-full mt-1" placeholder="Estado" />
-                            @if (eventForm.get('state')?.touched && eventForm.get('state')?.invalid) {
+                            @if (eventForm.get('state')?.touched && eventForm.get('state')?.hasError('required')) {
                                 <p class="text-sm text-error mt-1">Campo obligatorio</p>
+                            }
+                            @if (eventForm.get('state')?.touched && !eventForm.get('state')?.hasError('required') && eventForm.get('state')?.hasError('minlength')) {
+                                <p class="text-sm text-error mt-1">Debe tener al menos 6 caracteres.</p>
                             }
                         </label>
 
@@ -65,22 +88,32 @@
                                 placeholder="Lugar o dirección" 
                                 formControlName="location"
                                 class="input input-bordered w-full mt-1">
-                            @if (eventForm.get('location')?.touched && eventForm.get('location')?.invalid) {
-                                <p class="text-sm text-error mt-1">Campo obligatorio</p>
+                            @if (eventForm.get('location')?.touched && eventForm.get('location')?.hasError('required')) {
+                                <p class="text-sm text-error mt-1">Campo obligatorio.</p>
                             }
+                            @if (eventForm.get('location')?.touched && eventForm.get('location')?.hasError('minlength')) {
+                                <p class="text-sm text-error mt-1">Debe ser más específica (mínimo 6 caracteres).</p>
+                            }
+
                         </label>
                         <label class="block">
                             <span class="text-sm font-medium text-gray-500">Código postal <span class="text-sm text-red-400">*</span></span>
                             <input type="text" formControlName="postalCode" class="input input-bordered w-full mt-1" placeholder="Postal" />
-                            @if (eventForm.get('postalCode')?.touched && eventForm.get('postalCode')?.invalid) {
-                                <p class="text-sm text-error mt-1">Campo obligatorio</p>
+                            @if (eventForm.get('postalCode')?.touched && eventForm.get('postalCode')?.hasError('required')) {
+                                <p class="text-sm text-error mt-1">Campo obligatorio.</p>
+                            }
+                            @if (eventForm.get('postalCode')?.touched && eventForm.get('postalCode')?.hasError('pattern')) {
+                                <p class="text-sm text-error mt-1">Debe contener exactamente 5 dígitos.</p>
                             }
                         </label>
                         <label class="block">
                             <span class="text-sm font-medium text-gray-500">Ubicación (lugar) <span class="text-sm text-red-400">*</span></span>
                             <input type="text" formControlName="ubication" class="input input-bordered w-full mt-1" placeholder="Ubicación" />
-                            @if (eventForm.get('ubication')?.touched && eventForm.get('ubication')?.invalid) {
-                                <p class="text-sm text-error mt-1">Campo obligatorio</p>
+                            @if (eventForm.get('ubication')?.touched && eventForm.get('ubication')?.hasError('required')) {
+                                <p class="text-sm text-error mt-1">Campo obligatorio.</p>
+                            }
+                            @if (eventForm.get('ubication')?.touched && eventForm.get('ubication')?.hasError('minlength')) {
+                                <p class="text-sm text-error mt-1">Debe tener al menos 6 caracteres.</p>
                             }
                         </label>
                     </div>
@@ -107,8 +140,9 @@
 
                     <!-- Tipo -->
                     <label class="block">
-                        <span class="text-sm font-medium text-gray-500">Tipo</span>
+                        <span class="text-sm font-medium text-gray-500">Tipo<span class="text-sm text-red-400">*</span></span>
                         <select formControlName="type" class="select input-bordered w-full mt-1" aria-label="Tipo del evento">
+                            <option value="" disabled selected> Seleccione un tipo </option> 
                             <option value="Gratis">Gratis</option>
                             <option value="Pago">Pago</option>
                         </select>
@@ -121,10 +155,15 @@
                         <span class="text-sm font-medium text-gray-500">Capacidad total (tope) <span class="text-sm text-red-400">*</span></span>
                         <input type="number" min="0" formControlName="capacity" class="input input-bordered w-full mt-1">
                         <p class="text-xs text-warning mt-1">La suma de tickets no puede exceder esta cifra.</p>
-                        @if (eventForm.get('capacity')?.touched && eventForm.get('capacity')?.invalid) {
-                            <p class="text-sm text-error mt-1">Campo obligatorio.</p>
+                        
+                        @if (eventForm.get('capacity')?.touched && eventForm.get('capacity')?.hasError('required')) {
+                            <p class="text-sm text-error mt-1">Campo obligatorio</p>
                         }
-                    </label>
+                        
+                        @if (eventForm.get('capacity')?.touched && eventForm.get('capacity')?.hasError('min')) {
+                            <p class="text-sm text-error mt-1">Debe ser un número positivo (al menos 1)</p>
+                        }
+                        </label>
                 </div>
             </div>
 
@@ -204,11 +243,24 @@
                                 <label class="block text-xs text-gray-500">Precio</label>
                                 <input type="number" min="0" step="0.01" formControlName="ticketPrice"
                                     class="input input-bordered w-full mt-1" />
+                                @if (ticket.get('ticketPrice')?.touched && ticket.get('ticketPrice')?.hasError('required')) {
+                                    <p class="text-xs text-error mt-1">El precio es obligatorio.</p>
+                                }
+                                @if (ticket.get('ticketPrice')?.touched && ticket.get('ticketPrice')?.hasError('min')) {
+                                    <p class="text-xs text-error mt-1">Debe ser mayor a 0</p>
+                                }
                             </div>
     
                             <div class="col-span-3">
                                 <label class="block text-xs text-gray-500">Cantidad</label>
                                 <input type="number" min="0" class="input input-bordered w-full" formControlName="quantity" />
+                                @if (ticket.get('quantity')?.touched && ticket.get('quantity')?.hasError('required')) {
+                                    <p class="text-xs text-error mt-1">La cantidad es obligatoria</p>
+                                }
+                                @if (ticket.get('quantity')?.touched && ticket.get('quantity')?.hasError('min')) {
+                                    <p class="text-xs text-error mt-1">Debe ser al menos 1</p>
+                                }
+
                             </div>
     
                             <div class="col-span-1">
@@ -263,6 +315,14 @@
                                 <label class="block">
                                     <span class="text-sm font-medium text-gray-500">Nombre</span>
                                     <input type="text" formControlName="name" class="input input-bordered w-full mt-1" />
+                                    <div class="h-2"> 
+                                        @if (product.get('name')?.touched && product.get('name')?.hasError('required')) {
+                                            <p class="text-xs text-error mt-1">El nombre es obligatorio.</p>
+                                        }
+                                        @if (product.get('name')?.touched && product.get('name')?.hasError('minlength')) {
+                                            <p class="text-xs text-error mt-1">Mínimo 3 caracteres.</p>
+                                        }
+                                    </div>
                                 </label>
                             </div>
 
@@ -270,6 +330,14 @@
                                 <label class="block">
                                     <span class="text-sm font-medium text-gray-500">Precio</span>
                                     <input type="number" min="0" step="0.01" formControlName="productPrice" class="input input-bordered w-full mt-1" />
+                                    <div class="h-2"> 
+                                        @if (product.get('productPrice')?.touched && product.get('productPrice')?.hasError('required')) {
+                                            <p class="text-xs text-error mt-1">El precio es obligatorio.</p>
+                                        }
+                                        @if (product.get('productPrice')?.touched && product.get('productPrice')?.hasError('min')) {
+                                            <p class="text-xs text-error mt-1">Debe ser mayor a 0</p>
+                                        }
+                                    </div>                                                                                                                                                                                                                                                                                                                                               
                                 </label>
                             </div>
 
@@ -277,6 +345,14 @@
                                 <label class="block">
                                     <span class="text-sm font-medium text-gray-500">Stock</span>
                                     <input type="number" min="0" formControlName="stock" class="input input-bordered w-full mt-1" />
+                                    <div class="h-2"> 
+                                        @if (product.get('stock')?.touched && product.get('stock')?.hasError('required')) {
+                                            <p class="text-xs text-error mt-1">El stock es obligatorio.</p>
+                                        }
+                                        @if (product.get('stock')?.touched && product.get('stock')?.hasError('min')) {
+                                            <p class="text-xs text-error mt-1">Debe ser al menos 0</p>
+                                        }   
+                                    </div>
                                 </label>
                             </div>
 

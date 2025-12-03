@@ -10,6 +10,31 @@ import { LoadingModalService } from '../../../../shared/services/loading-modal.s
 import { CreateEventFormValue } from '../../../interfaces';
 import { CreateEventUseCase } from '../../../use-cases/create-event.usecase';
 import { HeaderBackComponent } from '../../../../shared/components/header-back/header-back.component';
+// 👉 NO LO PONGAS DENTRO DE LA CLASE
+import { AbstractControl, ValidationErrors, FormGroup } from '@angular/forms';
+
+function decimalPriceValidator(control: AbstractControl): ValidationErrors | null {
+  if (control.value === null || control.value === '') return null;
+  return /^\d+(\.\d{1,2})?$/.test(control.value) ? null : { priceFormat: true };
+}
+
+function positiveIntValidator(control: AbstractControl): ValidationErrors | null {
+  if (control.value === null || control.value === '') return null;
+  return /^[1-9]\d*$/.test(control.value) ? null : { positiveInt: true };
+}
+
+function ticketCapacityValidator(control: AbstractControl): ValidationErrors | null {
+  const form = control as FormGroup;
+  const tickets = form.get('tickets')?.value || [];
+  const capacity = Number(form.get('capacity')?.value || 0);
+
+  const total = tickets.reduce(
+    (acc: number, t: any) => acc + Number(t.quantity),
+    0
+  );
+
+  return total > capacity ? { capacityExceeded: true } : null;
+}
 
 @Component({
   selector: 'app-create-event-page',
@@ -38,33 +63,34 @@ export class CreateEventPageComponent implements OnInit {
   productPreviews: string[] = [];
 
   eventForm = this.fb.group({
-    name: ['', [Validators.required, Validators.minLength(3)]],
-    description: ['', [Validators.maxLength(500)]],
-    location: ['', Validators.required],
-    city: ['', Validators.required],
-    state: ['', Validators.required],
-    postalCode: ['', Validators.required],
-    ubication: [''],
+    name: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(50),Validators.pattern(/\S/)]],
+    description: ['', [Validators.maxLength(300)]],
+    location: ['',[ Validators.required, Validators.minLength(6), Validators.maxLength(150)]],
+    city: ['', [Validators.required, Validators.minLength(4)]],
+    state: ['', [Validators.required, Validators.minLength(6)]],
+    postalCode: ['', [Validators.required, Validators.pattern(/^\d{5}$/)]
+],
+    ubication: ['', [Validators.required,  Validators.minLength(6), Validators.maxLength(80)]],
     status: ['Activo', Validators.required],
     organizingHouseId: [null],
     imageUrl: [''],
     tags: [[] as string[]],
     date: ['', Validators.required],
     time: ['', Validators.required],
-    type: ['Gratis', Validators.required],
-    capacity: [null, [Validators.required, Validators.min(0)]],
+    type: ['',Validators.required],
+    capacity: [null, [Validators.required, Validators.min(1)]],
     tickets: this.fb.array([]),
     products: this.fb.array([]),
     sellMerch: [false],
     postEventContent: [false]
-  });
+  }, { validators: [ticketCapacityValidator] });
 
   constructor() {}
 
   ngOnInit(): void {
     this.initializeFormSubscriptions();
   }
-
+  
   private initializeFormSubscriptions() {
     // reglas cuando cambia tipo Gratis / Pago
     this.eventForm.get('type')?.valueChanges
@@ -108,18 +134,33 @@ export class CreateEventPageComponent implements OnInit {
   }
 
   addTicketType() {
-    const firstAvailable = this.ticketTypes.find(
-      t => !this.selectedTicketTypes().includes(t.value)
-    )?.value ?? 'general';
+  const firstAvailable = this.ticketTypes.find(
+    t => !this.selectedTicketTypes().includes(t.value)
+  )?.value ?? 'general';
 
-    this.tickets.push(
-      this.fb.group({
-        type: [firstAvailable],
-        ticketPrice: [0, Validators.min(0)],
-        quantity: [0, Validators.min(0)]
-      })
-    );
-  }
+  this.tickets.push(
+    this.fb.group({
+      type: [firstAvailable, Validators.required],
+      ticketPrice: [
+        null,
+        [
+          Validators.required,
+          Validators.min(0.01),
+          decimalPriceValidator
+        ]
+      ],
+      quantity: [
+        null,
+        [
+          Validators.required,
+          Validators.min(1),
+          positiveIntValidator
+        ]
+      ],
+    })
+  );
+}
+
 
   removeTicketType(idx: number) {
     if (this.tickets.length > 1) this.tickets.removeAt(idx);
@@ -153,20 +194,35 @@ export class CreateEventPageComponent implements OnInit {
   }
 
   addProduct() {
-    this.products.push(
-      this.fb.group({
-        id: [this.nextProductId++],
-        name: [''],
-        description: [''],
-        productPrice: [0, Validators.min(0)],
-        stock: [0, Validators.min(0)],
-        imageUrl: ['']
-      })
-    );
+  this.products.push(
+    this.fb.group({
+      id: [this.nextProductId++],
+      name: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(100)]],
+      description: [''],
+      productPrice: [
+        null,
+        [
+          Validators.required,
+          Validators.min(0.01),
+          decimalPriceValidator
+        ]
+      ],
+      stock: [
+        null,
+        [
+          Validators.required,
+          Validators.min(1),
+          positiveIntValidator
+        ]
+      ],
+      imageUrl: ['']
+    })
+  );
 
-    this.productFiles.push(null);
-    this.productPreviews.push('');
-  }
+  this.productFiles.push(null);
+  this.productPreviews.push('');
+}
+
 
   removeProduct(idx: number) {
     this.products.removeAt(idx);
@@ -243,6 +299,13 @@ export class CreateEventPageComponent implements OnInit {
   }
 
   async onSubmit() {
+    if (this.eventForm.hasError('capacityExceeded')) {
+  return this.notification.showNotification(
+    'La suma de boletos supera la capacidad del evento',
+    'error'
+  );
+}
+
     if (this.hasDuplicateTicketTypes()) {
       return this.notification.showNotification('Hay tipos de boleto duplicados.', 'error');
     }
