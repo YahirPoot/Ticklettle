@@ -9,3 +9,4 @@ export interface ResponseTicketInterface{
     ticketTypeId: number,
     entry: null, 
 }
+

@@ -131,7 +131,7 @@
                   <button class="btn btn-ghost btn-sm btn-square" title="Editar">
                     <mat-icon>edit</mat-icon>
                   </button>
-                  <button class="btn btn-ghost btn-sm btn-square text-error" title="Eliminar" (click)="confirmDeleteProduct(itemSale)">
+                  <button class="btn btn-ghost btn-sm btn-square text-error" title="Eliminar" (click)="openConfirm(itemSale.productId)">
                     <mat-icon>delete</mat-icon>
                   </button>
                 </div>
@@ -270,3 +270,14 @@
     <span>{{ filterWarning() }}</span>
   </div>
 }
+
+<confirm-modal 
+  [show]="showConfirmDelete()"
+  [modalTitle]="'¿Seguro que desea eliminar el prodcuto?'"
+  icon="delete"
+  iconColor="text-red-600"
+  confirmText="Eliminar"
+  cancelText="Cancelar"
+  (confirm)="confirmDelete()"
+  (cancel)="cancelConfirm()"
+/>

@@ -90,8 +90,9 @@
                                 <h4 class="text-lg font-semibold truncate">
                                     {{ event.name.length > 13 ? (event.name | slice: 0 : 13) + '...' : event.name }}
                                 </h4>
-                                <p class="text-sm mt-1 truncate">{{ event.dateTime | date:'dd/MM/yyyy HH:mm' }}</p>
-                                <p class="text-sm mt-1 truncate">{{ event.location }}</p>
+                                <p class="text-sm mt-1 truncate">{{ event.dateTime | date:'dd/MM/yyyy' }}</p>
+                                <p class="text-sm mt-1 truncate">{{ event.dateTime | date:'HH:mm' : '': 'es' }}</p>
+                                <p class="text-sm mt-1 truncate">{{ event.city }}</p>
                                 <p class="text-sm text-gray-600 mt-3 line-clamp-3 min-w-0">
                                     {{ (event.description.length > 16 ? (event.description | slice: 0 : 16) + '...' : event.description) ?? 'Sin descripción' }}
                                 </p>

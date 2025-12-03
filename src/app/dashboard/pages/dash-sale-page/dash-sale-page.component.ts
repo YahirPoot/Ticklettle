@@ -7,11 +7,13 @@ import { ProductInterface } from '../../../product/interfaces/product.interface'
 import { ProductFilterRequest, ProductFilter, ProductSpecialFilter } from '../../../product/interfaces';
 import { PaginationComponent } from '../../../shared/components/pagination/pagination.component';
 import { MatIconModule } from "@angular/material/icon";
+import { ConfirmModalComponent } from '../../../shared/components/confirm-modal/confirm-modal.component';
+import { NotificationService } from '../../../shared/services/notification.service';
 
 @Component({
   selector: 'app-dash-sale-page',
   standalone: true,
-  imports: [PaginationComponent, MatIconModule],
+  imports: [PaginationComponent, MatIconModule, ConfirmModalComponent],
   templateUrl: './dash-sale-page.component.html',
 })
 export class DashSalePageComponent {
@@ -19,16 +21,22 @@ export class DashSalePageComponent {
   private productService = inject(ProductService);
   paginationService = inject(PaginationService);
   private profileService = inject(ProfileService);
+  private notificationService = inject(NotificationService);
 
   organizerId = signal<number | null>(null);
   sales = signal<ProductInterface[]>([]);
   isLoading = signal(false);
   error = signal<string | null>(null);
 
-  // ⚠️ Mensaje de advertencia si no ingresó filtros
+  // Mensaje de advertencia si no ingresó filtros
   filterWarning = signal<string>('');
 
-  // ❗ Filtros TEMPORALES (inputs)
+
+  // Signla para el modal de eleimnación den producto
+  showConfirmDelete = signal(false);
+  selectedToDelete = signal<number | null>(null);
+
+  // Filtros TEMPORALES (inputs)
   tempFilters = signal<ProductFilterRequest>({
     page: 1,
     pageSize: 10,
@@ -39,7 +47,7 @@ export class DashSalePageComponent {
     specialFilter: {} as ProductSpecialFilter
   });
 
-  // ❗ Filtros APLICADOS (los que sí se envían al backend)
+  // Filtros APLICADOS (los que sí se envían al backend)
   appliedFilters = signal<ProductFilterRequest>({
     page: 1,
     pageSize: 10,
@@ -197,27 +205,18 @@ export class DashSalePageComponent {
     });
   }
 
-  confirmDeleteProduct(product: ProductInterface) {
-    const id = (product as any).productId ?? (product as any).id ?? null;
-    if (!id) {
-      console.warn('No product id found for', product);
-      return;
-    }
-    const ok = window.confirm('¿Seguro que deseas eliminar este producto?');
-    if (!ok) return;
-    this.deleteProduct(id);
-  }
-
   private deleteProduct(productId: number) { 
     this.isLoading.set(true);
     this.productService.deleteProduct(productId).subscribe({
       next: () => {
         // recargar página actual
+        this.notificationService.showNotification('Producto eliminado correctamente.', 'success');
         this.loadProducts(this.paginationService.page());
       },
       error: (err) => {
         console.error('Error eliminando producto', err);
         this.error.set('Error eliminando producto.');
+        this.notificationService.showNotification('Error eliminando el producto. Intenta de nuevo más tarde.', 'error');
         this.isLoading.set(false);
       }
     });
@@ -225,5 +224,22 @@ export class DashSalePageComponent {
 
   onPageChange(newPage: number) {
     this.paginationService.setPage(newPage);
+  }
+
+  openConfirm(productId: number) {
+    this.selectedToDelete.set(productId);
+    this.showConfirmDelete.set(true);
+  }
+
+  cancelConfirm() {
+    this.selectedToDelete.set(null);
+    this.showConfirmDelete.set(false);
+  }
+
+  confirmDelete() {
+    const id = this.selectedToDelete();
+    if (id == null) return;
+    this.deleteProduct(id);
+    this.showConfirmDelete.set(false);
   }
 }

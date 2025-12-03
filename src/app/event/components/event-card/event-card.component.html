@@ -18,13 +18,12 @@
 
   <div class="card-body p-4">
     <h2 class="card-title text-lg font-semibold leading-tight">
-      {{ event().name.length > 60 ? (event().name | slice:0:60) + '...' : event().name }}
+      {{ event().name.length > 20 ? (event().name | slice:0:20) + '...' : event().name }}
     </h2>
 
     <div class="text-sm text-gray-600 mt-1 space-y-1">
       @if (event().location) {
         <div class="truncate">{{ event().location }}</div>
-      } @else if (event().city) {
         <div class="truncate">{{ event().city }}{{ event().state ? ', ' + event().state : '' }}</div>
       } @else {
         <div class="truncate">Ubicación no disponible</div>
@@ -32,7 +31,9 @@
 
       @if (event().dateTime) {
         <div class="text-xs text-gray-500">
-          {{ event().dateTime | date:'mediumDate' }} {{ event().dateTime ? (' ' + (event().dateTime | date:'shortTime')) : '' }}
+          {{ event().dateTime | date:'mediumDate' }}
+          &nbsp;·&nbsp;
+          {{ event().dateTime ? (' ' + (event().dateTime | date:'shortTime')) : '' }}
         </div>
       }
     </div>

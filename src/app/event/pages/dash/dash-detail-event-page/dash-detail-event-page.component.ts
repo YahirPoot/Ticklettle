@@ -12,10 +12,14 @@ import { NotificationService } from '../../../../shared/services/notification.se
 import { ProductRequest } from '../../../../product/interfaces';
 import { ProductService } from '../../../../product/services/product.service';
 import { UploadImageUseCase } from '../../../../shared/use-cases/upload-image-use-case';
+import { ConfirmModalComponent } from '../../../../shared/components/confirm-modal/confirm-modal.component';
 
 @Component({
   selector: 'app-dash-detail-event-page',
-  imports: [MatIconModule, HeaderBackComponent, DatePipe, RouterLink, ReactiveFormsModule, LoadingComponent],
+  imports: [MatIconModule, HeaderBackComponent, 
+    DatePipe, RouterLink, ReactiveFormsModule, 
+    LoadingComponent, ConfirmModalComponent
+  ],
   templateUrl: './dash-detail-event-page.component.html',
 })  
 export class DashDetailEventPageComponent { 
@@ -35,6 +39,11 @@ export class DashDetailEventPageComponent {
   productImageFile = signal<File | null>(null);
   productImagePreview = signal<string | null>(null);
   isSubmit = signal(false);
+
+  // Signals para confirmar la elimincación de un producto
+  showConfirmDeleteProduct = signal(false);
+  selectedProductToDelete = signal<number | null>(null);
+
 
   eventResource = resource({
     loader: () => {
@@ -125,6 +134,41 @@ export class DashDetailEventPageComponent {
 
   goBack() {
     return this.router.navigate(['/admin/events'], { relativeTo: this.activedRoute });
+  }
+
+  openConfirmDeleteProduct(productId: number) {
+    this.selectedProductToDelete.set(productId);
+    this.showConfirmDeleteProduct.set(true);
+  }
+
+  cancelConfirmDeleteProduct() {
+    this.selectedProductToDelete.set(null);
+    this.showConfirmDeleteProduct.set(false);
+  }
+
+  private deleteProduct(productId: number) {
+    
+    this.productService.deleteProduct(productId).subscribe({
+      next: () => {
+        this.notificationService.showNotification('Producto eliminado correctamente.', 'success');
+        this.eventResource.reload();
+        this.showConfirmDeleteProduct.set(false);
+        this.selectedProductToDelete.set(null);
+      },
+      error: (err) => {
+        console.error('Error eliminando producto', err);
+        this.notificationService.showNotification('Error eliminando el producto. Intenta de nuevo más tarde.', 'error');
+        this.showConfirmDeleteProduct.set(false);
+        this.selectedProductToDelete.set(null);
+      }
+    })
+  }
+
+  confirmDeleteProduct() {
+    const productId = this.selectedProductToDelete();
+    if (productId == null) return;
+    
+    this.deleteProduct(productId);
   }
 }
   
