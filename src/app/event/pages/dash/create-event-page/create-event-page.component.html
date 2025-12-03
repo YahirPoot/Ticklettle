@@ -120,7 +120,10 @@
                     <label class="block">
                         <span class="text-sm font-medium text-gray-500">Capacidad total (tope) <span class="text-sm text-red-400">*</span></span>
                         <input type="number" min="0" formControlName="capacity" class="input input-bordered w-full mt-1">
-                        <p class="text-xs text-warning mt-1">La suma de tickets no puede exceder esta cifra.</p>
+                        @if (capacityControl().value! < totalTicketsCount()) {
+                            <p class="text-sm text-error mt-1">La capacidad no puede ser menor que la suma de boletos configurados ({{ totalTicketsCount() }}).</p>
+                        }
+                        <!-- <p class="text-xs text-warning mt-1">La suma de tickets no puede exceder esta cifra.</p> -->
                         @if (eventForm.get('capacity')?.touched && eventForm.get('capacity')?.invalid) {
                             <p class="text-sm text-error mt-1">Campo obligatorio.</p>
                         }

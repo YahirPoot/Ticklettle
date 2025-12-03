@@ -13,11 +13,8 @@ const apiBaseUrl = environment.apiBaseUrl;
 export class ProductService {
   private http = inject(HttpClient);
 
-  getProductsByOrganizer(organizerId: number, page: number, pageSize: number,) {
-    return this.http.post(`${apiBaseUrl}/Products/organizer/${organizerId}`, {
-      page: page,
-      pageSize: pageSize
-    });
+  getProductsByOrganizer(organizerId: number, requestFilter: ProductFilterRequest): Observable<{ items: ProductInterface[], totalItems: number }> {
+    return this.http.post<{ items: ProductInterface[], totalItems: number }>(`${apiBaseUrl}/Products/organizer/${organizerId}`, requestFilter);
   }
 
   createProductByEvent(eventId: number, requestProduct: ProductRequest): Observable<ProductRequest> {
@@ -25,5 +22,9 @@ export class ProductService {
       .pipe(
         tap(response => console.log('Product created:', response))
       ) ;
+  }
+
+  deleteProduct(productId: number): Observable<void> {
+    return this.http.delete<void>(`${apiBaseUrl}/Products/${productId}`);
   }
 }

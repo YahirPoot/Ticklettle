@@ -1,17 +1,25 @@
 <div class="min-h-screen w-full text-base-content">
-    <shared-header-back [title]="`Analíticas - Evento ${analyticsForEvent?.event?.name}`" (back)="goBack()" />
+    <shared-header-back [title]="`Detalles - Evento ${analytics()?.event?.name}`" (back)="goBack()" />
     <div class="flex flex-col">
         <span class="text-lg md:text-2xl font-semibold">Boletos Vendidos</span>
-        <label class="input input-bordered input-sm mt-2 w-full max-w-xs">
-            <svg class="h-4 w-4 opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                <g stroke-linejoin="round" stroke-linecap="round" stroke-width="2.5" fill="none"
-                    stroke="currentColor">
-                    <circle cx="11" cy="11" r="8"></circle>
-                    <path d="m21 21-4.3-4.3"></path>
-                </g>
-            </svg>
-            <input class="flex-1" type="search" placeholder="Buscar boleto..." />
-        </label>
+
+        <!-- BOTONES DE FILTRO POR FECHA -->
+        <div class="flex flex-wrap gap-2 mt-3">
+            <button class="btn btn-sm" [class.btn-primary]="selectedPeriod() === 'today'" (click)="filterByPeriod('today')">Hoy</button>
+            <button class="btn btn-sm" [class.btn-primary]="selectedPeriod() === 'week'"  (click)="filterByPeriod('week')">Esta Semana</button>
+            <button class="btn btn-sm" [class.btn-primary]="selectedPeriod() === 'month'" (click)="filterByPeriod('month')">Este Mes</button>
+            <button class="btn btn-sm" [class.btn-primary]="selectedPeriod() === 'last30'" (click)="filterByPeriod('last30')">Últimos 30 Días</button>
+            <button class="btn btn-sm" [class.btn-primary]="selectedPeriod() === 'all'" (click)="filterByPeriod('all')">Todos</button>
+
+            <!-- Mostrar etiqueta con el filtro activo -->
+            @if (selectedPeriodLabel()) {
+                <span class="ml-3 text-sm text-gray-500">Filtro activo: <strong class="ml-1">{{ selectedPeriodLabel() }}</strong></span>
+            }
+        </div>
+
+        @if (emptyMessage()) {
+            <p class="mt-3 text-red-300 text-sm">{{emptyMessage()}}</p>
+        }
         <div class="overflow-x-auto mt-3">
             <div class="max-h-80 overflow-y-auto rounded-lg">
                 <table class="table w-full bg-base-200 shadow-md">
@@ -26,7 +34,7 @@
                         </tr>
                     </thead>
                     <tbody class="text-sm">
-                        @for (ticket of analyticsForEvent?.tickets; track $index) {
+                        @for (ticket of filteredTickets(); track $index) {
                             <tr class="hover:bg-base-200">
                                 <th>{{ticket.ticketId}}</th>
                                 <td>{{ticket.buyerName}}</td>
@@ -40,10 +48,12 @@
                 </table>
             </div>
         </div>
-        <div class="w-full flex flex-row items-center justify-between mt-1">
-            <span class="text-md font-light truncate">Total de boletos vendidos: {{summary?.totalTicketsSold}}</span>
-            <span class="text-md font-light truncate">Ingreso Total: ${{summary?.totalRevenue}}</span>
-        </div>
+        @if (selectedPeriod() === 'all') {
+            <div class="w-full flex flex-row items-center justify-between mt-1">
+                <span class="text-md font-light truncate">Total de boletos vendidos: {{summary?.totalTicketsSold}}</span>
+                <span class="text-md font-light truncate">Ingreso Total: ${{summary?.totalRevenue}}</span>
+            </div>
+        }
     </div>
     <!-- PRODUCTOS VENDIDOS + TARJETA RESUMEN -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-2 mt-4">
@@ -61,7 +71,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @for (product of analyticsForEvent?.products; track $index) {
+                        @for (product of analytics()?.products; track $index) {
                             <tr>
                                 <th>
                                     <div class="flex items-center gap-3">

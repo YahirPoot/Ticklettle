@@ -9,7 +9,9 @@ export interface EventInterface {
     location: string;
     city: string;
     state: string;
+    postalCode: string;
     type: string;
+    ubication: string;
     status: string;
     imageUrl: string;
     organizingHouseId: number;

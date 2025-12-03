@@ -1,19 +1,17 @@
 import { Component, inject, resource, signal } from '@angular/core';
 import { EventCarouselComponent } from '../../components/event-carousel/event-carousel.component';
 import { EventService } from '../../services/event.service';
-import { DatePipe, SlicePipe } from '@angular/common';
+import { DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'event-page',
-  imports: [EventCarouselComponent, SlicePipe, RouterLink, DatePipe],
+  imports: [EventCarouselComponent, RouterLink, DatePipe],
   templateUrl: './event-page.component.html',
 })
 export class EventPageComponent {
   private eventService = inject(EventService);
-
-  nextEventFilter = signal<Record<string, any> | null>({ 'SpecialFilter.IsUpcoming': true });
 
   featuredEventResource = resource({
     loader: () => firstValueFrom(this.eventService.getEvents({

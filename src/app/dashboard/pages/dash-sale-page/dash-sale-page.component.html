@@ -1,53 +1,40 @@
-<div class="min-h-screen text-base-content w-full p-2">
-
+<div class="min-h-screen w-full p-4 text-base-content">
+  <!-- LOADING -->
   @if (this.isLoading()) {
-
-    <!-- Skeleton del header -->
     <div class="flex flex-col gap-4">
-      <div class="flex items-center justify-between w-full">
+
+      <div class="card bg-base-200 p-6 border border-base-content/10 shadow">
         <div class="skeleton h-8 w-40"></div>
-        <div class="skeleton h-10 w-40"></div>
+        <div class="mt-4 grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div class="skeleton h-12"></div>
+          <div class="skeleton h-12"></div>
+          <div class="skeleton h-12"></div>
+          <div class="skeleton h-12"></div>
+        </div>
       </div>
 
-      <!-- Skeleton de la tabla -->
-      <div class="overflow-x-auto rounded-box border border-base-content/10 bg-base-200 shadow">
-        <table class="table w-full hidden md:table">
+      <div class="overflow-x-auto rounded-xl  bg-base-200 shadow">
+        <table class="table hidden md:table w-full">
           <thead>
             <tr>
-              <th class="w-28"><div class="skeleton h-4 w-16"></div></th>
+              <th><div class="skeleton h-4 w-16"></div></th>
               <th><div class="skeleton h-4 w-24"></div></th>
-              <th class="text-right"><div class="skeleton h-4 w-16"></div></th>
-              <th class="text-center"><div class="skeleton h-4 w-16"></div></th>
-              <th class="text-center"><div class="skeleton h-4 w-20"></div></th>
-              <th class="text-center"><div class="skeleton h-4 w-20"></div></th>
+              <th><div class="skeleton h-4 w-16"></div></th>
+              <th><div class="skeleton h-4 w-16"></div></th>
+              <th><div class="skeleton h-4 w-20"></div></th>
+              <th><div class="skeleton h-4 w-20"></div></th>
             </tr>
           </thead>
-
           <tbody>
             @for (_ of [1,2,3,4,5,6]; track $index) {
               <tr>
+                <td><div class="skeleton h-20 w-20 rounded-xl"></div></td>
+                <td><div class="skeleton h-5 w-32"></div></td>
+                <td><div class="skeleton h-5 w-12"></div></td>
+                <td><div class="skeleton h-5 w-12"></div></td>
+                <td><div class="skeleton h-5 w-12"></div></td>
                 <td>
-                  <div class="avatar">
-                    <div class="mask mask-squircle h-20 w-20 skeleton"></div>
-                  </div>
-                </td>
-                <td>
-                  <div class="flex flex-col">
-                    <div class="skeleton h-4 w-32 mb-1"></div>
-                    <div class="skeleton h-4 w-20"></div>
-                  </div>
-                </td>
-                <td class="text-right">
-                  <div class="skeleton h-5 w-16"></div>
-                </td>
-                <td class="text-center">
-                  <div class="skeleton h-5 w-12"></div>
-                </td>
-                <td class="text-center">
-                  <div class="skeleton h-5 w-12"></div>
-                </td>
-                <td class="text-center">
-                  <div class="flex items-center justify-center gap-4">
+                  <div class="flex gap-4 justify-center">
                     <div class="skeleton h-8 w-8 rounded-full"></div>
                     <div class="skeleton h-8 w-8 rounded-full"></div>
                   </div>
@@ -58,133 +45,228 @@
         </table>
       </div>
     </div>
+  } @else {
+    <div class="mb-6">
+      <h1 class="text-3xl font-bold">Panel de Productos</h1>
+      <p class="text-gray-500">Administra tus productos, filtros y ventas.</p>
+    </div>
+  <!-- PANEL DE FILTROS (siempre visible) -->
+  <div class="card p-2 shadow border border-base-content/10 mb-6 rounded-xl">
+    <h2 class="text-sm font-semibold mb-4">Filtrar por</h2>
 
-  }
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
 
-  @if (!isLoading() && ( sales().length <= 0)) {
+      <input type="text" class="input input-bordered input-sm w-full"
+        placeholder="Buscar producto…"
+        [value]="tempFilters().search ?? ''"
+        (input)="updateFilter('search', $any($event.target).value)" />
 
-    <div class="max-w-6xl mx-auto">
-      <div class="card bg-base-200 border border-base-300 rounded-lg p-6 flex flex-col items-center justify-center gap-4 w-full">
+      <input type="number" class="input input-bordered input-sm w-full"
+        placeholder="Precio mínimo"
+        [value]="tempFilters().filter?.minPrice"
+        (input)="updateNestedFilter('filter','minPrice',+$any($event.target).value)" />
 
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-16 h-16 text-yellow-500 animate-pulse" viewBox="0 0 24 24" fill="none">
-          <path stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13l-2 5h13" class="fill-current/5" />
-        </svg>
+      <input type="number" class="input input-bordered input-sm w-full"
+        placeholder="Precio máximo"
+        [value]="tempFilters().filter?.maxPrice"
+        (input)="updateNestedFilter('filter','maxPrice',+$any($event.target).value)" />
 
-        <h3 class="text-2xl font-semibold">Aún no tienes ventas</h3>
+      <button
+        class="btn btn-sm w-full"
+        (click)="applyFilters()"
+        [disabled]="!canApplyFilters()"
+        title="Introduce al menos un criterio para activar"
+      >
+        Aplicar filtros
+      </button>
 
-        <p class="text-sm text-gray-500 max-w-lg text-center">
-          Agrega productos o registra una venta para que aparezcan aquí.
-        </p>
+    </div>
+  </div>
+    <div class="overflow-x-auto bg-base-200 border border-base-content/10 rounded-xl shadow">
+      <table class="table w-full hidden md:table">
 
-        <div class="flex gap-3">
-          <a routerLink="/dashboard/products" class="btn btn-primary">
-            Agregar producto
-          </a>
-        </div>
+        <thead>
+          <tr class="text-sm">
+            <th class="w-28">Imagen</th>
+            <th>Producto</th>
+            <th class="text-right">Precio</th>
+            <th class="text-center">Stock</th>
+            <th class="text-center">Vendidos</th>
+            <th class="text-center">Opciones</th>
+          </tr>
+        </thead>
 
-      </div>
+        <tbody>
+          @for (itemSale of sales(); track $index) {
+            <tr class="hover:bg-base-content/5 transition">
+              <td>
+                <div class="avatar">
+                  <div class="mask mask-squircle h-20 w-20 bg-base-300">
+                    @if (itemSale.imageUrl) {
+                      <img [src]="itemSale.imageUrl" class="object-cover w-full h-full" />
+                    }
+                    @else {
+                      <div class="flex items-center justify-center w-full h-full">
+                        {{ itemSale.name.charAt(0).toUpperCase() }}
+                      </div>
+                    }
+                  </div>
+                </div>
+              </td>
+
+              <td>
+                <span class="text-md font-semibold">{{ itemSale.name }}</span>
+              </td>
+
+              <td class="text-right">
+                <span class="font-medium">${{ itemSale.price }}</span>
+              </td>
+
+              <td class="text-center">{{ itemSale.stock }}</td>
+
+              <td class="text-center">{{ itemSale.description }} 0</td>
+
+              <td class="text-center">
+                <div class="flex justify-center gap-3">
+                  <button class="btn btn-ghost btn-sm btn-square" title="Editar">
+                    <mat-icon>edit</mat-icon>
+                  </button>
+                  <button class="btn btn-ghost btn-sm btn-square text-error" title="Eliminar" (click)="confirmDeleteProduct(itemSale)">
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+
+      </table>
     </div>
 
+    <!-- PAGINACIÓN -->
+    <div class="flex justify-center mt-6">
+      <shared-pagination
+        [page]="paginationService.page()"
+        [totalPages]="paginationService.totalPages()"
+        (pageChange)="onPageChange($event)" />
+    </div>
+    @if ((sales().length <= 0)) {
+      @if (noResults()) {
+        <!-- No hay resultados para los filtros -->
+        <div class="max-w-4xl mx-auto">
+          <div class=" rounded-2x shadow p-8 text-center flex flex-col items-center gap-4">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-20 h-20 text-muted" fill="none" viewBox="0 0 24 24">
+              <path stroke="currentColor" stroke-width="1.5" d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+              <path stroke="currentColor" stroke-width="1.5" d="M7 10l5-5 5 5" />
+            </svg>
+            <h3 class="text-2xl font-semibold">No se encontraron productos</h3>
+            <p class="text-gray-500">No se encontró ningún producto con los filtros aplicados. Puedes limpiar los filtros o refrescar para ver todos los productos.</p>
+            <div class="flex gap-3 mt-4">
+              <button class="btn btn-outline" (click)="clearFilters()">Limpiar filtros</button>
+              <!-- <button class="btn btn-primary" (click)="loadProducts(paginationService.page())">Refrescar</button> -->
+            </div>
+          </div>
+        </div>
+      } @else {
+        <!-- Estado vacío real: no hay productos en la cuenta -->
+        <div class="max-w-4xl mx-auto">
+          <div class="card bg-base-200 border border-base-300 shadow p-10 text-center flex flex-col items-center gap-4">
+  
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-20 h-20 text-warning animate-pulse" fill="none" viewBox="0 0 24 24">
+              <path stroke="currentColor" stroke-width="1.5" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13l-2 5h13" />
+            </svg>
+  
+            <h3 class="text-3xl font-semibold">No hay productos</h3>
+            <p class="text-gray-500">Aún no se registran productos para mostrar.</p>
+  
+            <a routerLink="/dashboard/products" class="btn btn-primary mt-3">
+              Agregar producto
+            </a>
+          </div>
+        </div>
+      }
+    }
   }
 
+  <!-- EMPTY STATE -->
+
+  <!-- CONTENT
   @if (sales().length > 0) {
 
-    <div class="flex flex-col">
-      <div class="w-full flex items-center justify-between gap-4">
-        <h3 class="text-2xl font-semibold">Productos</h3>
-        <button
-          class="btn btn-primary btn-outline"
-          title="Agregar producto"
-          aria-label="Agregar producto"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-          </svg>
-          Agregar Producto
-        </button>
-      </div>
+    TABLA
+    <div class="overflow-x-auto bg-base-200 border border-base-content/10 rounded-xl shadow">
+      <table class="table w-full hidden md:table">
 
-      <div class="mt-4 w-full">
-        <div class="overflow-x-auto rounded-box border border-base-content/10 bg-base-200 shadow">
-          <table class="table w-full hidden md:table">
+        <thead>
+          <tr class="text-sm">
+            <th class="w-28">Imagen</th>
+            <th>Producto</th>
+            <th class="text-right">Precio</th>
+            <th class="text-center">Stock</th>
+            <th class="text-center">Vendidos</th>
+            <th class="text-center">Opciones</th>
+          </tr>
+        </thead>
 
-            <thead>
-              <tr class="text-sm">
-                <th class="w-28">Imagen</th>
-                <th>Producto</th>
-                <th class="text-right">Precio</th>
-                <th class="text-center">Stock</th>
-                <th class="text-center">Vendidos</th>
-                <th class="text-center">Opciones</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              @for (itemSale of sales(); track $index) {
-                <tr class="hover:bg-base-content/10">
-                  <th>
-                    <div class="avatar">
-                      <div class="mask mask-squircle h-20 w-20 bg-base-300">
-                        @if (itemSale.imageUrl) {
-                          <img [src]="itemSale.imageUrl" [alt]="itemSale.name" class="object-cover w-full h-full"/>
-                        }
-                        @else {
-                          <div class="flex items-center justify-center w-full h-full object-cover">
-                            {{ itemSale.name.charAt(0).toUpperCase() }}
-                          </div>
-                        }
+        <tbody>
+          @for (itemSale of sales(); track $index) {
+            <tr class="hover:bg-base-content/5 transition">
+              <td>
+                <div class="avatar">
+                  <div class="mask mask-squircle h-20 w-20 bg-base-300">
+                    @if (itemSale.imageUrl) {
+                      <img [src]="itemSale.imageUrl" class="object-cover w-full h-full" />
+                    }
+                    @else {
+                      <div class="flex items-center justify-center w-full h-full">
+                        {{ itemSale.name.charAt(0).toUpperCase() }}
                       </div>
-                    </div>
-                  </th>
+                    }
+                  </div>
+                </div>
+              </td>
 
-                  <th>
-                    <div class="flex flex-col">
-                      <span class="text-md font-semibold truncate max-w-xs">{{ itemSale.name }}</span>
-                    </div>
-                  </th>
+              <td>
+                <span class="text-md font-semibold">{{ itemSale.name }}</span>
+              </td>
 
-                  <td class="text-right">
-                    <span class="text-lg font-medium">${{ itemSale.price }}</span>
-                  </td>
+              <td class="text-right">
+                <span class="font-medium">${{ itemSale.price }}</span>
+              </td>
 
-                  <td class="text-center">
-                    <span class="text-lg font-medium">{{ itemSale.stock }}</span>
-                  </td>
+              <td class="text-center">{{ itemSale.stock }}</td>
 
-                  <td class="text-center">
-                    <span class="text-lg font-medium">{{ itemSale.description }} 0</span>
-                  </td>
+              <td class="text-center">{{ itemSale.description }} 0</td>
 
-                  <td class="text-center">
-                    <div class="flex items-center justify-center gap-2">
-                      <button title="Editar" aria-label="Editar" class="btn btn-ghost btn-sm btn-square">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536M4 20h4.586a1 1 0 00.707-.293l9.414-9.414a1 1 0 000-1.414l-3.586-3.586a1 1 0 00-1.414 0L4.293 15.293A1 1 0 004 16v4z"/>
-                        </svg>
-                      </button>
+              <td class="text-center">
+                <div class="flex justify-center gap-3">
+                  <button class="btn btn-ghost btn-sm btn-square" title="Editar">
+                    <mat-icon>edit</mat-icon>
+                  </button>
+                  <button class="btn btn-ghost btn-sm btn-square text-error" title="Eliminar" (click)="confirmDeleteProduct(itemSale)">
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
 
-                      <button title="Eliminar" aria-label="Eliminar" class="btn btn-ghost btn-sm btn-square">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-error" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5-4h4m-7 4h10"/>
-                        </svg>
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              }
-            </tbody>
-
-          </table>
-        </div>
-      </div>
-
-      <div class="flex justify-center items-center mt-4">
-        <shared-pagination 
-          [page]="paginationService.page()"
-          [totalPages]="paginationService.totalPages()"
-          (pageChange)="onPageChange($event)"
-        />
-      </div>
+      </table>
     </div>
-  }
+
+    PAGINACIÓN
+    <div class="flex justify-center mt-6">
+      <shared-pagination
+        [page]="paginationService.page()"
+        [totalPages]="paginationService.totalPages()"
+        (pageChange)="onPageChange($event)" />
+    </div>
+  } -->
 </div>
+
+@if (filterWarning()) {
+  <div class="alert alert-warning mt-2">
+    <span>{{ filterWarning() }}</span>
+  </div>
+}

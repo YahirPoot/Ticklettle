@@ -1,10 +1,11 @@
-import { Component, inject, resource } from '@angular/core';
+import { Component, computed, inject, resource, signal } from '@angular/core';
 import { TicketService } from '../../../../ticket/services/ticket.service';
 import { HeaderBackComponent } from '../../../../shared/components/header-back/header-back.component';
 import { ActivatedRoute } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import AnalyticsService from '../../../services/analytics.service';
 import { DatePipe } from '@angular/common';
+import { AnalyticsForEventInterface, TicketDetail } from '../../../interfaces';
 
 @Component({
   selector: 'app-event-analytics-page',
@@ -18,18 +19,107 @@ export class EventAnalyticsPageComponent {
 
   readonly eventId: number = this.activatedRoute.snapshot.params['eventId'];
 
-  analyticsForEventResource = resource({
-    loader: () =>  firstValueFrom(this.analyticsService.getAnalyticsByEvent(this.eventId)),
-  });
+  analytics = signal<AnalyticsForEventInterface | null>(null);
 
+  filteredTickets = signal<TicketDetail[]>([]);
+  emptyMessage = signal<string>('');
+  // periodo seleccionado para mostrar al usuario cuál filtro está activo
+  selectedPeriod = signal<string>('all');
 
-  get analyticsForEvent() {
-    return this.analyticsForEventResource.value();
+  selectedPeriodLabel = computed(() => {
+    switch (this.selectedPeriod()) {
+      case 'today': return 'Hoy';
+      case 'week': return 'Últimos 7 días';
+      case 'month': return 'Este mes';
+      case 'last30': return 'Últimos 30 días';
+      case 'all': return 'Todos los tiempos';
+      default: return this.selectedPeriod();
+    }
+  })
+
+  constructor() {
+    this.loadAnalytics();
   }
+
+  async loadAnalytics() {
+    this.analyticsService.getAnalyticsByEvent(this.eventId).subscribe({
+      next: (data) => {
+        this.analytics.set(data);
+        this.filteredTickets.set(data.tickets); 
+
+      }, 
+      error: (err) => {
+        this.emptyMessage.set('Error al cargar los datos de analíticas.');
+        console.error('Error fetching analytics data:', err);
+      }
+    })
+  }
+
+  filterByPeriod(period: string) {
+    // marcar periodo seleccionado para mostrar en UI
+    this.selectedPeriod.set(period);
+    if (!this.analytics()) return;
+
+    const tickets = [...this.analytics()!.tickets];
+    const now = new Date();
+    let filtered = tickets;
+
+    switch (period) {
+      case 'today': {
+        filtered = tickets.filter(t => {
+          const date = new Date(t.purchaseDate);
+          return date.toDateString() === now.toDateString();
+        });
+        break;
+      }
+
+      case 'week': {
+        const start = new Date(now);
+        start.setDate(now.getDate() - 7);
+        filtered = tickets.filter(t => new Date(t.purchaseDate) >= start);
+        break;
+      }
+
+      case 'month': {
+        const start = new Date(now.getFullYear(), now.getMonth(), 1);
+        filtered = tickets.filter(t => new Date(t.purchaseDate) >= start);
+        break;
+      }
+
+      case 'last30': {
+        const start = new Date(now);
+        start.setDate(now.getDate() - 30);
+        filtered = tickets.filter(t => new Date(t.purchaseDate) >= start);
+        break;
+      }
+
+      case 'all':
+      default:
+        filtered = tickets;
+        break;
+    }
+
+    if (filtered.length === 0) {
+      this.emptyMessage.set('No se encontraron boletos en este período.');
+    } else {
+      this.emptyMessage.set('');
+    }
+
+    this.filteredTickets.set(filtered);
+  }
+  // analyticsForEventResource = resource({
+  //   loader: () =>  firstValueFrom(this.analyticsService.getAnalyticsByEvent(this.eventId)),
+  // });
+
+
+  // get analyticsForEvent() {
+  //   return this.analyticsForEventResource.value();
+  // }
 
   get summary() {
-    return this.analyticsForEvent?.summary;
+    return this.analytics()?.summary;
   }
+
   goBack() {
     window.history.back();
   }
