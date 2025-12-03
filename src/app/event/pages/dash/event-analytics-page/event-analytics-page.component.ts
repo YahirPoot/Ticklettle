@@ -1,9 +1,10 @@
-import { Component, computed, inject, resource, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { TicketService } from '../../../../ticket/services/ticket.service';
 import { HeaderBackComponent } from '../../../../shared/components/header-back/header-back.component';
 import { ActivatedRoute } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import AnalyticsService from '../../../services/analytics.service';
+import AnalyticsStateService from '../../../state/analytics-state.service';
 import { DatePipe } from '@angular/common';
 import { AnalyticsForEventInterface, TicketDetail } from '../../../interfaces';
 
@@ -23,41 +24,35 @@ export class EventAnalyticsPageComponent {
 
   filteredTickets = signal<TicketDetail[]>([]);
   emptyMessage = signal<string>('');
-  // periodo seleccionado para mostrar al usuario cuál filtro está activo
-  selectedPeriod = signal<string>('all');
+  isLoading = signal<boolean>(false);
 
-  selectedPeriodLabel = computed(() => {
-    switch (this.selectedPeriod()) {
-      case 'today': return 'Hoy';
-      case 'week': return 'Últimos 7 días';
-      case 'month': return 'Este mes';
-      case 'last30': return 'Últimos 30 días';
-      case 'all': return 'Todos los tiempos';
-      default: return this.selectedPeriod();
-    }
-  })
+  // Estado compartido para el periodo seleccionado (visible desde otros componentes)
+  readonly analyticsState = inject(AnalyticsStateService);
 
   constructor() {
     this.loadAnalytics();
   }
 
   async loadAnalytics() {
+    this.isLoading.set(true);
     this.analyticsService.getAnalyticsByEvent(this.eventId).subscribe({
       next: (data) => {
         this.analytics.set(data);
         this.filteredTickets.set(data.tickets); 
+        this.isLoading.set(false);
 
       }, 
       error: (err) => {
         this.emptyMessage.set('Error al cargar los datos de analíticas.');
         console.error('Error fetching analytics data:', err);
+        this.isLoading.set(false);
       }
     })
   }
 
   filterByPeriod(period: string) {
-    // marcar periodo seleccionado para mostrar en UI
-    this.selectedPeriod.set(period);
+    // marcar periodo seleccionado en el estado compartido
+    this.analyticsState.setSelectedPeriod(period);
     if (!this.analytics()) return;
 
     const tickets = [...this.analytics()!.tickets];

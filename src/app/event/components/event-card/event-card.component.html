@@ -1,7 +1,7 @@
 <!-- ...existing code... -->
-<div class="card bg-base-100 w-96 shadow-sm overflow-hidden">
+<div class="card bg-base-100  shadow-sm overflow-hidden">
   @if (event().imageUrl) {
-    <figure class="h-48 w-full bg-gray-100">
+    <figure class="h-48 w-80 bg-gray-100">
       <img
         [src]="event().imageUrl"
         [alt]="'Imagen de ' + event().name"
@@ -11,7 +11,7 @@
       />
     </figure>
   } @else {
-    <figure class="h-48 w-full bg-gray-200 flex items-center justify-center text-3xl font-bold">
+    <figure class="h-48 w-80 bg-gray-200 flex items-center justify-center text-3xl font-bold">
       <span aria-hidden="true">{{ event().name.charAt(0) }}</span>
     </figure>
   }
