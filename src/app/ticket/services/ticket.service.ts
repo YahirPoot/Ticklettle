@@ -14,16 +14,11 @@ export class TicketService {
 
   getTicketsByAttendee(): Observable<ResponseTicketInterface[]> {
     return this.http.get<ResponseTicketInterface[]>(`${apiBaseUrl}/Tickets/my-tickets`)
-      .pipe(
-        tap(res => console.log('Tickets obtenidos:', res))
-      )
   }
 
   claimFreetickets(requestClaimFree: ClaimFreeTicketRequest): Observable<ClaimFreeTicketRequest> {
     return this.http.post<ClaimFreeTicketRequest>(`${apiBaseUrl}/Tickets/claim-free`,
       requestClaimFree
-    ).pipe(
-      tap(res => console.log('Ticket reclamado:', res))
     )
   }
 }

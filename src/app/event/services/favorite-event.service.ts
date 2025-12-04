@@ -22,7 +22,6 @@ export class FavoriteEventService {
   getFavoriteEventsByAttendee() {
     return this.http.get<FavoriteDto[]>(`${apiBaseUrl}/Favorite`)
       .pipe(
-        tap(res => console.log('Favorite events obtained:', res)),
         catchError(err => {
           console.error('Error fetching favorite events:', err);
           throw err;
@@ -32,15 +31,9 @@ export class FavoriteEventService {
 
   addFavoriteEvent(eventId: number) {
     return this.http.post(`${apiBaseUrl}/Favorite/${eventId}`, {})
-      .pipe(
-        tap(() => console.log(`Favorite event added: ${eventId}`))
-      );
   }
 
   removeFavoriteEvent(eventId: number) {
     return this.http.delete(`${apiBaseUrl}/Favorite/${eventId}`)
-      .pipe(
-        tap(() => console.log(`Favorite event removed: ${eventId}`))
-      );
   }
 }

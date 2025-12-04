@@ -30,7 +30,6 @@ function buildContent(envObj) {
 function writeFileSafe(targetPath, content) {
   fs.mkdirSync(path.dirname(targetPath), { recursive: true });
   fs.writeFileSync(targetPath, content, { encoding: 'utf8' });
-  console.log('Wrote', targetPath);
 }
 
 (function main() {

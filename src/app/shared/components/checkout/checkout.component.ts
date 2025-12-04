@@ -81,7 +81,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       this.clientSecret = savedIntent.clientSecret;
       this.paymentIntentId = savedIntent.paymentIntentId;
       this.paymentId = savedIntent.paymentId;
-      console.log('Restored saved payment intent from storage:', savedIntent);
     }
 
     try {
@@ -103,7 +102,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         this.clientSecret = res.clientSecret;
         this.paymentIntentId = res.paymentIntentId;
         this.paymentId = res.paymentId;
-        console.log('Payment Intent creado:', res); 
         this.checkoutService.savePaymentIntent(this.clientSecret, this.paymentIntentId, this.paymentId);
       }
     }
@@ -196,7 +194,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       // si quieres intentar cancelar el PaymentIntent en backend, descomenta y usa paymentService.cancelPaymentIntent
       if (this.paymentId && typeof this.paymentService.deletePaymentId === 'function') {
         await firstValueFrom(this.paymentService.deletePaymentId(this.paymentId));
-        console.log('Payment Intent cancelado:', this.paymentIntentId);
       }
 
      const navigated = await this.router.navigate(['/']); // o la ruta que prefieras
@@ -261,7 +258,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       }
 
       const confirmPayload = { paymentIntentId: this.paymentIntentId, paymentMethodId };
-      console.log('Confirming payment with payload:', confirmPayload);
 
       if (!this.paymentIntentId || !paymentMethodId) {
         this.error.set('Faltan datos para procesar el pago.');
@@ -270,7 +266,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       }
 
       const confirmRes: ResponsePaymentInterface = await firstValueFrom(this.paymentService.confirmPayment(confirmPayload));
-      console.log('Payment confirmation result:', confirmRes);
 
       const status = confirmRes?.status || confirmRes?.status;
       if (status === 'succeeded' || status === 'completed') {

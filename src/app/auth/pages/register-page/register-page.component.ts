@@ -342,8 +342,6 @@ export class RegisterPageComponent implements OnInit, OnDestroy {
       isGoogleRegistration: Boolean(socialToken)
     };
 
-    console.log('payloadAttendee', payloadAttendee);
-
     const payloadOrganizer: RegisterRequest = {
       email: this.registerForm.get('email')?.value!,
       firstName: this.registerForm.get('firstName')?.value!,
@@ -362,7 +360,6 @@ export class RegisterPageComponent implements OnInit, OnDestroy {
     };
 
     if (role === 1) {
-      console.log('Registering organizer with payload:', payloadOrganizer);
       this.authService.registerOrganizer(payloadOrganizer).subscribe({
         next: ok => {
           if (ok) {
