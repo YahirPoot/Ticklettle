@@ -56,7 +56,7 @@ export class TicketPageComponent {
     this.initialLoading.set(isInitial);
     this.pageLoading.set(!isInitial);
     
-    this.ticketService.getTicketsByAttendee(page, this.paginationService.pageSize()).subscribe({
+    this.ticketService.getTicketsByAttendee({Page:page, PageSize:this.paginationService.pageSize()}).subscribe({
       next: (res) => {
         this.tickets.set(res.items);
         this.initialLoading.set(false);

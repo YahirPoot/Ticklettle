@@ -58,16 +58,23 @@
   @else {
 
     <div class="w-full min-h-screen flex flex-col">
-      <div class="p-4 max-w-6xl mx-auto w-full">
+    <div class="p-4 max-w-6xl mx-auto w-full">
 
-        <!-- Navbar -->
         <div class="px-4 py-2 mb-4">
-          <div class="flex-1">
-            <h1 class="text-2xl font-bold">Mis Boletos</h1>
-          </div>
-          <div class="flex items-center justify-center gap-4">
-            Aqui va un filtro por estado del evento
-          </div>
+            <div class="flex-1">
+                <h1 class="text-2xl font-bold">Mis Boletos</h1>
+            </div>
+            <div class="flex items-center justify-end gap-1"> 
+                
+                <div class="text-sm font-semibold text-gray-700 whitespace-nowrap">
+                    Filtrar por:
+                </div>
+
+                <select id="filter-status" class="select select-bordered w-full select-sm max-w-[8rem]"> 
+                    <option value="active" selected>Activos</option>
+                    <option value="expired">Vencidos</option>
+                </select>
+            </div>
         </div>
 
           <!-- ACTIVOS -->
@@ -75,58 +82,58 @@
             <div class= "grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
 
              @for (ticket of tickets(); track $index) {
-    <a [routerLink]="['detail-ticket', ticket.ticketId]" class="block mb-6 relative">
-        <article class="relative bg-white shadow-2xl border border-gray-200 overflow-hidden w-full min-w-80 rounded-lg">
-            
-            <div class="h-40 w-full overflow-hidden relative">
-                <img [src]="ticket.event.imageUrl" [alt]="'Imagen del evento ' + ticket.event.name" class="w-full h-full object-cover brightness-75">
-                <div class="absolute inset-0 flex items-center justify-center p-4">
-                    <h3 class="text-2xl font-black text-white text-center drop-shadow-lg leading-tight">
-                        {{ ticket.event.name }}
-                    </h3>
-                </div>
-            </div>
-            
-            <div class="absolute left-0 right-0 h-0.5 border-t border-dashed border-gray-400 z-10" style="top: 10rem;">
-                <div class="absolute -top-3 left-0 w-6 h-6 bg-base-100 rounded-full transform -translate-x-1/2"></div>
-                <div class="absolute -top-3 right-0 w-6 h-6 bg-base-100 rounded-full transform translate-x-1/2"></div>
-            </div>
-
-            <div class="p-4 pt-8">
-                
-                <p class="text-sm font-semibold text-gray-500 mb-1 text-center">TIPO DE BOLETO:</p>
-                <p class="text-xl font-bold text-primary mb-3 text-center">
-                    {{ ticket.type | uppercase }}
-                </p>
-
-                <div class="grid grid-cols-2 gap-4 text-sm mb-4 border-b border-gray-100 pb-3">
-                    
-                    <div class="text-center"> 
-                        <div class="text-gray-600 font-medium mb-1">
-                            FECHA
+                <a [routerLink]="['detail-ticket', ticket.ticketId]" class="block mb-6 relative">
+                    <article class="relative bg-white shadow-2xl border border-gray-200 overflow-hidden w-full min-w-80 rounded-lg">
+                        
+                        <div class="h-40 w-full overflow-hidden relative">
+                            <img [src]="ticket.event.imageUrl" [alt]="'Imagen del evento ' + ticket.event.name" class="w-full h-full object-cover brightness-75">
+                            <div class="absolute inset-0 flex items-center justify-center p-4">
+                                <h3 class="text-2xl font-black text-white text-center drop-shadow-lg leading-tight">
+                                    {{ ticket.event.name }}
+                                </h3>
+                            </div>
                         </div>
-                        <p class="text-gray-800 font-semibold">{{ ticket.event.dateTime | date:'dd MMM yyyy' }}</p>
-                    </div>
-
-                    <div class="text-center">
-                        <div class="text-gray-600 font-medium mb-1">
-                            HORA
+                        
+                        <div class="absolute left-0 right-0 h-0.5 border-t border-dashed border-gray-400 z-10" style="top: 10rem;">
+                            <div class="absolute -top-3 left-0 w-6 h-6 bg-base-100 rounded-full transform -translate-x-1/2"></div>
+                            <div class="absolute -top-3 right-0 w-6 h-6 bg-base-100 rounded-full transform translate-x-1/2"></div>
                         </div>
-                        <p class="text-gray-800 font-semibold">{{ ticket.event.dateTime | date:'shortTime' }}</p>
-                    </div>
-                </div>
-                
-                <div class="text-center bg-gray-50 p-2 rounded-md">
-                     <div class="text-gray-600 font-medium mb-1">
-                        UBICACIÓN
-                    </div>
-                     <p class="text-sm font-bold text-gray-700">{{ ticket.event.location }}, {{ ticket.event.city }}</p>
-                </div>
-                
-                </div>
-        </article>
-    </a>
-}
+
+                        <div class="p-4 pt-8">
+                            
+                            <p class="text-sm font-semibold text-gray-500 mb-1 text-center">TIPO DE BOLETO:</p>
+                            <p class="text-xl font-bold text-primary mb-3 text-center">
+                                {{ ticket.type | uppercase }}
+                            </p>
+
+                            <div class="grid grid-cols-2 gap-4 text-sm mb-4 border-b border-gray-100 pb-3">
+                                
+                                <div class="text-center"> 
+                                    <div class="text-gray-600 font-medium mb-1">
+                                        FECHA
+                                    </div>
+                                    <p class="text-gray-800 font-semibold">{{ ticket.event.dateTime | date:'dd MMM yyyy' }}</p>
+                                </div>
+
+                                <div class="text-center">
+                                    <div class="text-gray-600 font-medium mb-1">
+                                        HORA
+                                    </div>
+                                    <p class="text-gray-800 font-semibold">{{ ticket.event.dateTime | date:'shortTime' }}</p>
+                                </div>
+                            </div>
+                            
+                            <div class="text-center bg-gray-50 p-2 rounded-md">
+                                <div class="text-gray-600 font-medium mb-1">
+                                    UBICACIÓN
+                                </div>
+                                <p class="text-sm font-bold text-gray-700">{{ ticket.event.location }}, {{ ticket.event.city }}</p>
+                            </div>
+                            
+                            </div>
+                    </article>
+                </a>
+              }
               
               
             </div>
