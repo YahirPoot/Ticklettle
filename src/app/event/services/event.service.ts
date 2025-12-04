@@ -45,9 +45,9 @@ export class EventService {
   updateEvent(eventId: number, updateEventRequest: UpdateEventRequest): Observable<EventInterface> {
     return this.http.put<EventInterface>(`${apiBaseUrl}/Events/${eventId}`, updateEventRequest)
       .pipe(
-        catchError(error => {
-          throw error;
-        })
+      //   catchError(error => {
+      //     throw error;
+      //   })
       );
   }
 

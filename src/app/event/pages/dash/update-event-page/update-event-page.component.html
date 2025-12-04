@@ -1,69 +1,43 @@
-<div class="min-h-screen w-full text-base-content p-2">
-    <shared-header-back [title]="'Actualizar Evento'" (back)="goBack()" />
-    <form  [formGroup]="updateEventForm"  (ngSubmit)="onSubmit()" class="w-full p-4 space-y-6">
+<div class="min-h-screen w-full p-4 lg:p-8 bg-base-100 text-base-content">
+    <shared-header-back title="Actualizar Evento" (back)="goBack()"></shared-header-back>
 
-        <!-- Información general -->
-        <section class="grid grid-cols-1 md:grid-cols-2 gap-4 items-start" aria-labelledby="general-info">
-            <div>
-                <h2 id="general-info" class="text-xl font-semibold mb-3">Información General</h2>
+    <form [formGroup]="updateEventForm" (ngSubmit)="onSubmit()" class="w-full space-y-8">
 
-                <div class="space-y-3">
+        <section class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start bg-base-100/50 p-6 rounded-xl shadow-md">
+            <div class="lg:col-span-2">
+                <h2 class="text-2xl font-semibold mb-4 border-b pb-2">Información General</h2>
 
-                    <!-- Nombre -->
+                <div class="space-y-4">
                     <label class="block">
-                        <span class="text-sm font-medium text-gray-500">
-                            Nombre del evento
-                        </span>
-                        <input 
-                            type="text" 
-                            placeholder="Nombre del evento" 
-                            formControlName="name"
-                            class="input input-bordered w-full mt-1" 
-                        >
+                        <span class="text-sm font-medium">Nombre del evento</span>
+                        <input formControlName="name" type="text" placeholder="Nombre del evento" class="input input-bordered w-full mt-1" />
                     </label>
 
-                    <!-- Descripción -->
                     <label class="block">
-                        <span class="text-sm font-medium text-gray-500">Descripción</span>
-                        <textarea 
-                            formControlName="description" 
-                            rows="4" 
-                            placeholder="Descripción breve"
-                            class="textarea textarea-bordered w-full mt-1" 
-                            aria-label="Descripción del evento">
-                        </textarea>
+                        <span class="text-sm font-medium">Descripción</span>
+                        <textarea formControlName="description" rows="4" placeholder="Descripción breve" class="textarea textarea-bordered w-full mt-1 resize-none"></textarea>
                     </label>
 
-                    <!-- Ubicación -->
                     <label class="block">
-                        <span class="text-sm font-medium text-gray-500">
-                            Ubicación
-                        </span>
-                        <input 
-                            type="text" 
-                            placeholder="Lugar o dirección" 
-                            formControlName="location"
-                            class="input input-bordered w-full mt-1">
+                        <span class="text-sm font-medium">Ubicación</span>
+                        <input formControlName="location" type="text" placeholder="Lugar o dirección" class="input input-bordered w-full mt-1" />
                     </label>
 
-                    <!-- Fecha -->
-                    <label class="block">
-                        <span class="text-sm font-medium text-gray-500">Fecha </span>
-                        <input type="date" formControlName="date"
-                            class="input input-bordered w-full mt-1" aria-label="Fecha del evento">
-                    </label>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <label class="block">
+                            <span class="text-sm font-medium">Fecha</span>
+                            <input formControlName="date" type="date" class="input input-bordered w-full mt-1" />
+                        </label>
 
-                    <!-- Hora -->
-                    <label class="block">
-                        <span class="text-sm font-medium text-gray-500">Hora</span>
-                        <input type="time" formControlName="time"
-                            class="input input-bordered w-full mt-1" aria-label="Hora del evento">
-                    </label>
+                        <label class="block">
+                            <span class="text-sm font-medium">Hora</span>
+                            <input formControlName="time" type="time" class="input input-bordered w-full mt-1" />
+                        </label>
+                    </div>
 
-                    <!-- Tipo -->
                     <label class="block">
-                        <span class="text-sm font-medium text-gray-500">Tipo </span>
-                        <select formControlName="type" class="select input-bordered w-full mt-1" aria-label="Tipo del evento">
+                        <span class="text-sm font-medium">Tipo</span>
+                        <select formControlName="type" class="select select-bordered w-full mt-1">
                             <option value="Gratis">Gratis</option>
                             <option value="Pago">Pago</option>
                         </select>
@@ -71,162 +45,122 @@
                 </div>
             </div>
 
-            <!-- Imagen -->
-            <div>
-                <div class="flex items-start justify-end mb-3">
-                    <button type="submit" class="btn btn-lg btn-primary" [disabled]="!hasChanges() || !isLoaded()">Actualizar Evento</button>
+            <div class="lg:col-span-1 flex flex-col items-stretch">
+                <div class="mb-6 w-full">
+                    <button type="submit" class="btn btn-primary w-full" [disabled]="!hasChanges() || !isLoaded()">Actualizar Evento</button>
                 </div>
 
-                <h3 class="text-lg font-medium mb-2">Imagen del Evento</h3>
-
-                <div class="border border-dashed rounded-lg p-3 flex flex-col items-center gap-3">
-                    <div class="w-full h-56 bg-base-200 rounded-md overflow-hidden flex items-center justify-center">
+                <h3 class="text-lg font-medium mb-3">Imagen del Evento</h3>
+                <div class="border border-dashed rounded-lg p-3 flex flex-col items-center gap-3 bg-base-200">
+                    <div class="w-full h-56 bg-base-300 rounded-md overflow-hidden flex items-center justify-center relative">
                         @if (imagePreview()) {
-                            <img [src]="imagePreview()" alt="preview" class="w-full h-full object-cover">
+                            <img [src]="imagePreview()" alt="preview" class="w-full h-full object-cover" />
                             <div class="absolute bottom-2 right-2 bg-black/50 text-white text-xs px-2 py-1 rounded">Imagen actual</div>
                         }
                         @if (!imagePreview()) {
-                            <div class="text-sm text-neutral flex items-center justify-center h-full">
-                                <mat-icon>image</mat-icon>
-                            </div>
+                            <div class="text-sm text-neutral">No hay previsualización</div>
                         }
                     </div>
 
-                    <input type="file" accept="image/*" (change)="onFileChange($event)" class="file-input file-input-bordered w-full">
-                    <p class="text-xs text-neutral">Formatos permitidos: JPG, PNG, GIF. Tamaño máximo: 2MB</p>
+                    <input type="file" accept="image/*" (change)="onFileChange($event)" class="file-input file-input-bordered w-full" />
+                    <p class="text-xs text-muted">Formatos permitidos: JPG, PNG, GIF. Tamaño máximo: 2MB</p>
                 </div>
             </div>
         </section>
 
         <!-- Boletos -->
-        <!-- <section class="grid-cols-1 md:grid-cols-2 gap-4" aria-labelledby="ticket-config">
-            <div>
-                <h2 id="ticket-config" class="text-xl font-semibold mb-3">Configuración de Boletos</h2>
+        <section class="bg-base-100 rounded-xl p-6 shadow-md">
+            <h2 class="text-xl font-semibold mb-3">Boletos</h2>
+            <div class="text-sm text-neutral mb-3">El tipo de evento determina los tipos de boleto que se pueden configurar.</div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <label class="block">
-                        <span class="text-sm font-medium text-gray-500">Capacidad total (tope)</span>
-                        <input type="number" min="0" formControlName="capacity" class="input input-bordered w-full mt-1">
-                        <p class="text-xs text-neutral mt-1">La suma de tickets no puede exceder esta cifra.</p>
-                    </label>
-
-                    <div class="block">
-                        <span class="text-sm font-medium text-gray-500">Total tickets configurados</span>
-                        <div class="mt-1 text-lg font-semibold">
-                            {{ totalTicketsCount() }}
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="space-y-3" formArrayName="tickets">
-
-                @for (ticket of tickets.controls; track $index ) {
-                    <div [formGroupName]="$index" class="grid grid-cols-12 gap-2 items-end">
-                        <div class="col-span-5">
-                            <label class="block text-xs text-gray-500">Tipo</label>
-                            <select class="select input-bordered w-full" formControlName="type">
-                                <option value="general">General</option>
-                                <option value="vip">VIP</option>
-                                <option value="early">Oro</option>
-                            </select>
-                        </div>
-
-                        <div class="col-span-3">
-                            <label class="block text-xs text-gray-500">Precio</label>
-                            <input type="number" min="0" step="0.01" formControlName="ticketPrice"
-                                class="input input-bordered w-full mt-1" />
-                        </div>
-
-                        <div class="col-span-3">
-                            <label class="block text-xs text-gray-500">Cantidad</label>
-                            <input type="number" min="0" class="input input-bordered w-full" formControlName="quantity" />
-                        </div>
-
-                        <div class="col-span-1">
-                            <button type="button" class="btn btn-ghost" (click)="removeTicketType($index)" aria-label="Eliminar tipo">✕</button>
-                        </div>
-                    </div>
-                }
-
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
                 <div>
-                    <button type="button" 
-                        [disabled]="totalTicketsCount() === capacityValue()" 
-                        class="btn btn-sm btn-outline" 
-                        (click)="addTicketType()">+ Agregar tipo
-                    </button>
+                    <label class="block text-sm">Tipo de Evento</label>
+                    <select formControlName="type" class="select select-bordered w-full mt-1">
+                        <option value="Gratis">Gratis</option>
+                        <option value="Pago">Pago</option>
+                    </select>
                 </div>
 
-                @if (capacityValue() > 0 && totalTicketsCount() > capacityValue()) {
-                    <div class="text-warning text-sm mt-2">
-                        La suma de cantidades de los tipos de boleto excede la capacidad total.
+                <div class="md:col-span-2 flex items-center justify-between">
+                    <button type="button" class="btn btn-outline btn-sm" (click)="addTicketType()">+ Agregar tipo</button>
+                    <div class="text-xs text-neutral">Para eventos gratis se crea automáticamente un boleto único con precio 0.</div>
+                </div>
+            </div>
+
+            <div formArrayName="ticketTypes" class="space-y-3 mt-4">
+                @for (ticket of ticketTypes.controls; track $index) {
+                    <div [formGroupName]="$index" class="bg-indigo-50 border-l-4 border-indigo-500 p-4 rounded-md flex flex-wrap items-center gap-4">
+                        <div class="flex-1 min-w-[150px]">
+                            <span class="text-xs font-semibold text-gray-500">{{ (ticket.value?.ticketTypeId) ? ('ID: ' + ticket.value.ticketTypeId) : 'NUEVO' }}</span>
+                            <input [value]="ticket.value?.name" (input)="updateTicket($index, 'name', $event)" placeholder="Nombre del Ticket" type="text" class="w-full text-lg font-semibold bg-transparent border-b border-indigo-200 focus:outline-none" />
+                        </div>
+
+                        <div class="w-24">
+                            <label class="block text-xs font-medium text-gray-500">Precio ($)</label>
+                            <input [value]="ticket.value?.price" (input)="updateTicket($index, 'price', $event)" type="number" min="0" class="w-full p-1 border rounded text-right" [readonly]="(updateEventForm.get('type')?.value === 'Gratis') && $index === 0" />
+                        </div>
+
+                        <div class="w-24">
+                            <label class="block text-xs font-medium text-gray-500">Disp.</label>
+                            <input [value]="ticket.value?.availableQuantity" (input)="updateTicket($index, 'availableQuantity', $event)" type="number" min="0" class="w-full p-1 border rounded text-right" />
+                        </div>
+
+                        <div class="w-24 text-center">
+                            <label class="block text-xs font-medium text-gray-500">Vendidos</label>
+                            <p class="font-bold text-sm text-indigo-700">{{ getTicketSoldQuantity($index) }}</p>
+                        </div>
+
+                        <button type="button" (click)="removeTicket($index)" [disabled]="!!ticket.value?.ticketTypeId" [attr.title]="ticket.value?.ticketTypeId ? 'No se puede eliminar este ticket' : 'Eliminar Ticket'" class="p-2 rounded-full bg-red-100 text-red-600 hover:bg-red-200 transition disabled:opacity-50" aria-label="Eliminar Ticket">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+                            </svg>
+                        </button>
                     </div>
                 }
             </div>
-        </section> -->
-
-        <!-- Monetización -->
-        <!-- <section class="bg-base-100 rounded-lg p-4">
-            <h2 class="text-lg font-semibold mb-3">Opciones de Monetización</h2>
-
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <label class="flex items-start gap-3">
-                    <input type="checkbox" formControlName="sellMerch" class="checkbox mt-1" />
-                    <div>
-                        <div class="font-medium">Venta de mercancía</div>
-                        <div class="text-xs text-neutral">Permite vender artículos físicos/merch durante el evento.</div>
-                    </div>  
-                </label>
-            </div>
-        </section> -->
+        </section>
 
         <!-- Productos -->
-        <section class="bg-base-100 rounded-lg p-4">
-            <h2 class="text-lg font-semibold mb-3">Productos</h2>
+        <section class="bg-base-100 rounded-xl p-6 shadow-md">
+            <h2 class="text-xl font-semibold mb-3">Productos</h2>
 
             <div formArrayName="products" class="space-y-3">
                 @for (product of products.controls; track $index) {
-                    <div [formGroupName]="$index" class="grid grid-cols-12 gap-3 items-end border rounded p-3">
-                        <div class="col-span-5">
-                            <label class="block">
-                                <span class="text-sm font-medium text-gray-500">Nombre</span>
-                                <input type="text" formControlName="name" class="input input-bordered w-full mt-1" />
-                            </label>
+                    <div [formGroupName]="$index" class="bg-purple-50 border-l-4 border-purple-500 p-4 rounded-md flex flex-wrap items-center gap-4">
+                        <div class="flex-1 min-w-[150px]">
+                            <span class="text-xs font-semibold text-gray-500">{{ (product.value?.productId) ? ('ID: ' + product.value.productId) : 'NUEVO' }}</span>
+                            <input [value]="product.value?.name" (input)="updateProduct($index, 'name', $event)" placeholder="Nombre del Producto" type="text" class="w-full text-lg font-semibold bg-transparent border-b border-purple-200 focus:outline-none" />
                         </div>
 
-                        <div class="col-span-2">
-                            <label class="block">
-                                <span class="text-sm font-medium text-gray-500">Precio</span>
-                                <input type="number" min="0" step="0.01" formControlName="price" class="input input-bordered w-full mt-1" />
-                            </label>
+                        <div class="w-24">
+                            <label class="block text-xs font-medium text-gray-500">Precio ($)</label>
+                            <input [value]="product.value?.price" (input)="updateProduct($index, 'price', $event)" type="number" min="0" class="w-full p-1 border rounded text-right" />
                         </div>
 
-                        <div class="col-span-2">
-                            <label class="block">
-                                <span class="text-sm font-medium text-gray-500">Stock</span>
-                                <input type="number" min="0" formControlName="stock" class="input input-bordered w-full mt-1" />
-                            </label>
+                        <div class="w-24">
+                            <label class="block text-xs font-medium text-gray-500">Stock</label>
+                            <input [value]="product.value?.stock" (input)="updateProduct($index, 'stock', $event)" type="number" min="0" class="w-full p-1 border rounded text-right" />
                         </div>
 
-                        <div class="col-span-2">
-                            <label class="block">
-                                <span class="text-sm font-medium text-gray-500">Imagen</span>
-                                <input type="file" accept="image/*" (change)="onProductFileChange($event, $index)" class="file-input file-input-bordered w-full mt-1" />
-                            </label>
-
+                        <div class="w-40">
+                            <label class="block text-xs font-medium text-gray-500">Imagen</label>
+                            <input type="file" accept="image/*" (change)="onProductFileChange($event, $index)" class="file-input file-input-bordered w-full mt-1" />
                             @if (productPreviews[$index]) {
                                 <img [src]="productPreviews[$index]" class="w-24 h-24 object-cover mt-2 rounded" />
                             }
                         </div>
 
-                        <div class="col-span-1 text-right">
-                            <button type="button" class="btn btn-ghost" (click)="removeProduct($index)">✕</button>
-                        </div>
+                        <button type="button" (click)="removeProduct($index)" [disabled]="!!product.value?.productId" [attr.title]="product.value?.productId ? 'No se puede eliminar este producto' : 'Eliminar Producto'" class="p-2 rounded-full bg-red-100 text-red-600 hover:bg-red-200 transition disabled:opacity-50" aria-label="Eliminar Producto">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+                            </svg>
+                        </button>
                     </div>
                 }
 
                 <div>
-                    <button type="button" class="btn btn-sm btn-outline" (click)="addProduct()">+ Agregar producto</button>
+                    <button type="button" class="btn btn-outline btn-sm" (click)="addProduct()">+ Agregar producto</button>
                 </div>
             </div>
         </section>
@@ -235,3 +169,4 @@
 
     <shared-loading></shared-loading>
 </div>
+<shared-loading></shared-loading>

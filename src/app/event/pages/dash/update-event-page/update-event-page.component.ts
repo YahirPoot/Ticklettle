@@ -2,7 +2,7 @@ import { Component, computed, effect, inject, input, signal } from '@angular/cor
 import { ActivatedRoute, Router } from '@angular/router';
 import { EventService } from '../../../services/event.service';
 import { FormBuilder, ReactiveFormsModule, FormArray, Validators } from '@angular/forms';
-import { EventInterface } from '../../../interfaces';
+import { EventInterface, ProductRequest, UpdateEventRequest } from '../../../interfaces';
 import { NotificationService } from '../../../../shared/services/notification.service';
 import { LoadingModalService } from '../../../../shared/services/loading-modal.service';
 import { LoadingComponent } from '../../../../shared/components/loading/loading.component';
@@ -11,6 +11,18 @@ import { firstValueFrom } from 'rxjs';
 import { MatIconModule } from '@angular/material/icon';
 import { ImageCloudinaryUploadService } from '../../../../shared/services/image-cloudinary-upload.service';
 import { HeaderBackComponent } from '../../../../shared/components/header-back/header-back.component';
+import { ProductService } from '../../../../product/services/product.service';
+import { UploadImageUseCase } from '../../../../shared/use-cases/upload-image-use-case';
+import { EventUpdateFacadeService } from '../../../services/event-update-facade.service';
+import { buildProductPayload } from '../../../utils/update-event.utils';
+import {
+  ensureTicketTypesForType,
+  addTicketType,
+  removeTicketType,
+  updateTicketField,
+  updateProductField,
+  getTicketSoldQuantity
+} from '../../../utils/update-event-form.utils';
 
 @Component({
   selector: 'app-update-event-page',
@@ -26,6 +38,9 @@ export class UpdateEventPageComponent {
   private imageUploadService = inject(ImageCloudinaryUploadService);
   private notificationService = inject(NotificationService);
   private loadingService = inject(LoadingModalService);
+  private productService = inject(ProductService);
+  private uploadImageUseCase = inject(UploadImageUseCase);
+  private eventUpdateFacade = inject(EventUpdateFacadeService);
 
   readonly eventId: number = this.activateRoute.snapshot.params['eventId'];
 
@@ -85,6 +100,11 @@ export class UpdateEventPageComponent {
       if (!event) return;
       this.fillForm(event);
     });
+    // reaccionar a cambios en el tipo para ajustar ticketTypes automáticamente
+    const typeControl = this.updateEventForm.get('type');
+    typeControl?.valueChanges?.subscribe((t: string | null) => {
+      ensureTicketTypesForType(this.updateEventForm, this.fb, t ?? undefined);
+    });
   }
 
   onFileChange(e: Event) {
@@ -128,6 +148,11 @@ export class UpdateEventPageComponent {
 
   removeProduct(index: number) {
     const products = this.updateEventForm.get('products') as FormArray;
+    const prod = products.at(index)?.value;
+    if (prod?.productId) {
+      this.notificationService.showNotification('No se puede eliminar un producto existente.', 'warning');
+      return;
+    }
     products.removeAt(index);
     delete this.productPreviews[index];
     delete this.productFiles[index];
@@ -245,17 +270,19 @@ export class UpdateEventPageComponent {
     }, { emitEvent: false });
 
     // llenar ticketTypes form array
-    const ticketTypesArr = this.updateEventForm.get('ticketTypes') as FormArray;
-    ticketTypesArr.clear();
-    (event.ticketTypes ?? []).forEach(tt => {
-      ticketTypesArr.push(this.fb.group({
-        ticketTypeId: [tt.ticketTypeId],
-        name: [tt.name || '', Validators.required],
-        description: [tt.description || ''],
-        price: [tt.price ?? 0, Validators.required],
-        availableQuantity: [tt.availableQuantity ?? 0]
-      }));
-    });
+      const ticketTypesArr = this.updateEventForm.get('ticketTypes') as FormArray;
+      ticketTypesArr.clear();
+      (event.ticketTypes ?? []).forEach(tt => {
+        ticketTypesArr.push(this.fb.group({
+          ticketTypeId: [tt.ticketTypeId],
+          name: [tt.name || '', Validators.required],
+          description: [tt.description || ''],
+          price: [tt.price ?? 0, Validators.required],
+          availableQuantity: [tt.availableQuantity ?? 0]
+        }));
+      });
+        // asegurar que los ticketTypes estén de acuerdo al tipo actual
+        ensureTicketTypesForType(this.updateEventForm, this.fb, event.type);
 
     // llenar products form array
     const productsArr = this.updateEventForm.get('products') as FormArray;
@@ -298,6 +325,78 @@ export class UpdateEventPageComponent {
     this.notificationService.showNotification('Valores restaurados', 'info');
   }
 
+  // asegura la forma de ticketTypes según el tipo de evento
+  private ensureTicketTypesForType(type: string | null | undefined) {
+    const ticketTypesArr = this.updateEventForm.get('ticketTypes') as FormArray;
+    const t = (type ?? '').toLowerCase();
+    if (t === 'gratis') {
+      // conservar primero si existe, o crear uno con price 0
+      const first = ticketTypesArr.at(0)?.value;
+      const qty = first?.availableQuantity ?? 0;
+      ticketTypesArr.clear();
+      ticketTypesArr.push(this.fb.group({
+        ticketTypeId: [first?.ticketTypeId ?? undefined],
+        name: ['General', Validators.required],
+        description: [''],
+        price: [0, Validators.required],
+        availableQuantity: [qty]
+      }));
+      return;
+    }
+
+    // pago: asegurar General y VIP (si ya existen mantener ids/valores)
+    const values = ticketTypesArr.value ?? [];
+    const find = (name: string) => values.find((v: any) => (v.name ?? '').toLowerCase() === name.toLowerCase());
+    const general = find('general') ?? values[0] ?? { name: 'General', price: 0, availableQuantity: 0 };
+    const vip = find('vip') ?? values.find((v: any) => (v.name ?? '').toLowerCase() === 'vip') ?? { name: 'VIP', price: 0, availableQuantity: 0 };
+    ticketTypesArr.clear();
+    ticketTypesArr.push(this.fb.group({
+      ticketTypeId: [general?.ticketTypeId ?? undefined],
+      name: [general?.name ?? 'General', Validators.required],
+      description: [general?.description ?? ''],
+      price: [general?.price ?? 0, Validators.required],
+      availableQuantity: [general?.availableQuantity ?? 0]
+    }));
+    ticketTypesArr.push(this.fb.group({
+      ticketTypeId: [vip?.ticketTypeId ?? undefined],
+      name: [vip?.name ?? 'VIP', Validators.required],
+      description: [vip?.description ?? ''],
+      price: [vip?.price ?? 0, Validators.required],
+      availableQuantity: [vip?.availableQuantity ?? 0]
+    }));
+  }
+
+  addTicketType(name = 'Custom') { addTicketType(this.updateEventForm, this.fb, name); }
+
+  removeTicketType(index: number) { removeTicketType(this.updateEventForm, index); }
+
+  // wrapper for template: remove ticket (guard against existing)
+  removeTicket(index: number) {
+    const ticket = (this.updateEventForm.get('ticketTypes') as FormArray).at(index)?.value;
+    if (ticket?.ticketTypeId) {
+      this.notificationService.showNotification('No se puede eliminar un tipo de boleto existente.', 'warning');
+      return;
+    }
+    removeTicketType(this.updateEventForm, index);
+  }
+
+  // wrapper to update ticket using util
+  updateTicket(index: number, field: string, event: Event) {
+    const val = (event.target as HTMLInputElement).value;
+    updateTicketField(this.updateEventForm, index, field, val);
+  }
+
+  // wrapper to update product using util
+  updateProduct(index: number, field: string, event: Event) {
+    const val = (event.target as HTMLInputElement).value;
+    updateProductField(this.updateEventForm, index, field, val);
+  }
+
+  // get sold quantity via util
+  getTicketSoldQuantity(index: number): number {
+    return getTicketSoldQuantity(this.updateEventForm, this.originalValues(), index);
+  }
+
   async onSubmit() {
     if (!this.hasChanges()) {
       this.notificationService.showNotification('No hay cambios para actualizar.', 'info');
@@ -321,27 +420,31 @@ export class UpdateEventPageComponent {
       this.loadingService.hideModal();
     }
 
-    // procesar productos: subir imágenes nuevas y construir payload
-    const productsControls = (this.updateEventForm.get('products') as FormArray).controls || [];
-    const productsPayload: any[] = [];
-    for (let i = 0; i < productsControls.length; i++) {
-      const v = productsControls[i].value;
-      let imageUrl = v.imageUrl ?? undefined;
-      const file = this.productFiles[i];
-      if (file) {
-        const uploaded = await this.uploadIfFile(file);
-        if (uploaded) imageUrl = uploaded;
-      }
-      const productReq: any = {
-        name: v.name,
-        description: v.description,
-        price: v.price,
-        stock: v.stock,
-      };
-      if (v.productId) productReq.productId = v.productId;
-      if (imageUrl) productReq.imageUrl = imageUrl;
-      productsPayload.push(productReq);
+    // usar el facade para preparar el UpdateEventRequest (subida imágenes, creación productos, payload)
+    this.loadingService.showModal('update', 'Preparando actualización...');
+    let prepared: { request: UpdateEventRequest; createdProducts: ProductRequest[] } | undefined;
+    try {
+      prepared = await this.eventUpdateFacade.prepareUpdateRequest({
+        formValue: form,
+        productFiles: this.productFiles,
+        mainImageFile: this.imageFile(),
+        mainImageUrl: imageToUpload,
+        eventId: this.eventId
+      });
+    } catch (err) {
+      console.error('Error preparing update request:', err);
+      this.loadingService.hideModal();
+      this.notificationService.showNotification('Error preparando la actualización. Inténtalo de nuevo.', 'error');
+      return;
     }
+
+    if (!prepared) {
+      this.loadingService.hideModal();
+      this.notificationService.showNotification('No se pudo preparar la actualización.', 'error');
+      return;
+    }
+
+    const updateRequest = prepared.request;
 
     // ticketTypes payload
     const ticketTypesPayload = ((this.updateEventForm.get('ticketTypes') as FormArray).controls || []).map(tc => {
@@ -356,20 +459,7 @@ export class UpdateEventPageComponent {
       return t;
     });
 
-    const updateRequest: any = {
-      name: form.name ?? '',
-      description: form.description ?? '',
-      dateTime: dateTime,
-      location: form.location ?? '',
-      type: form.type ?? '',
-      status: form.status ?? '',
-      imageUrl: imageToUpload ?? '',
-      ticketTypes: ticketTypesPayload,
-      products: productsPayload
-    };
-
     this.loadingService.showModal('update', 'Actualizando evento...');
-
     try {
       const res = await firstValueFrom(this.eventService.updateEvent(this.eventId, updateRequest));
       this.originalValues.set(res);
