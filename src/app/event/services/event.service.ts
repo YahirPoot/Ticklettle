@@ -20,9 +20,6 @@ export class EventService {
       }
     });
     return this.http.get<EventsResponse>(`${apiBaseUrl}/Events`, { params })
-      .pipe(
-        tap(response => console.log('Eventos obtenidos con filtros:', filters, response))
-      );
   }
 
   getEventsOrganizer(page: number, pageSize: number) {
@@ -34,32 +31,21 @@ export class EventService {
         }
       }
     )
-    .pipe(
-      tap(res => console.log('Eventos obtenidos organizador:', res))
-    )
   }
 
 
   getEventById(eventId: number) {
     return this.http.get<EventInterface>(`${apiBaseUrl}/Events/${eventId}`)
-      .pipe(
-        tap(res => console.log('console detail event -', res))
-      )
   }
 
   createEvent(createEventRequest: CreateEventRequest): Observable<CreateEventRequest> {
     return this.http.post<CreateEventRequest>(`${apiBaseUrl}/Events`, createEventRequest)
-      .pipe(
-        tap(response => console.log('Evento creado:', response))
-      );
   }
 
   updateEvent(eventId: number, updateEventRequest: UpdateEventRequest): Observable<EventInterface> {
     return this.http.put<EventInterface>(`${apiBaseUrl}/Events/${eventId}`, updateEventRequest)
       .pipe(
-        tap(response => console.log('Evento actualizado:', response)),
         catchError(error => {
-          console.log('Error al actualizar el evento:', error);
           throw error;
         })
       );
@@ -68,7 +54,6 @@ export class EventService {
   deleteEvent(eventId: number) {
     return this.http.delete<void>(`${apiBaseUrl}/Events/${eventId}`)
       .pipe(
-        tap(() => console.log('Evento eliminado:', eventId)),
         catchError(err => {
           console.error('Error eliminando evento:', err);
           throw err;

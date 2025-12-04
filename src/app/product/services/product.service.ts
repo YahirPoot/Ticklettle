@@ -19,9 +19,6 @@ export class ProductService {
 
   createProductByEvent(eventId: number, requestProduct: ProductRequest): Observable<ProductRequest> {
     return this.http.post<ProductRequest>(`${apiBaseUrl}/Products/event/${eventId}`, requestProduct)
-      .pipe(
-        tap(response => console.log('Product created:', response))
-      ) ;
   }
 
   deleteProduct(productId: number): Observable<void> {

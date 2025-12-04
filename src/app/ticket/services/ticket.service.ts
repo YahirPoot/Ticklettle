@@ -36,8 +36,6 @@ export class TicketService {
   claimFreetickets(requestClaimFree: ClaimFreeTicketRequest): Observable<ClaimFreeTicketRequest> {
     return this.http.post<ClaimFreeTicketRequest>(`${apiBaseUrl}/Tickets/claim-free`,
       requestClaimFree
-    ).pipe(
-      tap(res => console.log('Ticket reclamado:', res))
     )
   }
 }

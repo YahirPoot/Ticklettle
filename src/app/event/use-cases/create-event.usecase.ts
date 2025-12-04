@@ -39,7 +39,6 @@ export class CreateEventUseCase {
         const productsImgUrls = await this.imageUploadUseCase.uploadAll(productsFiles, 4, 1);
 
         const request = mapFormToCreateEventRequest(formValue, imageUrl, productsImgUrls, organizingHouseId);
-        console.log('CreateEventUseCase - request to create event:', request);
         await firstValueFrom(this.eventService.createEvent(request));
     }   
 }

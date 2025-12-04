@@ -15,15 +15,9 @@ export default class AnalyticsService {
 
   getMyAnalytics(): Observable<ResponseAnalitycsInterface> {
     return this.http.get<ResponseAnalitycsInterface>(`${apiBaseUrl}/Analytics/my-analytics`)
-      .pipe(
-        tap(res => console.log('Analytics obtenidos -', res))
-      );
   }
 
   getAnalyticsByEvent(eventId: number): Observable<AnalyticsForEventInterface> {
     return this.http.get<AnalyticsForEventInterface>(`${apiBaseUrl}/Analytics/event/${eventId}`)
-      .pipe(
-        tap(res => console.log('Analytics for event obtained -', res))
-      );
   }
 }

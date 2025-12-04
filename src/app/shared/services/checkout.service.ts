@@ -17,7 +17,7 @@ export class CheckoutService {
   onProceedToPayment(requestPayment: RequestPaymentInterface) {
     try  {
       sessionStorage.setItem(STORAGE_KEY_PAYLOAD, JSON.stringify(requestPayment));
-    } catch { console.log('Could not store payment payload in sessionStorage'); }
+    } catch {}
     this._payload$.next(requestPayment);
     this.router.navigate(['/tickets/checkout']);
   }
@@ -38,7 +38,6 @@ export class CheckoutService {
       this._payload$.next(parsed);
       return parsed;
     } catch {
-      console.log('Could not parse payment payload from sessionStorage');
       return null;
     }
   }
@@ -50,9 +49,7 @@ export class CheckoutService {
   savePaymentIntent(clientSecret: string, paymentIntentId: string, paymentId: number) {
     try {
       sessionStorage.setItem(STORAGE_KEY_INTENT, JSON.stringify({ clientSecret, paymentIntentId, paymentId }));
-    } catch { 
-      console.log('Could not store payment intent in sessionStorage');
-    }
+    } catch {}
   }
 
   getSavedPaymentIntent(): { clientSecret: string; paymentIntentId: string; paymentId: number } | null {
@@ -61,8 +58,7 @@ export class CheckoutService {
       if (!raw) return null;
       return JSON.parse(raw) as { clientSecret: string; paymentIntentId: string; paymentId: number };
     } catch {
-      console.log('Could not parse payment intent from sessionStorage');
-      return null;
+      console.log('Error retrieving payment intent from storage'); return null;
     }
   }
 }

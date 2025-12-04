@@ -15,15 +15,11 @@ export class PaymentService {
 
   createPaymentIntent(requestPayment: RequestPaymentInterface) {
     return this.http.post<{ paymentIntentId: string, clientSecret: string, paymentId: number }>(`${apiBaseUrl}/Payments/create-payment-intent`, requestPayment)
-      .pipe(
-        tap(response => console.log('Payment Intent creado:', response))
-      );
   }
 
   confirmPayment(payload: { paymentIntentId: string; paymentMethodId: string }): Observable<ResponsePaymentInterface> {
     return this.http.post<ResponsePaymentInterface>(`${apiBaseUrl}/Payments/confirm-payment`, payload)
       .pipe(
-        tap(response => console.log('Payment confirmado:', response)),
         catchError(err => {
           console.error('Error al confirmar el pago:', err);
           throw err;
@@ -37,7 +33,6 @@ export class PaymentService {
         body: { paymentIntentId }
       }
     ).pipe(
-      tap(() => console.log('Payment Intent cancelado:', paymentIntentId)),
       catchError(err => {
         console.error('Error al cancelar el Payment Intent:', err);
         throw err;
@@ -48,7 +43,6 @@ export class PaymentService {
   deletePaymentId(payementId: number): Observable<void> {
     return this.http.delete<void>(`${apiBaseUrl}/Payments/${payementId}`)
       .pipe(
-        tap(() => console.log('Pago eliminado:', payementId)),
         catchError(err => {
           console.error('Error al eliminar el pago:', err);
           throw err;
@@ -58,8 +52,6 @@ export class PaymentService {
 
   getSaleById(saleId: number): Observable<ResponsePaymentInterface> {
     return this.http.get<ResponsePaymentInterface>(`${apiBaseUrl}/Payments/sales/${saleId}`
-      ).pipe(
-        tap(response => console.log('Detalles de la venta obtenidos:', response))
       )
   }
 }
