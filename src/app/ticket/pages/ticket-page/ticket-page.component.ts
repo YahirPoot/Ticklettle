@@ -8,10 +8,11 @@ import { TicketService } from '../../services/ticket.service';
 import { TicketInterface } from '../../interfaces';
 import { PaginationService } from '../../../shared/services/pagination.service';
 import { PaginationComponent } from '../../../shared/components/pagination/pagination.component';
+import { DatePipe, UpperCasePipe } from '@angular/common';
 
 @Component({
   selector: 'app-ticket-page',
-  imports: [IsNotAuthenticatedComponent, RouterLink, MatIconModule, PaginationComponent],
+  imports: [IsNotAuthenticatedComponent, RouterLink, MatIconModule, PaginationComponent, DatePipe, UpperCasePipe],
   templateUrl: './ticket-page.component.html',
 })
 export class TicketPageComponent { 
