@@ -17,7 +17,7 @@ export class CheckoutService {
   onProceedToPayment(requestPayment: RequestPaymentInterface) {
     try  {
       sessionStorage.setItem(STORAGE_KEY_PAYLOAD, JSON.stringify(requestPayment));
-    } catch { return null;}
+    } catch {}
     this._payload$.next(requestPayment);
     this.router.navigate(['/tickets/checkout']);
   }
@@ -49,9 +49,7 @@ export class CheckoutService {
   savePaymentIntent(clientSecret: string, paymentIntentId: string, paymentId: number) {
     try {
       sessionStorage.setItem(STORAGE_KEY_INTENT, JSON.stringify({ clientSecret, paymentIntentId, paymentId }));
-    } catch { 
-      return null;
-    }
+    } catch {}
   }
 
   getSavedPaymentIntent(): { clientSecret: string; paymentIntentId: string; paymentId: number } | null {
@@ -60,7 +58,7 @@ export class CheckoutService {
       if (!raw) return null;
       return JSON.parse(raw) as { clientSecret: string; paymentIntentId: string; paymentId: number };
     } catch {
-      return null;
+      console.log('Error retrieving payment intent from storage'); return null;
     }
   }
 }
