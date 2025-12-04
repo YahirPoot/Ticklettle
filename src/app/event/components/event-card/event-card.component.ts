@@ -27,6 +27,8 @@ export class EventCardComponent {
   showDelete = input<boolean>(false);
 
   remove = output<number>();
+  favoriteToggled = output<{eventId: number, isFavorited: boolean}>();
+
 
   private checkIfFavorite = effect(() => {
     const ev = this.event();
@@ -60,21 +62,30 @@ export class EventCardComponent {
     }
   }
 
+
   private addFavorite(eventId: number) {
     this.favoriteEventSvc.addFavoriteEvent(eventId)
       .subscribe({
-        next: () => this._isFavorited.set(true),
+        next: () => {
+          this._isFavorited.set(true);
+          this.favoriteToggled.emit({ eventId, isFavorited: true });
+        },
         error: () => console.error("Error al agregar favorito")
       });
   }
 
+
   private removeFavorite(eventId: number) {
     this.favoriteEventSvc.removeFavoriteEvent(eventId)
       .subscribe({
-        next: () => this._isFavorited.set(false),
+        next: () => {
+          this._isFavorited.set(false);
+          this.favoriteToggled.emit({ eventId, isFavorited: false });
+        },
         error: () => console.error("Error al eliminar favorito")
       });
   }
+
 
 
 }
