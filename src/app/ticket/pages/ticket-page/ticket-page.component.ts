@@ -1,7 +1,6 @@
 import { Component, computed, effect, inject, resource, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
-
 import { AuthService } from '../../../auth/services/auth.service';
 import { IsNotAuthenticatedComponent } from '../../../shared/components/is-not-authenticated/is-not-authenticated.component';
 import { TicketService } from '../../services/ticket.service';
