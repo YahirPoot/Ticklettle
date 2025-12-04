@@ -5,10 +5,11 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { DatePipe, TitleCasePipe } from '@angular/common';
 import { QRCodeComponent } from 'angularx-qrcode';
+import { HeaderBackComponent } from '../../../shared/components/header-back/header-back.component';
 
 @Component({
   selector: 'app-detail-ticket-page',
-  imports: [MatIconModule, DatePipe, QRCodeComponent, RouterLink, TitleCasePipe],
+  imports: [MatIconModule, DatePipe, QRCodeComponent, RouterLink, TitleCasePipe, HeaderBackComponent],
   templateUrl: './detail-ticket-page.component.html',
 })
 export class DetailTicketPageComponent { 
@@ -60,5 +61,8 @@ addToGoogleWallet(event?: MouseEvent) {
   }
 
   copyCode() {}
+  goback() {
+    window.history.back();
 }
 
+}

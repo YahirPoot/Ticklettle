@@ -77,7 +77,7 @@
               [event]="fav.event"
               [showFavorite]="false"
               [showDelete]="true"
-              (remove)="openConfirm($event, fav.event.name)">
+              (favoriteToggled)="onFavoriteToggled($event)">
             </event-card>
 
           }

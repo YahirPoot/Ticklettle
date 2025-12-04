@@ -1,49 +1,96 @@
 <div class="min-h-screen w-full text-base-content">
-  <div class="px-4 py-2 mb-4">
+  @if (initialLoading()) {
+    <div class="px-4 py-2 mb-4 animate-pulse">
       <div class="flex-1">
-          <h1 class="text-2xl font-bold">Mis Boletos</h1>
+        <div class="skeleton h-8 w-40 mb-2"></div>
       </div>
-      <div class="flex items-center justify-end gap-1"> 
-          
-          <div class="text-sm font-semibold text-gray-700 whitespace-nowrap">
-              Filtrar por:
-          </div>
+      <div class="flex items-center justify-end gap-1">
+        <div class="skeleton h-4 w-20"></div>
 
-          <div class="flex items-center gap-2">
-              <select #filterStatus id="filter-status" class="select select-bordered w-full select-sm max-w-[8rem]" (change)="onFilterChange(filterStatus.value)">
-                <option value="Activo" selected>Activos</option>
-                <option value="Vencido">Vencidos</option>
-              </select>
-
-            <button class="btn btn-sm btn-outline" (click)="applyFilters()">Filtrar</button>
-          </div>
+        <div class="flex items-center gap-2">
+          <div class="skeleton h-8 w-32 rounded-lg"></div>
+        </div>
       </div>
-  </div>
+    </div>
+  } @else {
+    <div class="px-4 py-2 mb-4">
+      <div class="flex-1">
+        <h1 class="text-2xl font-bold">Mis Boletos</h1>
+      </div>
+      <div class="flex items-center justify-end gap-1">
 
-  <!-- 1️⃣ LOADING GLOBAL -->
-  @if (
-    initialLoading()
-  ) {
-    <div class="p-4 max-w-6xl mx-auto flex flex-col gap-4">
-      <!-- <div class="w-1/3 skeleton h-10 mt-4"></div> -->
+        <div class="text-sm font-semibold text-gray-700 whitespace-nowrap">
+          Filtrar por:
+        </div>
 
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full">
-        <div class="skeleton card h-60 w-full"></div>
-        <div class="skeleton card h-60 w-full"></div>
-        <div class="skeleton card h-60 w-full"></div>
-        <div class="skeleton card h-60 w-full"></div>
+        <div class="flex items-center gap-2">
+          <select #filterStatus id="filter-status" class="select select-bordered w-full select-sm max-w-[8rem]" (change)="onFilterChange(filterStatus.value)"
+            [disabled]="initialLoading()"
+            [value]="selectedStatus()"
+            >
+              <option value="Activo" [selected]="selectedStatus() === 'Activo'">Activos</option>
+              <option value="Vencido" [selected]="selectedStatus() === 'Vencido'">Vencidos</option>
+          </select>
+        </div>
       </div>
     </div>
   }
 
-  <!-- 2️⃣ NO AUTENTICADO -->
+  @if (
+    initialLoading()
+  ) {
+    <div class="p-4 max-w-6xl mx-auto flex flex-col gap-4">
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 w-full">
+        @for (item of [1, 2, 3, 4, 5, 6]; track item) {
+          <div class="relative bg-base-100 shadow-xl border border-gray-200 overflow-hidden w-full rounded-lg">
+            
+            <div class="h-40 w-full overflow-hidden relative bg-gray-300 animate-pulse flex items-center justify-center">
+              <div class="skeleton h-8 w-3/4 rounded-lg bg-gray-400"></div>
+            </div>
+
+            <div class="absolute left-0 right-0 h-0.5 border-t border-dashed border-gray-400 z-10" style="top: 10rem;">
+              <div class="absolute -top-3 left-0 w-6 h-6 bg-base-100 rounded-full transform -translate-x-1/2 skeleton"></div>
+              <div class="absolute -top-3 right-0 w-6 h-6 bg-base-100 rounded-full transform translate-x-1/2 skeleton"></div>
+            </div>
+
+            <div class="p-4 pt-8 animate-pulse">
+              <div class="skeleton h-4 w-1/2 mx-auto mb-2"></div>
+              <div class="skeleton h-6 w-3/4 mx-auto mb-4"></div>
+
+              <div class="grid grid-cols-2 gap-4 text-sm mb-4 border-b border-gray-100 pb-3">
+                <div class="text-center">
+                  <div class="skeleton h-4 w-1/2 mx-auto mb-1"></div>
+                  <div class="skeleton h-4 w-2/3 mx-auto"></div>
+                </div>
+                <div class="text-center">
+                  <div class="skeleton h-4 w-1/2 mx-auto mb-1"></div>
+                  <div class="skeleton h-4 w-2/3 mx-auto"></div>
+                </div>
+              </div>
+
+              <div class="bg-gray-50 p-2 rounded-md">
+                <div class="skeleton h-4 w-1/3 mx-auto mb-1"></div>
+                <div class="skeleton h-4 w-5/6 mx-auto"></div>
+              </div>
+            </div>
+
+          </div>
+        }
+      </div>
+
+      <div class="flex items-center justify-center mt-4">
+        <div class="skeleton h-8 w-48 rounded-full"></div>
+      </div>
+    </div>
+  }
+
   @else if (!isAuthenticated()) {
     <shared-is-not-authenticated
       [message]="'Debes iniciar sesión para ver tus boletos.'"
     />
   }
 
-  <!-- 3️⃣ NO HAY BOLETOS -->
   @else if (
     (tickets().length === 0) && !initialLoading() && isAuthenticated()
   ) {
@@ -74,82 +121,79 @@
 
   }
 
-  <!-- 4️⃣ SÍ HAY BOLETOS -->
   @else {
 
     <div class="w-full min-h-screen flex flex-col">
     <div class="p-4 max-w-6xl mx-auto w-full">
 
-        
 
-          <!-- ACTIVOS -->
-          <section>
-            <div class= "grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
+        <section>
+          <div class= "grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
 
-            @for (ticket of tickets(); track $index) {
-                <a [routerLink]="['detail-ticket', ticket.ticketId]" class="block mb-6 relative">
-                    <article class="relative bg-white shadow-2xl border border-gray-200 overflow-hidden w-full min-w-80 rounded-lg">
-                        
-                        <div class="h-40 w-full overflow-hidden relative">
-                            <img [src]="ticket.event.imageUrl" [alt]="'Imagen del evento ' + ticket.event.name" class="w-full h-full object-cover brightness-75">
-                            <div class="absolute inset-0 flex items-center justify-center p-4">
-                                <h3 class="text-2xl font-black text-white text-center drop-shadow-lg leading-tight">
-                                    {{ ticket.event.name }}
-                                </h3>
-                            </div>
-                        </div>
-                        
-                        <div class="absolute left-0 right-0 h-0.5 border-t border-dashed border-gray-400 z-10" style="top: 10rem;">
-                            <div class="absolute -top-3 left-0 w-6 h-6 bg-base-100 rounded-full transform -translate-x-1/2"></div>
-                            <div class="absolute -top-3 right-0 w-6 h-6 bg-base-100 rounded-full transform translate-x-1/2"></div>
-                        </div>
+          @for (ticket of tickets(); track $index) {
+              <a [routerLink]="['detail-ticket', ticket.ticketId]" class="block mb-6 relative">
+                  <article class="relative bg-white shadow-2xl border border-gray-200 overflow-hidden w-full min-w-80 rounded-lg">
 
-                        <div class="p-4 pt-8">
-                            
-                            <p class="text-sm font-semibold text-gray-500 mb-1 text-center">TIPO DE BOLETO:</p>
-                            <p class="text-xl font-bold text-primary mb-3 text-center">
-                                {{ ticket.type | uppercase }}
-                            </p>
+                      <div class="h-40 w-full overflow-hidden relative">
+                          <img [src]="ticket.event.imageUrl" [alt]="'Imagen del evento ' + ticket.event.name" class="w-full h-full object-cover brightness-75">
+                          <div class="absolute inset-0 flex items-center justify-center p-4">
+                              <h3 class="text-2xl font-black text-white text-center drop-shadow-lg leading-tight">
+                                  {{ ticket.event.name }}
+                              </h3>
+                          </div>
+                      </div>
 
-                            <div class="grid grid-cols-2 gap-4 text-sm mb-4 border-b border-gray-100 pb-3">
-                                
-                                <div class="text-center"> 
-                                    <div class="text-gray-600 font-medium mb-1">
-                                        FECHA
-                                    </div>
-                                    <p class="text-gray-800 font-semibold">{{ ticket.event.dateTime | date:'dd MMM yyyy' }}</p>
-                                </div>
+                      <div class="absolute left-0 right-0 h-0.5 border-t border-dashed border-gray-400 z-10" style="top: 10rem;">
+                          <div class="absolute -top-3 left-0 w-6 h-6 bg-base-100 rounded-full transform -translate-x-1/2"></div>
+                          <div class="absolute -top-3 right-0 w-6 h-6 bg-base-100 rounded-full transform translate-x-1/2"></div>
+                      </div>
 
-                                <div class="text-center">
-                                    <div class="text-gray-600 font-medium mb-1">
-                                        HORA
-                                    </div>
-                                    <p class="text-gray-800 font-semibold">{{ ticket.event.dateTime | date:'shortTime' }}</p>
-                                </div>
-                            </div>
-                            
-                            <div class="text-center bg-gray-50 p-2 rounded-md">
-                                <div class="text-gray-600 font-medium mb-1">
-                                    UBICACIÓN
-                                </div>
-                                <p class="text-sm font-bold text-gray-700">{{ ticket.event.location }}, {{ ticket.event.city }}</p>
-                            </div>
-                            
-                            </div>
-                    </article>
-                </a>
-              }
-              
-              
-            </div>
-            <div class="flex items-center justify-center mt-4">
-              <shared-pagination
-                  [page]="paginationService.page()"
-                  [totalPages]="paginationService.totalPages()"
-                  (pageChange)="onPageChange($event)"
-              />
+                      <div class="p-4 pt-8">
+
+                          <p class="text-sm font-semibold text-gray-500 mb-1 text-center">TIPO DE BOLETO:</p>
+                          <p class="text-xl font-bold text-primary mb-3 text-center">
+                              {{ ticket.type | uppercase }}
+                          </p>
+
+                          <div class="grid grid-cols-2 gap-4 text-sm mb-4 border-b border-gray-100 pb-3">
+
+                              <div class="text-center">
+                                  <div class="text-gray-600 font-medium mb-1">
+                                      FECHA
+                                  </div>
+                                  <p class="text-gray-800 font-semibold">{{ ticket.event.dateTime | date:'dd MMM yyyy' }}</p>
+                              </div>
+
+                              <div class="text-center">
+                                  <div class="text-gray-600 font-medium mb-1">
+                                      HORA
+                                  </div>
+                                  <p class="text-gray-800 font-semibold">{{ ticket.event.dateTime | date:'shortTime' }}</p>
+                              </div>
+                          </div>
+
+                          <div class="text-center bg-gray-50 p-2 rounded-md">
+                              <div class="text-gray-600 font-medium mb-1">
+                                  UBICACIÓN
+                              </div>
+                              <p class="text-sm font-bold text-gray-700">{{ ticket.event.location }}, {{ ticket.event.city }}</p>
+                          </div>
+
+                          </div>
+                  </article>
+              </a>
+            }
+
+
           </div>
-          </section>
+          <div class="flex items-center justify-center mt-4">
+            <shared-pagination
+                [page]="paginationService.page()"
+                [totalPages]="paginationService.totalPages()"
+                (pageChange)="onPageChange($event)"
+            />
+          </div>
+        </section>
       </div>
     </div>
   }

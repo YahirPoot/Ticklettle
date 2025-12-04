@@ -52,10 +52,7 @@
     </div>
 } @else {
     <div class="w-full flex flex-col text-base-content">
-        <div class="p-4">
-            <h1 class="text-2xl font-semibold">Vista de Boleto</h1>
-        </div>
-
+        <shared-header-back [title]="'Vista del Boleto'" (back)="goback()"/>
         <!-- Ticket card -->
         <div class="p-4 flex-1 flex items-start justify-center">
             <article class="card w-full max-w-4xl shadow-xl rounded-2xl overflow-hidden bg-base-100">

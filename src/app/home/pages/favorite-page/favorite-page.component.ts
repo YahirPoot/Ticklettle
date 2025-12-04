@@ -42,6 +42,14 @@ export class FavoritePageComponent {
   get favorites() {
     return this.favoritesResource.value() || [];
   }
+  onFavoriteToggled(evt: { eventId: number; isFavorited: boolean }) {
+    if (!evt.isFavorited) {
+      // eliminamos el item localmente para que desaparezca al instante
+      this.favoritesResource.update((prev) =>
+        prev?.filter((f) => f.eventId !== evt.eventId) ?? []
+      );
+    }
+  }
 
   openConfirm(eventId: number, name?: string) {
     this.selectedToDelete.set(eventId);
