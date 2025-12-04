@@ -1,14 +1,14 @@
 import { Component, inject, OnInit, resource, signal } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { TicketService } from '../../services/ticket.service';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
-import { DatePipe } from '@angular/common';
+import { DatePipe, TitleCasePipe } from '@angular/common';
 import { QRCodeComponent } from 'angularx-qrcode';
 
 @Component({
   selector: 'app-detail-ticket-page',
-  imports: [MatIconModule, DatePipe, QRCodeComponent],
+  imports: [MatIconModule, DatePipe, QRCodeComponent, RouterLink, TitleCasePipe],
   templateUrl: './detail-ticket-page.component.html',
 })
 export class DetailTicketPageComponent { 
@@ -57,5 +57,8 @@ addToGoogleWallet(event?: MouseEvent) {
         alert('Hubo un error al agregar a Google Wallet.');
       }
     });
+  }
+
+  copyCode() {}
 }
-}
+
