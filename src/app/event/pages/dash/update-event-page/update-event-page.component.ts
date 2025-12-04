@@ -2,7 +2,7 @@ import { Component, computed, effect, inject, input, signal } from '@angular/cor
 import { ActivatedRoute, Router } from '@angular/router';
 import { EventService } from '../../../services/event.service';
 import { FormBuilder, ReactiveFormsModule, FormArray, Validators } from '@angular/forms';
-import { EventInterface } from '../../../interfaces';
+import { EventInterface, ProductRequest, UpdateEventRequest } from '../../../interfaces';
 import { NotificationService } from '../../../../shared/services/notification.service';
 import { LoadingModalService } from '../../../../shared/services/loading-modal.service';
 import { LoadingComponent } from '../../../../shared/components/loading/loading.component';
@@ -11,6 +11,15 @@ import { firstValueFrom } from 'rxjs';
 import { MatIconModule } from '@angular/material/icon';
 import { ImageCloudinaryUploadService } from '../../../../shared/services/image-cloudinary-upload.service';
 import { HeaderBackComponent } from '../../../../shared/components/header-back/header-back.component';
+import { EventUpdateFacadeService } from '../../../services/event-update-facade.service';
+import {
+  ensureTicketTypesForType,
+  addTicketType,
+  removeTicketType,
+  updateTicketField,
+  updateProductField,
+  getTicketSoldQuantity
+} from '../../../utils/update-event-form.utils';
 
 @Component({
   selector: 'app-update-event-page',
@@ -26,6 +35,7 @@ export class UpdateEventPageComponent {
   private imageUploadService = inject(ImageCloudinaryUploadService);
   private notificationService = inject(NotificationService);
   private loadingService = inject(LoadingModalService);
+  private eventUpdateFacade = inject(EventUpdateFacadeService);
 
   readonly eventId: number = this.activateRoute.snapshot.params['eventId'];
 
@@ -43,7 +53,11 @@ export class UpdateEventPageComponent {
     date: [''],
     time: [''],
     location: [''],
+    city: [''],
+    state: [''],
+    postalCode: [''],
     type: [''],
+    ubication: [''],
     status: [''],
     imageUrl: [''],
     products: this.fb.array([]),
@@ -84,6 +98,11 @@ export class UpdateEventPageComponent {
       const event = this.eventResource.value();
       if (!event) return;
       this.fillForm(event);
+    });
+    // reaccionar a cambios en el tipo para ajustar ticketTypes automáticamente
+    const typeControl = this.updateEventForm.get('type');
+    typeControl?.valueChanges?.subscribe((t: string | null) => {
+      ensureTicketTypesForType(this.updateEventForm, this.fb, t ?? undefined);
     });
   }
 
@@ -128,6 +147,11 @@ export class UpdateEventPageComponent {
 
   removeProduct(index: number) {
     const products = this.updateEventForm.get('products') as FormArray;
+    const prod = products.at(index)?.value;
+    if (prod?.productId) {
+      this.notificationService.showNotification('No se puede eliminar un producto existente.', 'warning');
+      return;
+    }
     products.removeAt(index);
     delete this.productPreviews[index];
     delete this.productFiles[index];
@@ -162,6 +186,10 @@ export class UpdateEventPageComponent {
       (current.date ?? '') !== (origDate ?? '') ||
       (current.time ?? '') !== (origTime ?? '') ||
       (current.location ?? '') !== (original.location ?? '') ||
+      (current.city ?? '') !== (original.city ?? '') ||
+      (current.state ?? '') !== (original.state ?? '') ||
+      (current.postalCode ?? '') !== (original.postalCode ?? '') ||
+      (current.ubication ?? '') !== (original.ubication ?? '') ||
       (current.type ?? '') !== (original.type ?? '') ||
       (current.status ?? '') !== (original.status ?? '') ||
       (current.imageUrl ?? '') !== (original.imageUrl ?? '')
@@ -239,23 +267,29 @@ export class UpdateEventPageComponent {
       date,
       time,
       location: event.location ?? '',
+      city: event.city ?? '',
+      state: event.state ?? '',
+      postalCode: event.postalCode ?? '',
+      ubication: event.ubication ?? '',
       type: event.type ?? '',
       status: event.status ?? '',
       imageUrl: event.imageUrl,
     }, { emitEvent: false });
 
     // llenar ticketTypes form array
-    const ticketTypesArr = this.updateEventForm.get('ticketTypes') as FormArray;
-    ticketTypesArr.clear();
-    (event.ticketTypes ?? []).forEach(tt => {
-      ticketTypesArr.push(this.fb.group({
-        ticketTypeId: [tt.ticketTypeId],
-        name: [tt.name || '', Validators.required],
-        description: [tt.description || ''],
-        price: [tt.price ?? 0, Validators.required],
-        availableQuantity: [tt.availableQuantity ?? 0]
-      }));
-    });
+      const ticketTypesArr = this.updateEventForm.get('ticketTypes') as FormArray;
+      ticketTypesArr.clear();
+      (event.ticketTypes ?? []).forEach(tt => {
+        ticketTypesArr.push(this.fb.group({
+          ticketTypeId: [tt.ticketTypeId],
+          name: [tt.name || '', Validators.required],
+          description: [tt.description || ''],
+          price: [tt.price ?? 0, Validators.required],
+          availableQuantity: [tt.availableQuantity ?? 0]
+        }));
+      });
+        // asegurar que los ticketTypes estén de acuerdo al tipo actual
+        ensureTicketTypesForType(this.updateEventForm, this.fb, event.type);
 
     // llenar products form array
     const productsArr = this.updateEventForm.get('products') as FormArray;
@@ -290,12 +324,47 @@ export class UpdateEventPageComponent {
       date,
       time,
       location: original.location ?? '',
+      city: original.city ?? '',
+      state: original.state ?? '',
+      postalCode: original.postalCode ?? '',
+      ubication: original.ubication ?? '',
       type: original.type ?? '',
       status: original.status ?? '',
       imageUrl: original.imageUrl ?? '',
     });
 
     this.notificationService.showNotification('Valores restaurados', 'info');
+  }
+
+  addTicketType(name = 'Custom') { addTicketType(this.updateEventForm, this.fb, name); }
+
+  removeTicketType(index: number) { removeTicketType(this.updateEventForm, index); }
+
+  // wrapper for template: remove ticket (guard against existing)
+  removeTicket(index: number) {
+    const ticket = (this.updateEventForm.get('ticketTypes') as FormArray).at(index)?.value;
+    if (ticket?.ticketTypeId) {
+      this.notificationService.showNotification('No se puede eliminar un tipo de boleto existente.', 'warning');
+      return;
+    }
+    removeTicketType(this.updateEventForm, index);
+  }
+
+  // wrapper to update ticket using util
+  updateTicket(index: number, field: string, event: Event) {
+    const val = (event.target as HTMLInputElement).value;
+    updateTicketField(this.updateEventForm, index, field, val);
+  }
+
+  // wrapper to update product using util
+  updateProduct(index: number, field: string, event: Event) {
+    const val = (event.target as HTMLInputElement).value;
+    updateProductField(this.updateEventForm, index, field, val);
+  }
+
+  // get sold quantity via util
+  getTicketSoldQuantity(index: number): number {
+    return getTicketSoldQuantity(this.updateEventForm, this.originalValues(), index);
   }
 
   async onSubmit() {
@@ -309,7 +378,6 @@ export class UpdateEventPageComponent {
     // build ISO dateTime (if time empty, use 00:00)
     const datePart = form.date ?? '';
     const timePart = (form.time && form.time.length >= 5) ? form.time : '00:00';
-    const dateTime = `${datePart}T${timePart}`;
 
     // subir imagen principal si cambió
     let imageToUpload = form.imageUrl ?? '';
@@ -321,55 +389,33 @@ export class UpdateEventPageComponent {
       this.loadingService.hideModal();
     }
 
-    // procesar productos: subir imágenes nuevas y construir payload
-    const productsControls = (this.updateEventForm.get('products') as FormArray).controls || [];
-    const productsPayload: any[] = [];
-    for (let i = 0; i < productsControls.length; i++) {
-      const v = productsControls[i].value;
-      let imageUrl = v.imageUrl ?? undefined;
-      const file = this.productFiles[i];
-      if (file) {
-        const uploaded = await this.uploadIfFile(file);
-        if (uploaded) imageUrl = uploaded;
-      }
-      const productReq: any = {
-        name: v.name,
-        description: v.description,
-        price: v.price,
-        stock: v.stock,
-      };
-      if (v.productId) productReq.productId = v.productId;
-      if (imageUrl) productReq.imageUrl = imageUrl;
-      productsPayload.push(productReq);
+    // usar el facade para preparar el UpdateEventRequest (subida imágenes, creación productos, payload)
+    this.loadingService.showModal('update', 'Preparando actualización...');
+    let prepared: { request: UpdateEventRequest; createdProducts: ProductRequest[] } | undefined;
+    try {
+      prepared = await this.eventUpdateFacade.prepareUpdateRequest({
+        formValue: form,
+        productFiles: this.productFiles,
+        mainImageFile: this.imageFile(),
+        mainImageUrl: imageToUpload,
+        eventId: this.eventId
+      });
+    } catch (err) {
+      console.error('Error preparing update request:', err);
+      this.loadingService.hideModal();
+      this.notificationService.showNotification('Error preparando la actualización. Inténtalo de nuevo.', 'error');
+      return;
     }
 
-    // ticketTypes payload
-    const ticketTypesPayload = ((this.updateEventForm.get('ticketTypes') as FormArray).controls || []).map(tc => {
-      const v = tc.value;
-      const t: any = {
-        name: v.name,
-        description: v.description,
-        price: v.price,
-        availableQuantity: v.availableQuantity
-      };
-      if (v.ticketTypeId) t.ticketTypeId = v.ticketTypeId;
-      return t;
-    });
+    if (!prepared) {
+      this.loadingService.hideModal();
+      this.notificationService.showNotification('No se pudo preparar la actualización.', 'error');
+      return;
+    }
 
-    const updateRequest: any = {
-      name: form.name ?? '',
-      description: form.description ?? '',
-      dateTime: dateTime,
-      location: form.location ?? '',
-      type: form.type ?? '',
-      status: form.status ?? '',
-      imageUrl: imageToUpload ?? '',
-      ticketTypes: ticketTypesPayload,
-      products: productsPayload
-    };
+    const updateRequest = prepared.request;
 
     this.loadingService.showModal('update', 'Actualizando evento...');
-
     try {
       const res = await firstValueFrom(this.eventService.updateEvent(this.eventId, updateRequest));
       this.originalValues.set(res);

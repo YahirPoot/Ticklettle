@@ -66,14 +66,22 @@
         <!-- Layout responsive -->
         <div class="grid grid-cols-1 md:grid-cols-2">
 
-          <!-- 📌 Imagen (responsiva) -->
-          <figure class="w-full h-30 md:h-64 lg:h-56 overflow-hidden rounded-l-2xl">
-            <img
-              [src]="featuredEvent?.imageUrl"
-              [alt]="featuredEvent?.name"
-              class="w-full h-full object-cover"
-            />
-          </figure>
+          @if (featuredEvent?.imageUrl) {
+            <!-- 📌 Imagen (responsiva) -->
+            <figure class="w-full h-30 md:h-64 lg:h-56 overflow-hidden rounded-l-2xl">
+              <img
+                [src]="featuredEvent?.imageUrl"
+                [alt]="featuredEvent?.name"
+                class="w-full h-full object-cover"
+              />
+            </figure>
+          } @else {
+            <figure class="w-full h-30 md:h-60 rounded-l-2xl bg-base-300">
+              <div class="w-full h-full object-cover text-center uppercase justify-center items-center flex text-5xl font-bold text-base-content/45">
+                {{featuredEvent?.name?.charAt(0)}}
+              </div>
+            </figure>
+          }
 
           <!-- 📌 Datos centrados -->
           <div class="flex flex-col justify-center items-center p-6 text-center gap-4">
