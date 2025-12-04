@@ -38,15 +38,14 @@
             </div>
             
             <div class="flex justify-center mb-6">
-                <img [src]="ticketDetails?.uniqueCode" alt="Código QR del Boleto" 
-                    class="w-64 h-64 bg-base-100 bg-gradient-to-br from-primary/20 to-secondary/20 p-4 rounded-lg shadow-lg" />
+                <qrcode [qrdata]="ticketDetails?.uniqueCode!" [width]="256" [errorCorrectionLevel]="'M'"></qrcode>
             </div>
 
             <div class="flex justify-center">
                 <button
                     class="btn btn-ghost p-0 rounded-full"
                     aria-label="Agregar a Google Wallet"
-                    (click)="addToGoogleWallet()"
+                    (click)="addToGoogleWallet($event)"
                     [disabled]="isAddingToWallet()"
                 >
                     <img

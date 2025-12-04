@@ -38,4 +38,12 @@ export class TicketService {
       requestClaimFree
     )
   }
+
+  getTicketShareUrl(ticketId: number): Observable<{ saveLink: string }> {
+    return this.http.get<{ saveLink: string }>(`${apiBaseUrl}/Tickets/${ticketId}/google-wallet-link`)
+    .pipe(
+      tap(res => console.log('Ticket share URL obtenido:', res))
+    );
+  }  
+
 }

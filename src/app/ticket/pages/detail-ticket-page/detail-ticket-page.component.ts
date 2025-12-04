@@ -1,13 +1,14 @@
-import { Component, inject, resource, signal } from '@angular/core';
+import { Component, inject, OnInit, resource, signal } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { TicketService } from '../../services/ticket.service';
 import { ActivatedRoute } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { DatePipe } from '@angular/common';
+import { QRCodeComponent } from 'angularx-qrcode';
 
 @Component({
   selector: 'app-detail-ticket-page',
-  imports: [MatIconModule, DatePipe],
+  imports: [MatIconModule, DatePipe, QRCodeComponent],
   templateUrl: './detail-ticket-page.component.html',
 })
 export class DetailTicketPageComponent { 
@@ -28,7 +29,33 @@ export class DetailTicketPageComponent {
   }
 
   // Método para manejar la acción de agregar a Google Wallet
-  addToGoogleWallet() {
-    this.isAddingToWallet.set(true);
-  }
+addToGoogleWallet(event?: MouseEvent) {
+  const openInNewTab = !!(event && (event.ctrlKey || event.metaKey || event.shiftKey));
+  this.isAddingToWallet.set(true);
+
+  this.ticketService.getTicketShareUrl(this.ticketId)
+    .subscribe({
+      next: (res) => {
+        console.log('URL recibida:', res);
+
+        // Si la API NO devuelve enlace, mostrar error
+        if (!res?.saveLink) {
+          this.isAddingToWallet.set(false);
+          alert('No se pudo generar el enlace de Google Wallet');
+          return;
+        }
+
+        if (openInNewTab) {
+            window.open(res.saveLink, '_blank', 'noopener');
+          } else {
+            window.location.href = res.saveLink;
+          }
+      },
+      error: (err) => {
+        console.error('Error obteniendo Wallet URL:', err);
+        this.isAddingToWallet.set(false);
+        alert('Hubo un error al agregar a Google Wallet.');
+      }
+    });
+}
 }
