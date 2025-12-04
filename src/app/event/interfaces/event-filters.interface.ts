@@ -1,3 +1,5 @@
+import { number } from "echarts/core";
+
 export interface EventFilter {
     Page?: number;
     PageSize?: number;
@@ -21,3 +23,4 @@ export interface EventFilter {
     "SpecialFilter.IsUpcoming"?: boolean;
     "SpecialFilter.DateRange"?: string;
 }
+
