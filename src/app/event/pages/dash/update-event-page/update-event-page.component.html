@@ -18,10 +18,30 @@
                         <textarea formControlName="description" rows="4" placeholder="Descripción breve" class="textarea textarea-bordered w-full mt-1 resize-none"></textarea>
                     </label>
 
-                    <label class="block">
-                        <span class="text-sm font-medium">Ubicación</span>
-                        <input formControlName="location" type="text" placeholder="Lugar o dirección" class="input input-bordered w-full mt-1" />
-                    </label>
+                    <div class="grid grid-cols-1 md:grid-cols-2">
+                        <label class="block">
+                            <span class="text-sm font-medium">Codigo Postal</span>
+                            <input formControlName="postalCode" type="text" placeholder="Código postal" class="input input-bordered w-full mt-1" />
+                        </label>
+                        <label class="block">
+                            <span class="text-sm font-medium">Estado / Provincia </span>
+                            <input formControlName="state" type="text" placeholder="Estado" class="input input-bordered w-full mt-1" />
+                        </label>
+                        <label class="block">
+                            <span class="text-sm font-medium">Ciudad</span>
+                            <input formControlName="city" type="text" placeholder="Ciudad" class="input input-bordered w-full mt-1" />
+                        </label>
+                        <label class="block">
+                            <span class="text-sm font-medium">Dirección</span>
+                            <input formControlName="location" type="text" placeholder="Lugar o dirección" class="input input-bordered w-full mt-1" />
+                        </label>
+                        <label class="block">
+                            <span class="text-sm font-medium">Ubicación</span>
+                            <input formControlName="ubication" type="text" placeholder="Lugar o dirección" class="input input-bordered w-full mt-1" />
+                        </label>
+
+                    </div>
+
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <label class="block">

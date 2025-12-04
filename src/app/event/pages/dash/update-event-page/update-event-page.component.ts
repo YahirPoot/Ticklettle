@@ -11,10 +11,7 @@ import { firstValueFrom } from 'rxjs';
 import { MatIconModule } from '@angular/material/icon';
 import { ImageCloudinaryUploadService } from '../../../../shared/services/image-cloudinary-upload.service';
 import { HeaderBackComponent } from '../../../../shared/components/header-back/header-back.component';
-import { ProductService } from '../../../../product/services/product.service';
-import { UploadImageUseCase } from '../../../../shared/use-cases/upload-image-use-case';
 import { EventUpdateFacadeService } from '../../../services/event-update-facade.service';
-import { buildProductPayload } from '../../../utils/update-event.utils';
 import {
   ensureTicketTypesForType,
   addTicketType,
@@ -38,8 +35,6 @@ export class UpdateEventPageComponent {
   private imageUploadService = inject(ImageCloudinaryUploadService);
   private notificationService = inject(NotificationService);
   private loadingService = inject(LoadingModalService);
-  private productService = inject(ProductService);
-  private uploadImageUseCase = inject(UploadImageUseCase);
   private eventUpdateFacade = inject(EventUpdateFacadeService);
 
   readonly eventId: number = this.activateRoute.snapshot.params['eventId'];
@@ -58,7 +53,11 @@ export class UpdateEventPageComponent {
     date: [''],
     time: [''],
     location: [''],
+    city: [''],
+    state: [''],
+    postalCode: [''],
     type: [''],
+    ubication: [''],
     status: [''],
     imageUrl: [''],
     products: this.fb.array([]),
@@ -187,6 +186,10 @@ export class UpdateEventPageComponent {
       (current.date ?? '') !== (origDate ?? '') ||
       (current.time ?? '') !== (origTime ?? '') ||
       (current.location ?? '') !== (original.location ?? '') ||
+      (current.city ?? '') !== (original.city ?? '') ||
+      (current.state ?? '') !== (original.state ?? '') ||
+      (current.postalCode ?? '') !== (original.postalCode ?? '') ||
+      (current.ubication ?? '') !== (original.ubication ?? '') ||
       (current.type ?? '') !== (original.type ?? '') ||
       (current.status ?? '') !== (original.status ?? '') ||
       (current.imageUrl ?? '') !== (original.imageUrl ?? '')
@@ -264,6 +267,10 @@ export class UpdateEventPageComponent {
       date,
       time,
       location: event.location ?? '',
+      city: event.city ?? '',
+      state: event.state ?? '',
+      postalCode: event.postalCode ?? '',
+      ubication: event.ubication ?? '',
       type: event.type ?? '',
       status: event.status ?? '',
       imageUrl: event.imageUrl,
@@ -317,53 +324,16 @@ export class UpdateEventPageComponent {
       date,
       time,
       location: original.location ?? '',
+      city: original.city ?? '',
+      state: original.state ?? '',
+      postalCode: original.postalCode ?? '',
+      ubication: original.ubication ?? '',
       type: original.type ?? '',
       status: original.status ?? '',
       imageUrl: original.imageUrl ?? '',
     });
 
     this.notificationService.showNotification('Valores restaurados', 'info');
-  }
-
-  // asegura la forma de ticketTypes según el tipo de evento
-  private ensureTicketTypesForType(type: string | null | undefined) {
-    const ticketTypesArr = this.updateEventForm.get('ticketTypes') as FormArray;
-    const t = (type ?? '').toLowerCase();
-    if (t === 'gratis') {
-      // conservar primero si existe, o crear uno con price 0
-      const first = ticketTypesArr.at(0)?.value;
-      const qty = first?.availableQuantity ?? 0;
-      ticketTypesArr.clear();
-      ticketTypesArr.push(this.fb.group({
-        ticketTypeId: [first?.ticketTypeId ?? undefined],
-        name: ['General', Validators.required],
-        description: [''],
-        price: [0, Validators.required],
-        availableQuantity: [qty]
-      }));
-      return;
-    }
-
-    // pago: asegurar General y VIP (si ya existen mantener ids/valores)
-    const values = ticketTypesArr.value ?? [];
-    const find = (name: string) => values.find((v: any) => (v.name ?? '').toLowerCase() === name.toLowerCase());
-    const general = find('general') ?? values[0] ?? { name: 'General', price: 0, availableQuantity: 0 };
-    const vip = find('vip') ?? values.find((v: any) => (v.name ?? '').toLowerCase() === 'vip') ?? { name: 'VIP', price: 0, availableQuantity: 0 };
-    ticketTypesArr.clear();
-    ticketTypesArr.push(this.fb.group({
-      ticketTypeId: [general?.ticketTypeId ?? undefined],
-      name: [general?.name ?? 'General', Validators.required],
-      description: [general?.description ?? ''],
-      price: [general?.price ?? 0, Validators.required],
-      availableQuantity: [general?.availableQuantity ?? 0]
-    }));
-    ticketTypesArr.push(this.fb.group({
-      ticketTypeId: [vip?.ticketTypeId ?? undefined],
-      name: [vip?.name ?? 'VIP', Validators.required],
-      description: [vip?.description ?? ''],
-      price: [vip?.price ?? 0, Validators.required],
-      availableQuantity: [vip?.availableQuantity ?? 0]
-    }));
   }
 
   addTicketType(name = 'Custom') { addTicketType(this.updateEventForm, this.fb, name); }
@@ -408,7 +378,6 @@ export class UpdateEventPageComponent {
     // build ISO dateTime (if time empty, use 00:00)
     const datePart = form.date ?? '';
     const timePart = (form.time && form.time.length >= 5) ? form.time : '00:00';
-    const dateTime = `${datePart}T${timePart}`;
 
     // subir imagen principal si cambió
     let imageToUpload = form.imageUrl ?? '';
@@ -445,19 +414,6 @@ export class UpdateEventPageComponent {
     }
 
     const updateRequest = prepared.request;
-
-    // ticketTypes payload
-    const ticketTypesPayload = ((this.updateEventForm.get('ticketTypes') as FormArray).controls || []).map(tc => {
-      const v = tc.value;
-      const t: any = {
-        name: v.name,
-        description: v.description,
-        price: v.price,
-        availableQuantity: v.availableQuantity
-      };
-      if (v.ticketTypeId) t.ticketTypeId = v.ticketTypeId;
-      return t;
-    });
 
     this.loadingService.showModal('update', 'Actualizando evento...');
     try {
