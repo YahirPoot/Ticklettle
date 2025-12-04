@@ -1,6 +1,6 @@
 export interface TicketFiltersInterface {
-    Page?: number
-    PageSize?: number
+    Page?: number;
+    PageSize?: number;
     Search?: string
     SortBy?: string
     "Filter.StatusTicket"?: string

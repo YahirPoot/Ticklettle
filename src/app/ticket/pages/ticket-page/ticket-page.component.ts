@@ -26,6 +26,9 @@ export class TicketPageComponent {
   initialLoading = signal(false);
   pageLoading = signal(false);
 
+  selectedStatus = signal<string>('Activo');
+
+
   private lastRequestPage = signal<number | null>(null);
   private reloadTimer: any = null;
 
@@ -50,14 +53,57 @@ export class TicketPageComponent {
     return () => clearTimeout(this.reloadTimer);
   });
 
+  applyFilters() {
+    // Reset pagination to first page and force a reload with current filters
+    this.paginationService.reset();
+    // Allow the reload effect to re-request even if same page was previously requested
+    this.lastRequestPage.set(null);
+
+    // If user is authenticated, trigger loading immediately
+    if (this.isAuthenticated()) {
+      const page = this.paginationService.page();
+      this.loadTickets(page);
+    }
+  }
+
+  onFilterChange(value: string) {
+    this.selectedStatus.set(value);
+    // apply filters immediately when select changes
+    this.applyFilters();
+  }
+
+  private mapStatusToApi(status: string): string {
+    if (!status) return 'Activo';
+    const s = status.toLowerCase();
+    if (s === 'active' || s === 'activo') return 'Activo';
+    if (s === 'expired' || s === 'vencido' || s === 'vencidos') return 'Vencido';
+    return status;
+  }
+
   loadTickets(page: number) {
     const isInitial = (this.tickets() ?? []).length === 0;
     this.initialLoading.set(isInitial);
     this.pageLoading.set(!isInitial);
-    
-    this.ticketService.getTicketsByAttendee({Page:page, PageSize:this.paginationService.pageSize()}).subscribe({
+    const status = this.mapStatusToApi(this.selectedStatus());
+    console.log('Loading tickets with filters:', { 'Filter.StatusTicket': status, Page: page, PageSize: this.paginationService.pageSize() });
+
+    this.ticketService.getTicketsByAttendee({
+      "Filter.StatusTicket": status,
+      Page: page,
+      PageSize: this.paginationService.pageSize()
+    }).subscribe({
       next: (res) => {
         this.tickets.set(res.items);
+        // Update pagination service with values from the response
+        if (res.totalPages !== undefined && res.totalPages !== null) {
+          this.paginationService.setTotalPages(res.totalPages);
+        }
+        if (res.page !== undefined && res.page !== null) {
+          this.paginationService.setPage(res.page);
+        }
+        if (res.pageSize !== undefined && res.pageSize !== null) {
+          this.paginationService.setPageSize(res.pageSize);
+        }
         this.initialLoading.set(false);
         this.pageLoading.set(false);
       }, 

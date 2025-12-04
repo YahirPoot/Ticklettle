@@ -181,61 +181,55 @@
         </section> -->
 
         <!-- Productos -->
-        <!-- @if (eventForm.get('sellMerch')?.value) {
-            <section class="bg-base-100 rounded-lg p-4">
-                <h2 class="text-lg font-semibold mb-3">Productos</h2>
-    
-                <div formArrayName="products" class="space-y-3">
+        <section class="bg-base-100 rounded-lg p-4">
+            <h2 class="text-lg font-semibold mb-3">Productos</h2>
 
-                    @for (product of products.controls; track $index) {
-                        <div [formGroupName]="$index" class="grid grid-cols-12 gap-3 items-end border rounded p-3">
-                            
-                            <div class="col-span-4">
-                                <label class="block">
-                                    <span class="text-sm font-medium text-gray-500">Nombre</span>
-                                    <input type="text" formControlName="name" class="input input-bordered w-full mt-1" />
-                                </label>
-                            </div>
-
-                            <div class="col-span-3">
-                                <label class="block">
-                                    <span class="text-sm font-medium text-gray-500">Precio</span>
-                                    <input type="number" min="0" step="0.01" formControlName="productPrice" class="input input-bordered w-full mt-1" />
-                                </label>
-                            </div>
-
-                            <div class="col-span-2">
-                                <label class="block">
-                                    <span class="text-sm font-medium text-gray-500">Stock</span>
-                                    <input type="number" min="0" formControlName="stock" class="input input-bordered w-full mt-1" />
-                                </label>
-                            </div>
-
-                            <div class="col-span-3">
-                                <label class="block">
-                                    <span class="text-sm font-medium text-gray-500">Imagen</span>
-                                    <input type="file" accept="image/*" (change)="onProductFileChange($event, $index)" class="file-input file-input-bordered w-full mt-1" />
-                                </label>
-
-                                @if (productPreviews[$index]) {
-                                    <img [src]="productPreviews[$index]" class="w-24 h-24 object-cover mt-2 rounded" />
-                                }
-                            </div>
-
-                            <div class="col-span-12 text-right">
-                                <button type="button" class="btn btn-sm btn-outline" (click)="removeProduct($index)">Eliminar</button>
-                            </div>
-
+            <div formArrayName="products" class="space-y-3">
+                @for (product of products.controls; track $index) {
+                    <div [formGroupName]="$index" class="grid grid-cols-12 gap-3 items-end border rounded p-3">
+                        <div class="col-span-5">
+                            <label class="block">
+                                <span class="text-sm font-medium text-gray-500">Nombre</span>
+                                <input type="text" formControlName="name" class="input input-bordered w-full mt-1" />
+                            </label>
                         </div>
-                    }
 
-                    <div>
-                        <button type="button" class="btn btn-sm btn-outline" (click)="addProduct()">+ Agregar producto</button>
+                        <div class="col-span-2">
+                            <label class="block">
+                                <span class="text-sm font-medium text-gray-500">Precio</span>
+                                <input type="number" min="0" step="0.01" formControlName="price" class="input input-bordered w-full mt-1" />
+                            </label>
+                        </div>
+
+                        <div class="col-span-2">
+                            <label class="block">
+                                <span class="text-sm font-medium text-gray-500">Stock</span>
+                                <input type="number" min="0" formControlName="stock" class="input input-bordered w-full mt-1" />
+                            </label>
+                        </div>
+
+                        <div class="col-span-2">
+                            <label class="block">
+                                <span class="text-sm font-medium text-gray-500">Imagen</span>
+                                <input type="file" accept="image/*" (change)="onProductFileChange($event, $index)" class="file-input file-input-bordered w-full mt-1" />
+                            </label>
+
+                            @if (productPreviews[$index]) {
+                                <img [src]="productPreviews[$index]" class="w-24 h-24 object-cover mt-2 rounded" />
+                            }
+                        </div>
+
+                        <div class="col-span-1 text-right">
+                            <button type="button" class="btn btn-ghost" (click)="removeProduct($index)">✕</button>
+                        </div>
                     </div>
+                }
 
+                <div>
+                    <button type="button" class="btn btn-sm btn-outline" (click)="addProduct()">+ Agregar producto</button>
                 </div>
-            </section>
-        } -->
+            </div>
+        </section>
 
     </form>
 
