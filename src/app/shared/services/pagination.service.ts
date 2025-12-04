@@ -3,7 +3,7 @@ import { Injectable, signal } from '@angular/core';
 @Injectable({ providedIn: 'root' })
 export class PaginationService {
   page = signal<number>(1);
-  pageSize = signal<number>(2);
+  pageSize = signal<number>(12);
   totalPages = signal<number>(1);
 
   setPage(page: number) {
