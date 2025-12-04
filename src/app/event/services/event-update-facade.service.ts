@@ -1,8 +1,9 @@
 import { Injectable, inject } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { ProductRequest, UpdateEventRequest } from '../interfaces';
-import { UploadImageUseCase } from '../../shared/use-cases/upload-image-use-case';
 import { ProductService } from '../../product/services/product.service';
+import { UploadImageUseCase } from '../../shared/use-cases/upload-image-use-case';
+
 
 @Injectable({ providedIn: 'root' })
 export class EventUpdateFacadeService {
@@ -106,35 +107,23 @@ export class EventUpdateFacadeService {
       });
     }
 
-    // ticketTypes: normalizar según el tipo de evento
-    let ticketTypesPayload: any[] = [];
-    const ticketForms = (formValue.ticketTypes ?? []) as any[];
-    if ((formValue.type ?? '').toLowerCase() === 'gratis') {
-      // único tipo de boleto con precio 0
-      const qty = ticketForms[0]?.availableQuantity ?? ticketForms[0]?.quantity ?? 0;
-      ticketTypesPayload = [{ name: 'General', description: '', price: 0, availableQuantity: Number(qty) }];
-    } else {
-      // pago: asegurar al menos General y VIP
-      const findByName = (name: string) => ticketForms.find(t => (t.name ?? '').toLowerCase() === name.toLowerCase());
-      const general = findByName('general') ?? ticketForms[0] ?? { name: 'General', price: 0, availableQuantity: 0 };
-      const vip = findByName('vip') ?? ticketForms.find(t => (t.name ?? '').toLowerCase() === 'vip') ?? { name: 'VIP', price: 0, availableQuantity: 0 };
-      const toOut = (t: any) => {
-        const out: any = { name: t.name ?? '', description: t.description ?? '', price: Number(t.price ?? 0), availableQuantity: Number(t.availableQuantity ?? 0) };
-        if (t.ticketTypeId) out.ticketTypeId = t.ticketTypeId;
-        return out;
+    // ticketTypes
+    const ticketTypesPayload = (formValue.ticketTypes ?? []).map((t: any) => {
+      const out: any = {
+        name: t.name,
+        description: t.description,
+        price: t.price,
+        availableQuantity: t.availableQuantity
       };
-      ticketTypesPayload = [toOut(general), toOut(vip)];
-    }
+      if (t.ticketTypeId) out.ticketTypeId = t.ticketTypeId;
+      return out;
+    });
 
     const request: UpdateEventRequest = {
       name: formValue.name ?? '',
       description: formValue.description ?? '',
       dateTime,
       location: formValue.location ?? '',
-      city: formValue.city ?? '',
-      state: formValue.state ?? '',
-      postalCode: formValue.postalCode ?? '',
-      ubication: formValue.ubication ?? '',
       type: formValue.type ?? '',
       status: formValue.status ?? '',
       imageUrl: imageUrl ?? '',
