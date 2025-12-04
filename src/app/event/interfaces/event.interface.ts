@@ -28,3 +28,5 @@ export interface EventInterface {
     ticketTypes: TypeTicketInterface[],
     products: ProductInterface[]
 }
+
+

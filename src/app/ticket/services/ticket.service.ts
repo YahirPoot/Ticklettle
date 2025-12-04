@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable, tap } from 'rxjs';
 import { environment } from '../../../environments/environment.dev';
-import { ClaimFreeTicketRequest, ResponseTicketInterface } from '../interfaces';
+import { ClaimFreeTicketRequest, ResponseTicketInterface, TicketInterface } from '../interfaces';
 
 const apiBaseUrl = environment.apiBaseUrl;
 
@@ -12,11 +12,25 @@ const apiBaseUrl = environment.apiBaseUrl;
 export class TicketService {
   private http = inject(HttpClient);
 
-  getTicketsByAttendee(): Observable<ResponseTicketInterface[]> {
-    return this.http.get<ResponseTicketInterface[]>(`${apiBaseUrl}/Tickets/my-tickets`)
+  getTicketsByAttendee(page: number, pageSize: number): Observable<ResponseTicketInterface> {
+    return this.http.get<ResponseTicketInterface>(`${apiBaseUrl}/Tickets/my-tickets`,
+      {
+        params: {
+          page, 
+          pageSize
+        }
+      }
+    )
       .pipe(
         tap(res => console.log('Tickets obtenidos:', res))
       )
+  }
+
+  getTicketById(ticketId: number): Observable<TicketInterface> {
+    return this.http.get<TicketInterface>(`${apiBaseUrl}/Tickets/${ticketId}`
+    ).pipe(
+      tap(res => console.log('Ticket obtenido:', res))
+    )
   }
 
   claimFreetickets(requestClaimFree: ClaimFreeTicketRequest): Observable<ClaimFreeTicketRequest> {

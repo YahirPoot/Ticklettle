@@ -1,12 +1,9 @@
-export interface ResponseTicketInterface{
-    ticketId: number,
-    type: string,
-    price: number,
-    status: string,
-    uniqueCode: string,
-    purchaseDate: string,
-    attendeeId: number,
-    ticketTypeId: number,
-    entry: null, 
-}
+import { TicketInterface } from "./ticket.interface";
 
+export interface ResponseTicketInterface{
+    items: TicketInterface[],
+    totalCount: number,
+    page: number,
+    pageSize: number,
+    totalPages: number
+}

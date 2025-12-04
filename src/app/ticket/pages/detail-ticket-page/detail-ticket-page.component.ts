@@ -3,10 +3,11 @@ import { MatIconModule } from '@angular/material/icon';
 import { TicketService } from '../../services/ticket.service';
 import { ActivatedRoute } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-detail-ticket-page',
-  imports: [MatIconModule],
+  imports: [MatIconModule, DatePipe],
   templateUrl: './detail-ticket-page.component.html',
 })
 export class DetailTicketPageComponent { 
@@ -19,7 +20,7 @@ export class DetailTicketPageComponent {
   ticketId: number = this.activatedRoute.snapshot.params['ticketId'];
 
   ticketResource = resource({
-    loader: () => firstValueFrom(this.ticketService.getTicketsByAttendee()).then(tickets => tickets.filter(ticket => ticket.ticketId === this.ticketId)[0]),
+    loader: () => firstValueFrom(this.ticketService.getTicketById(this.ticketId)),
   });
 
   get ticketDetails() {
