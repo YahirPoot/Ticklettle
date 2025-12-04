@@ -26,10 +26,29 @@ export class TicketPageComponent {
   initialLoading = signal(false);
   pageLoading = signal(false);
 
+  private lastRequestPage = signal<number | null>(null);
+  private reloadTimer: any = null;
+
   private reloadTicketsEffect = effect(() => {
-    this.paginationService.page();
-    this.loadTickets(this.paginationService.page());
-  })
+    const page = this.paginationService.page();
+    const auth = this.isAuthenticated();
+
+    // no cargar si el usuario no está autenticado
+    if (!auth) return;
+
+    // si ya pedimos esta página, no hacer nada
+    if (this.lastRequestPage() === page) return;
+
+    // debounce corto para evitar ráfagas de llamadas (ej. varios cambios de página en UI)
+    clearTimeout(this.reloadTimer);
+    this.reloadTimer = setTimeout(() => {
+      this.lastRequestPage.set(page);
+      this.loadTickets(page);
+    }, 150);
+
+    // cleanup al re-ejecutar
+    return () => clearTimeout(this.reloadTimer);
+  });
 
   loadTickets(page: number) {
     const isInitial = (this.tickets() ?? []).length === 0;

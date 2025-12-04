@@ -25,7 +25,7 @@
 
   <!-- 3️⃣ NO HAY BOLETOS -->
   @else if (
-    (pageLoading() === false)
+    (tickets().length === 0) && !initialLoading() && isAuthenticated()
   ) {
 
     <div class="max-w-4xl mx-auto p-4">
@@ -61,18 +61,18 @@
       <div class="p-4 max-w-6xl mx-auto w-full">
 
         <!-- Navbar -->
-        <div class="navbar px-4 py-2 mb-4">
+        <div class="px-4 py-2 mb-4">
           <div class="flex-1">
             <h1 class="text-2xl font-bold">Mis Boletos</h1>
           </div>
+          <div class="flex items-center justify-center gap-4">
+            Aqui va un filtro por estado del evento
+          </div>
         </div>
-
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
           <!-- ACTIVOS -->
           <section>
-            <h2 class="text-2xl text-center font-bold mb-4">Activos</h2>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
 
               @for (ticket of tickets(); track $index) {
                 <a [routerLink]="['detail-ticket', ticket.ticketId]">
@@ -94,53 +94,17 @@
                   </article>
                 </a>
               }
-
-              @empty {
-                <p class="col-span-full text-center text-gray-500">
-                  No tienes boletos activos.
-                </p>
-              }
-
+              
+              
             </div>
+            <div class="flex items-center justify-center mt-4">
+              <shared-pagination
+                  [page]="paginationService.page()"
+                  [totalPages]="paginationService.totalPages()"
+                  (pageChange)="onPageChange($event)"
+              />
+          </div>
           </section>
-
-          <!-- VENCIDOS / TRANSFERIDOS -->
-          <section>
-            <h2 class="text-2xl text-center font-bold mb-4">Vencidos/Transferidos</h2>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-
-              @for (ticket of tickets(); track $index) {
-                <a [routerLink]="['detail-ticket', ticket.ticketId]">
-                  <article class="card bg-base-200 shadow-lg border border-base-300 opacity-60">
-                    <div class="card-body p-4 flex flex-col items-center text-center">
-
-                      <h3 class="text-lg font-semibold truncate">{{ ticket.type }}</h3>
-
-                      <div class="w-full h-32 my-3 rounded-lg bg-gray-400 flex items-center justify-center"
-                        style="background: linear-gradient(180deg, rgba(255,255,255,0.1) 0%, rgba(0,0,0,0.3) 100%);">
-                        <mat-icon class="text-6xl text-gray-500">image</mat-icon>
-                      </div>
-
-                      <p class="text-md font-medium mb-3 truncate">{{ ticket.price }}</p>
-
-                      <div class="absolute bottom-2 right-2 bg-black text-white p-2 rounded-full shadow-lg">
-                        <mat-icon class="text-xl">wallet</mat-icon>
-                      </div>
-                    </div>
-                  </article>
-                </a>
-              }
-
-              @empty {
-                <p class="col-span-full text-center text-gray-500">
-                  No hay boletos vencidos o transferidos.
-                </p>
-              }
-
-            </div>
-          </section>
-
-        </div>
       </div>
     </div>
   }
