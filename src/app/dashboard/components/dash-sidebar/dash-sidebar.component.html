@@ -6,7 +6,7 @@
     @for (route of routes; track $index) {
         <li class="mb-4">
             <button [routerLink]="route.path === '' ? '/admin' : ['/admin', route.path]"
-                routerLinkActive="btn bg-base-300"
+                routerLinkActive="btn bg-primary/20"
                 [routerLinkActiveOptions]="route.path === '' ? { exact: true } : { exact: false }"
             >   
             <div class="flex items-center gap-3">
