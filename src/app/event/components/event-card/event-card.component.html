@@ -45,6 +45,7 @@
 
       <button
         class="btn btn-ghost btn-sm p-2 rounded-full"
+        [disabled]="!isAuthenticated()"
         aria-label="Favorito"
         (click)="toggleFavorite($event)"
         [attr.aria-pressed]="isFavorited()"
